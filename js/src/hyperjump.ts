@@ -102,8 +102,17 @@ const templatePattern = (template: string): RegExp =>
 
 export type Compiled = { ast: Parameters<typeof Validation.interpret>[2]["ast"]; urls: Map<string, string> };
 
+/** Hyperjump's schema store is global: compiles run one at a time. */
+let queue: Promise<unknown> = Promise.resolve();
+
 /** Compiles every schema of the registry into one AST. */
-export const compile = async (registry: Registry): Promise<Compiled> => {
+export const compile = (registry: Registry): Promise<Compiled> => {
+  const compiled = queue.then(() => compileNow(registry));
+  queue = compiled.catch(() => undefined);
+  return compiled;
+};
+
+const compileNow = async (registry: Registry): Promise<Compiled> => {
   setUp();
   for (const id of registry.ids()) {
     unregisterSchema(id);
