@@ -1,0 +1,10 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:catalog/regions/olivero",
+  "title": "Olivero regions",
+  "oneOf": [
+    { "const": "header", "title": "Header" },
+    { "const": "content", "title": "Content" },
+    { "const": "footer_top", "title": "Footer Top" }
+  ]
+}

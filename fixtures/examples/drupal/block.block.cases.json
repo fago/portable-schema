@@ -1,0 +1,136 @@
+[
+  {
+    "description": "block.block config entity, resolved against schemas/ and catalogs/",
+    "schema": { "$ref": "drupal:block.block" },
+    "tests": [
+      {
+        "description": "branding block with its own settings",
+        "data": {
+          "uuid": "8f9e6a0e-3c3a-4b8e-9d7f-1d2c3b4a5e6f",
+          "langcode": "en",
+          "status": true,
+          "dependencies": { "module": ["system"], "theme": ["olivero"] },
+          "id": "olivero_site_branding",
+          "theme": "olivero",
+          "region": "header",
+          "weight": 0,
+          "provider": null,
+          "plugin": "system_branding_block",
+          "settings": {
+            "id": "system_branding_block",
+            "label": "Site branding",
+            "label_display": "0",
+            "provider": "system",
+            "use_site_logo": true,
+            "use_site_name": true,
+            "use_site_slogan": false
+          },
+          "visibility": {}
+        },
+        "valid": true
+      },
+      {
+        "description": "plugin without own schema uses the fallback: base keys only",
+        "data": {
+          "langcode": "en",
+          "status": true,
+          "dependencies": { "module": ["system"], "theme": ["olivero"] },
+          "id": "olivero_powered",
+          "theme": "olivero",
+          "region": "footer_top",
+          "weight": 0,
+          "plugin": "system_powered_by_block",
+          "settings": {
+            "id": "system_powered_by_block",
+            "label": "Powered by Drupal",
+            "label_display": "0",
+            "provider": "system"
+          },
+          "visibility": {}
+        },
+        "valid": true
+      },
+      {
+        "description": "unknown plugin (PluginExists via the catalog)",
+        "data": {
+          "langcode": "en",
+          "status": true,
+          "dependencies": {},
+          "id": "olivero_foo",
+          "theme": "olivero",
+          "region": "header",
+          "weight": 0,
+          "plugin": "foo_block",
+          "settings": { "id": "foo_block", "label": "Foo", "label_display": "0", "provider": "system" },
+          "visibility": {}
+        },
+        "valid": false
+      },
+      {
+        "description": "unknown key in plugin-specific settings",
+        "data": {
+          "langcode": "en",
+          "status": true,
+          "dependencies": {},
+          "id": "olivero_site_branding",
+          "theme": "olivero",
+          "region": "header",
+          "weight": 0,
+          "plugin": "system_branding_block",
+          "settings": {
+            "id": "system_branding_block",
+            "label": "Site branding",
+            "label_display": "0",
+            "provider": "system",
+            "use_site_logo": true,
+            "use_site_name": true,
+            "use_site_slogan": false,
+            "use_site_motto": true
+          },
+          "visibility": {}
+        },
+        "valid": false
+      },
+      {
+        "description": "region not in the theme's region catalog",
+        "data": {
+          "langcode": "en",
+          "status": true,
+          "dependencies": {},
+          "id": "olivero_site_branding",
+          "theme": "olivero",
+          "region": "sidebar_first",
+          "weight": 0,
+          "plugin": "system_branding_block",
+          "settings": {
+            "id": "system_branding_block",
+            "label": "Site branding",
+            "label_display": "0",
+            "provider": "system",
+            "use_site_logo": true,
+            "use_site_name": true,
+            "use_site_slogan": false
+          },
+          "visibility": {}
+        },
+        "valid": false
+      },
+      {
+        "description": "invalid label_display in the base type",
+        "data": {
+          "langcode": "en",
+          "status": true,
+          "dependencies": {},
+          "id": "olivero_powered",
+          "theme": "olivero",
+          "region": "footer_top",
+          "weight": 0,
+          "plugin": "system_powered_by_block",
+          "settings": { "id": "system_powered_by_block", "label": "Powered", "label_display": "hidden", "provider": "system" },
+          "visibility": {}
+        },
+        "valid": false
+      }
+    ]
+  }
+]

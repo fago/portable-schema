@@ -1,0 +1,7 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:condition.plugin.*",
+  "title": "Condition (fallback)",
+  "$ref": "drupal:condition.plugin",
+  "unevaluatedProperties": false
+}

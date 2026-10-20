@@ -1,0 +1,13 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:block.settings.system_branding_block",
+  "title": "Branding block",
+  "$ref": "drupal:block_settings",
+  "properties": {
+    "use_site_logo": { "type": "boolean", "title": "Use site logo" },
+    "use_site_name": { "type": "boolean", "title": "Use site name" },
+    "use_site_slogan": { "type": "boolean", "title": "Use site slogan" }
+  },
+  "required": ["use_site_logo", "use_site_name", "use_site_slogan"],
+  "unevaluatedProperties": false
+}

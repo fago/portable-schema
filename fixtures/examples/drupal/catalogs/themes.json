@@ -1,0 +1,9 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:catalog/themes",
+  "title": "Installed themes",
+  "oneOf": [
+    { "const": "olivero", "title": "Olivero" },
+    { "const": "claro", "title": "Claro" }
+  ]
+}

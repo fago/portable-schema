@@ -1,0 +1,28 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:block_settings",
+  "title": "Block settings",
+  "description": "Open base type: the keys every block plugin's settings have.",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "title": "ID" },
+    "label": { "type": "string", "title": "Description", "x-portable-translatable": true },
+    "label_display": {
+      "title": "Display title",
+      "oneOf": [
+        { "const": "0", "title": "Hidden" },
+        { "const": "visible", "title": "Visible" }
+      ]
+    },
+    "provider": {
+      "title": "Provider of this block plugin",
+      "$ref": "drupal:catalog/modules"
+    },
+    "context_mapping": {
+      "type": "object",
+      "title": "Context assignments",
+      "additionalProperties": { "type": "string" }
+    }
+  },
+  "required": ["id", "label", "label_display", "provider"]
+}

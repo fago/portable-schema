@@ -1,0 +1,23 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:config_entity",
+  "title": "Config entity",
+  "description": "Open base type for all config entities.",
+  "type": "object",
+  "properties": {
+    "uuid": { "type": "string", "format": "uuid" },
+    "langcode": { "type": "string", "title": "Language code" },
+    "status": { "type": "boolean", "title": "Status" },
+    "dependencies": {
+      "type": "object",
+      "properties": {
+        "config": { "type": "array", "items": { "type": "string" } },
+        "content": { "type": "array", "items": { "type": "string" } },
+        "module": { "type": "array", "items": { "$ref": "drupal:catalog/modules" } },
+        "theme": { "type": "array", "items": { "$ref": "drupal:catalog/themes" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["langcode", "status", "dependencies"]
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:block.settings.*",
+  "title": "Block settings (fallback)",
+  "description": "For block plugins without their own settings schema: the base keys only.",
+  "$ref": "drupal:block_settings",
+  "unevaluatedProperties": false
+}

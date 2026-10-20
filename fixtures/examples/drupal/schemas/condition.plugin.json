@@ -1,0 +1,16 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:condition.plugin",
+  "title": "Condition",
+  "description": "Open base type for condition plugin configuration.",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "title": "ID" },
+    "negate": { "type": "boolean", "title": "Negate" },
+    "context_mapping": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  },
+  "required": ["id"]
+}
