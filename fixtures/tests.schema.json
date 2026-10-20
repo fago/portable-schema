@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portable-schema.dev/fixtures/tests.schema.json",
+  "title": "Fixture test file",
+  "description": "<name>.test.json: test cases run against <name>.json.",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "required": [
+      "description",
+      "data",
+      "valid"
+    ],
+    "properties": {
+      "description": {
+        "type": "string",
+        "minLength": 1
+      },
+      "data": true,
+      "valid": {
+        "type": "boolean"
+      },
+      "errors": {
+        "description": "Exactly the expected errors, in shaped order. Message text is not compared.",
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/error"
+        }
+      },
+      "unchecked": {
+        "description": "Exactly the expected unchecked entries.",
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/unchecked"
+        }
+      },
+      "options": {
+        "type": "object",
+        "properties": {
+          "partial": {
+            "type": "boolean"
+          },
+          "emptyAsMissing": {
+            "type": "boolean"
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "checks": {
+        "description": "Local callbacks as data: the canned result per check name, applied to every value the check is asked about.",
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "required": [
+            "errors"
+          ],
+          "properties": {
+            "errors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "code",
+                  "params"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "params": {
+                    "type": "object"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false
+  },
+  "$defs": {
+    "error": {
+      "type": "object",
+      "required": [
+        "instanceLocation",
+        "code",
+        "params"
+      ],
+      "properties": {
+        "instanceLocation": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "params": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "unchecked": {
+      "type": "object",
+      "required": [
+        "instanceLocation",
+        "code",
+        "reason"
+      ],
+      "properties": {
+        "instanceLocation": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "noProvider",
+            "pending",
+            "offline",
+            "error"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

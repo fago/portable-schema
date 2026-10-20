@@ -6,41 +6,57 @@ Conformance also includes the official [JSON-Schema-Test-Suite](https://github.c
 
 ## Layout
 
+Each fixture is a pair of files side by side, like a source file and its test:
+
+```
+validation/portable-typeBy/block-settings.json        the schema under test
+validation/portable-typeBy/block-settings.test.json   its test cases
+```
+
 | Path | Covers |
 |---|---|
-| `validation/<keyword>/*.json` | One file per keyword or rule of the profile and vocabulary |
-| `normalization/*.json` | Object vs list, coercion |
-| `catalogs/*.json` | Catalog resolution, live and static |
+| `validation/<area>/` | Keywords, types, formats, shaping, catalogs, options and the added keywords |
+| `normalization/` (planned) | Object vs list, coercion |
 
-## Format
+Runners find every `*.test.json` and run it against the `.json` file of the same name.
 
-The [JSON-Schema-Test-Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) format, extended with expected errors and normalized data:
+## Schema file: `<name>.json`
+
+Defined by [`../schema.schema.json`](../schema.schema.json).
+
+```json
+{
+  "description": "portable-typeBy selects the schema by a sibling value",
+  "registry": { "test:settings": { "type": "object" } },
+  "schema": { "$schema": "https://portable-schema.dev/v1/schema", "type": "object" }
+}
+```
+
+- **`schema`:** the schema under test.
+- **`registry`:** extra schemas and catalogs by `$id`. The `portable:*` types always come from [`types/v1/`](../../types/v1).
+
+## Test file: `<name>.test.json`
+
+Defined by [`../tests.schema.json`](../tests.schema.json). An array of test cases:
+
+| Key | Required | Meaning |
+|---|---|---|
+| `description` | yes | What the case shows |
+| `data` | yes | The instance |
+| `valid` | yes | The expected verdict |
+| `errors` | no | **Exactly** the expected errors, in shaped order, compared on `instanceLocation`, `code` and `params`. Message text is never compared |
+| `unchecked` | no | Exactly the expected unchecked entries |
+| `options` | no | Validation options: `partial`, `emptyAsMissing`, `locations` |
+| `checks` | no | Local callbacks as data: the canned result per check name, which runners turn into a callback |
 
 ```json
 [
   {
-    "description": "typeBy selects the schema by a sibling value",
-    "schema": { "$schema": "https://portable-schema.dev/v1/schema" },
-    "registry": { "urn:example:a": {} },
-    "tests": [
-      {
-        "description": "matching variant",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "unknown variant without fallback",
-        "data": {},
-        "valid": false,
-        "errors": [
-          { "instanceLocation": "/settings", "keyword": "portable-typeBy", "params": {} }
-        ]
-      }
-    ]
+    "description": "local callback reports a duplicate",
+    "checks": { "test:Unique": { "errors": [ { "code": "check.test:Unique", "params": { "value": "Hello" } } ] } },
+    "data": { "title": "Hello" },
+    "valid": false,
+    "errors": [ { "instanceLocation": "/title", "code": "check.test:Unique", "params": { "value": "Hello" } } ]
   }
 ]
 ```
-
-- **`registry`:** schemas and catalogs available for `$ref` resolution, keyed by `$id`.
-- **`errors`:** expected errors, compared on `instanceLocation`, `keyword` and `params`. Message text is not compared.
-- **`normalized`** (normalization cases): the expected data after normalization.

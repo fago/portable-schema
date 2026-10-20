@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portable-schema.dev/fixtures/schema.schema.json",
+  "title": "Fixture schema file",
+  "description": "<name>.json: the schema under test, with optional extra schemas.",
+  "type": "object",
+  "required": [
+    "description",
+    "schema"
+  ],
+  "properties": {
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "registry": {
+      "description": "Extra schemas and catalogs by $id. portable:* types always come from types/v1/.",
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "object",
+          "boolean"
+        ]
+      }
+    },
+    "schema": {
+      "type": [
+        "object",
+        "boolean"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
