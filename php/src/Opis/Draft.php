@@ -6,18 +6,8 @@ namespace PortableSchema\Opis;
 
 use Opis\JsonSchema\Parsers\Drafts\Draft202012;
 use Opis\JsonSchema\Parsers\KeywordParser;
-use Opis\JsonSchema\Parsers\Keywords\AllOfKeywordParser;
-use Opis\JsonSchema\Parsers\Keywords\AnyOfKeywordParser;
-use Opis\JsonSchema\Parsers\Keywords\ConstKeywordParser;
-use Opis\JsonSchema\Parsers\Keywords\ContainsKeywordParser;
-use Opis\JsonSchema\Parsers\Keywords\DependentSchemasKeywordParser;
-use Opis\JsonSchema\Parsers\Keywords\EnumKeywordParser;
 use Opis\JsonSchema\Parsers\Keywords\FormatKeywordParser;
 use Opis\JsonSchema\Parsers\Keywords\IfThenElseKeywordParser;
-use Opis\JsonSchema\Parsers\Keywords\OneOfKeywordParser;
-use Opis\JsonSchema\Parsers\Keywords\PatternPropertiesKeywordParser;
-use Opis\JsonSchema\Parsers\Keywords\PropertiesKeywordParser;
-use Opis\JsonSchema\Parsers\Keywords\PropertyNamesKeywordParser;
 use PortableSchema\Check\Checks;
 use PortableSchema\Trace\Tracer;
 
@@ -42,12 +32,8 @@ final class Draft extends Draft202012
         foreach (parent::getKeywordParsers() as $parser) {
             $parsers[] = match (true) {
                 $parser instanceof FormatKeywordParser => new FormatParser('format'),
-                $parser instanceof PropertyNamesKeywordParser, $parser instanceof AllOfKeywordParser, $parser instanceof AnyOfKeywordParser,
-                $parser instanceof OneOfKeywordParser, $parser instanceof ContainsKeywordParser, $parser instanceof ConstKeywordParser,
-                $parser instanceof EnumKeywordParser, $parser instanceof PropertiesKeywordParser, $parser instanceof PatternPropertiesKeywordParser,
-                $parser instanceof DependentSchemasKeywordParser => new FullParser($parser),
                 $parser instanceof IfThenElseKeywordParser => new IfParser('if', 'then', 'else'),
-                default => $parser,
+                default => new FullParser($parser),
             };
         }
         $parsers[] = new TypeByParser('portable-typeBy', $this->tracer);

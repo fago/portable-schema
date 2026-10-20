@@ -1,0 +1,107 @@
+[
+  {
+    "description": "anyOf without schemas",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load0",
+      "anyOf": []
+    },
+    "refused": true
+  },
+  {
+    "description": "oneOf without schemas",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load1",
+      "oneOf": []
+    },
+    "refused": true
+  },
+  {
+    "description": "repeated required name",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load2",
+      "required": [
+        "a",
+        "a"
+      ]
+    },
+    "refused": true
+  },
+  {
+    "description": "repeated type",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load3",
+      "type": [
+        "string",
+        "string"
+      ]
+    },
+    "refused": true
+  },
+  {
+    "description": "repeated dependentRequired name",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load4",
+      "dependentRequired": {
+        "a": [
+          "b",
+          "b"
+        ]
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "negative maxContains",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load5",
+      "contains": true,
+      "maxContains": -1
+    },
+    "refused": true
+  },
+  {
+    "description": "minContains 0",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load6",
+      "contains": true,
+      "minContains": 0
+    },
+    "refused": false
+  },
+  {
+    "description": "maxContains below minContains",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load7",
+      "contains": true,
+      "minContains": 3,
+      "maxContains": 1
+    },
+    "refused": false
+  },
+  {
+    "description": "integral float as a length",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load8",
+      "maxLength": 1.0
+    },
+    "refused": false
+  },
+  {
+    "description": "empty enum",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load9",
+      "enum": []
+    },
+    "refused": false
+  }
+]

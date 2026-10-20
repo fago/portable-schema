@@ -14,11 +14,6 @@ use Opis\JsonSchema\ValidationContext;
  */
 final class FullContainsKeyword extends ContainsKeyword
 {
-    public static function from(ContainsKeyword $keyword): self
-    {
-        return new self($keyword->value, $keyword->min, $keyword->max);
-    }
-
     public function validate(ValidationContext $context, Schema $schema): ?ValidationError
     {
         if (!$this->value instanceof Schema) {
