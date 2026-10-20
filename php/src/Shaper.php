@@ -41,7 +41,7 @@ final class Shaper
     {
         $shaped = $this->schema($root, '');
 
-        $errors = array_values(array_filter($shaped->errors, fn (ValidationError $e) => $this->reported($e->instanceLocation)));
+        $errors = array_values(array_filter($this->withoutKnownProperties($shaped->errors), fn (ValidationError $e) => $this->reported($e->instanceLocation)));
         usort($errors, fn (ValidationError $a, ValidationError $b) => Pointer::compare($a->instanceLocation, $b->instanceLocation) ?: Pointer::compare($a->keywordLocation, $b->keywordLocation));
         $errors = $this->unique($errors, fn (ValidationError $e) => [$e->instanceLocation, $e->code, $e->params]);
 
@@ -139,6 +139,29 @@ final class Shaper
             $shaped->add($this->schema($child, $this->childLocation($node, $child, $parent, $parentLocation, $location)));
         }
         return $shaped;
+    }
+
+    /**
+     * Drops `unknownProperty` errors for properties that have errors of their own: their schema exists, so the
+     * value is the problem.
+     *
+     * @param list<ValidationError> $errors
+     * @return list<ValidationError>
+     */
+    private function withoutKnownProperties(array $errors): array
+    {
+        return array_values(array_filter($errors, function (ValidationError $error) use ($errors): bool {
+            if ($error->code !== 'unknownProperty') {
+                return true;
+            }
+            $property = Pointer::append($error->instanceLocation, $error->params['property']);
+            foreach ($errors as $other) {
+                if ($other->code !== 'unknownProperty' && Pointer::isWithin($other->instanceLocation, $property)) {
+                    return false;
+                }
+            }
+            return true;
+        }));
     }
 
     /**

@@ -53,7 +53,7 @@ export class Shaper {
   shape(root: SchemaNode): Result {
     const shaped = this.schema(root, "");
 
-    let errors = shaped.errors.filter((e) => this.reported(e.instanceLocation));
+    let errors = withoutKnownProperties(shaped.errors).filter((e) => this.reported(e.instanceLocation));
     errors.sort((a, b) => Pointer.compare(a.instanceLocation, b.instanceLocation) || Pointer.compare(a.keywordLocation, b.keywordLocation));
     errors = unique(errors, (e) => [e.instanceLocation, e.code, e.params]);
 
@@ -316,6 +316,17 @@ export class Shaper {
     return this.locations === null || this.locations.some((base) => Pointer.isWithin(location, base));
   }
 }
+
+/**
+ * Drops `unknownProperty` errors for properties that have errors of their own: their schema exists, so the
+ * value is the problem.
+ */
+const withoutKnownProperties = (errors: ValidationError[]): ValidationError[] =>
+  errors.filter((error) => {
+    if (error.code !== "unknownProperty") return true;
+    const property = Pointer.append(error.instanceLocation, String(error.params["property"]));
+    return !errors.some((other) => other.code !== "unknownProperty" && Pointer.isWithin(other.instanceLocation, property));
+  });
 
 /** The branch whose const discriminator matches, else the one with the fewest errors; ties go to the first. */
 const bestBranch = (branches: unknown[], instance: JsonObject, results: Shaped[]): number => {
