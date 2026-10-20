@@ -1,0 +1,87 @@
+[
+  {
+    "description": "valid: \"::1\"",
+    "data": "::1",
+    "valid": true
+  },
+  {
+    "description": "valid: \"1:2:3:4:5:6:7:8\"",
+    "data": "1:2:3:4:5:6:7:8",
+    "valid": true
+  },
+  {
+    "description": "valid: \"fe80::1\"",
+    "data": "fe80::1",
+    "valid": true
+  },
+  {
+    "description": "valid: \"::ffff:192.168.0.1\"",
+    "data": "::ffff:192.168.0.1",
+    "valid": true
+  },
+  {
+    "description": "invalid: \"1::2::3\"",
+    "data": "1::2::3",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.ipv6",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"1:2:3:4:5:6:7:8:9\"",
+    "data": "1:2:3:4:5:6:7:8:9",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.ipv6",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"fe80::1%eth0\"",
+    "data": "fe80::1%eth0",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.ipv6",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"12345::1\"",
+    "data": "12345::1",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.ipv6",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \":\"",
+    "data": ":",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.ipv6",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "other types are not checked",
+    "data": 1,
+    "valid": true
+  }
+]

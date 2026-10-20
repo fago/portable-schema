@@ -1,0 +1,77 @@
+[
+  {
+    "description": "valid: \"1\"",
+    "data": "1",
+    "valid": true
+  },
+  {
+    "description": "valid: \"-0.5\"",
+    "data": "-0.5",
+    "valid": true
+  },
+  {
+    "description": "valid: \"100.25\"",
+    "data": "100.25",
+    "valid": true
+  },
+  {
+    "description": "invalid: \"01\"",
+    "data": "01",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.decimal",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"1.\"",
+    "data": "1.",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.decimal",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"+1\"",
+    "data": "+1",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.decimal",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"1e5\"",
+    "data": "1e5",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.decimal",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: 1.5",
+    "data": 1.5,
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.decimal",
+        "params": {}
+      }
+    ]
+  }
+]

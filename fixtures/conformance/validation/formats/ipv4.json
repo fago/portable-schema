@@ -1,0 +1,7 @@
+{
+  "description": "format ipv4: dotted quad, 0-255, no leading zeros",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "ipv4"
+  }
+}

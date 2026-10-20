@@ -1,0 +1,70 @@
+[
+  {
+    "description": "valid: \"drupal:block.settings.{plugin}\"",
+    "data": "drupal:block.settings.{plugin}",
+    "valid": true
+  },
+  {
+    "description": "valid: \"/node/{nid}{?page,sort}\"",
+    "data": "/node/{nid}{?page,sort}",
+    "valid": true
+  },
+  {
+    "description": "valid: \"{+path}/here\"",
+    "data": "{+path}/here",
+    "valid": true
+  },
+  {
+    "description": "invalid: \"{\"",
+    "data": "{",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri-template",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"/a/{b\"",
+    "data": "/a/{b",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri-template",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"{a b}\"",
+    "data": "{a b}",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri-template",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"/{}\"",
+    "data": "/{}",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri-template",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "other types are not checked",
+    "data": 1,
+    "valid": true
+  }
+]

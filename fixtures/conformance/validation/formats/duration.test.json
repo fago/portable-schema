@@ -1,0 +1,104 @@
+[
+  {
+    "description": "valid: \"P1Y2M\"",
+    "data": "P1Y2M",
+    "valid": true
+  },
+  {
+    "description": "valid: \"PT30M\"",
+    "data": "PT30M",
+    "valid": true
+  },
+  {
+    "description": "valid: \"P2W\"",
+    "data": "P2W",
+    "valid": true
+  },
+  {
+    "description": "valid: \"P1DT2H\"",
+    "data": "P1DT2H",
+    "valid": true
+  },
+  {
+    "description": "valid: \"P1Y2M3DT4H5M6S\"",
+    "data": "P1Y2M3DT4H5M6S",
+    "valid": true
+  },
+  {
+    "description": "invalid: \"P\"",
+    "data": "P",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.duration",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"PT\"",
+    "data": "PT",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.duration",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"P1W2D\"",
+    "data": "P1W2D",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.duration",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"P1.5D\"",
+    "data": "P1.5D",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.duration",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"1D\"",
+    "data": "1D",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.duration",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"P1H\"",
+    "data": "P1H",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.duration",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "other types are not checked",
+    "data": 1,
+    "valid": true
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "description": "portable-typeBy with source 0# selects the type by the key of the value",
+  "registry": {
+    "test:condition.language": {
+      "type": "object",
+      "properties": {
+        "langcodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "test:condition.path": {
+      "type": "object",
+      "properties": {
+        "pages": {
+          "type": "string"
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "additionalProperties": {
+      "portable-typeBy": {
+        "href": "test:condition.{id}",
+        "source": {
+          "id": "0#"
+        }
+      }
+    }
+  }
+}

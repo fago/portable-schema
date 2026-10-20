@@ -1,0 +1,56 @@
+[
+  {
+    "description": "integer",
+    "data": {
+      "kind": 1,
+      "value": "x"
+    },
+    "valid": true
+  },
+  {
+    "description": "boolean",
+    "data": {
+      "kind": true,
+      "value": 2
+    },
+    "valid": true
+  },
+  {
+    "description": "integer selects its type",
+    "data": {
+      "kind": 1,
+      "value": 2
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/value",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  },
+  {
+    "description": "an object cannot select a type",
+    "data": {
+      "kind": {},
+      "value": 2
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/value",
+        "code": "typeBy.unresolved",
+        "params": {
+          "value": null,
+          "resolved": null
+        }
+      }
+    ]
+  }
+]

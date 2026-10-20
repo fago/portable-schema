@@ -1,0 +1,7 @@
+{
+  "description": "format uri-template: RFC 6570 syntax, levels 1-4",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "uri-template"
+  }
+}

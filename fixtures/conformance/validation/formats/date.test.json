@@ -1,0 +1,65 @@
+[
+  {
+    "description": "valid: \"2026-10-20\"",
+    "data": "2026-10-20",
+    "valid": true
+  },
+  {
+    "description": "valid: \"2024-02-29\"",
+    "data": "2024-02-29",
+    "valid": true
+  },
+  {
+    "description": "invalid: \"2026-02-29\"",
+    "data": "2026-02-29",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.date",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"2026-13-01\"",
+    "data": "2026-13-01",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.date",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"2026-1-01\"",
+    "data": "2026-1-01",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.date",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"2026-10-20T00:00:00Z\"",
+    "data": "2026-10-20T00:00:00Z",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.date",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "other types are not checked",
+    "data": 1,
+    "valid": true
+  }
+]
