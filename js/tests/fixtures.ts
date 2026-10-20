@@ -20,7 +20,7 @@ export type Case = {
   unchecked?: unknown[];
   options?: { partial?: boolean; emptyAsMissing?: boolean; locations?: string[] };
   messages?: string[];
-  checks?: Record<string, { errors: { code: string; params: Record<string, unknown> }[] }>;
+  checks?: Record<string, { errors: { code: string; params: Record<string, unknown>; message?: string }[]; locations?: string[] }>;
 };
 
 /** Every `*.test.json` below fixtures/, relative to it. */
@@ -74,7 +74,8 @@ export const validator = async (testFile: string, schemaFile: SchemaFile, testCa
   for (const [id, schema] of Object.entries(schemaFile.registry ?? {})) registry.add(schema as never, id);
   let validator = await Validator.create(registry);
   for (const [name, canned] of Object.entries(testCase.checks ?? {})) {
-    validator = validator.withCheck(name, (requests) => requests.map(() => new CheckResult(canned.errors)));
+    validator = validator.withCheck(name, (requests) => requests.map((request) =>
+      new CheckResult(canned.locations === undefined || canned.locations.includes(request.location) ? canned.errors : [])));
   }
   return validator;
 };

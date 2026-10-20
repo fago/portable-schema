@@ -49,7 +49,7 @@ Defined by [`../tests.schema.json`](../tests.schema.json). An array of test case
 | `unchecked` | no | Exactly the expected unchecked entries |
 | `messages` | no | The English message of each error, in order, compared as text |
 | `options` | no | Validation options: `partial`, `emptyAsMissing`, `locations` |
-| `checks` | no | Local callbacks as data: the canned result per check name, which runners turn into a callback |
+| `checks` | no | Local callbacks as data: the canned result per check name, which runners turn into a callback. With `locations`, only the values there get the canned errors |
 
 ```json
 [

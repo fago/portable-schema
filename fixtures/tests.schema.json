@@ -61,7 +61,7 @@
         "additionalProperties": false
       },
       "checks": {
-        "description": "Local callbacks as data: the canned result per check name, applied to every value the check is asked about.",
+        "description": "Local callbacks as data: the canned result per check name, applied to every value the check is asked about, or only to the values at `locations`.",
         "type": "object",
         "additionalProperties": {
           "type": "object",
@@ -83,9 +83,19 @@
                   },
                   "params": {
                     "type": "object"
+                  },
+                  "message": {
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false
+              }
+            },
+            "locations": {
+              "description": "Instance locations that get the canned errors; values elsewhere pass.",
+              "type": "array",
+              "items": {
+                "type": "string"
               }
             }
           },

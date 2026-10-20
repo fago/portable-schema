@@ -96,8 +96,12 @@ final class Fixtures
         }
         $validator = new Validator($registry);
         foreach (get_object_vars($case->checks ?? new \stdClass()) as $name => $canned) {
-            $errors = array_map(fn (\stdClass $e) => ['code' => $e->code, 'params' => Json::toArray($e->params)], $canned->errors);
-            $validator = $validator->withCheck($name, fn (array $requests) => array_fill(0, count($requests), new CheckResult($errors)));
+            $errors = array_map(fn (\stdClass $e) => ['code' => $e->code, 'params' => Json::toArray($e->params)] + (isset($e->message) ? ['message' => $e->message] : []), $canned->errors);
+            $locations = $canned->locations ?? null;
+            $validator = $validator->withCheck($name, fn (array $requests) => array_map(
+                fn ($request) => new CheckResult($locations === null || in_array($request->location, $locations, true) ? $errors : []),
+                $requests,
+            ));
         }
         return $validator;
     }
