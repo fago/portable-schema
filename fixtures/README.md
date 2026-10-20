@@ -6,3 +6,5 @@ Language-neutral JSON test data, shared by the PHP and JS implementations.
 |---|---|
 | [`conformance/`](conformance) | Normative cases. Both implementations must pass every one |
 | [`examples/`](examples) | Worked examples for planning and docs, e.g. schemas an integration would generate. Not normative |
+
+Runners find every `*.test.json` and run it against the `.json` file of the same name (see [`conformance/`](conformance)). For examples, every file in a `schemas/` or `catalogs/` directory next to the fixture, or above it below `examples/`, joins the registry.

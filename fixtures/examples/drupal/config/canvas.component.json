@@ -1,0 +1,7 @@
+{
+  "description": "canvas.component.* config entities: source-dependent IDs and settings, versioned properties selected by key and active version",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$ref": "drupal:canvas.component.*"
+  }
+}

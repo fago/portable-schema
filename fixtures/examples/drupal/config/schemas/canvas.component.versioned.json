@@ -1,0 +1,13 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component.versioned.*",
+  "title": "Component version",
+  "description": "Resolves canvas.component.versioned.[%key].* before canvas.component.versioned.*.*, as config schema's wildcard lookup does.",
+  "portable-typeBy": {
+    "href": "drupal:canvas.component.versioned.{key}.*",
+    "source": {
+      "key": "0#"
+    },
+    "fallback": "drupal:canvas.component.versioned.*.*"
+  }
+}

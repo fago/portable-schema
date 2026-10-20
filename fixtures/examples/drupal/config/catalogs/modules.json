@@ -3,8 +3,29 @@
   "$id": "drupal:catalog/modules",
   "title": "Enabled modules",
   "oneOf": [
-    { "const": "block", "title": "Block" },
-    { "const": "system", "title": "System" },
-    { "const": "node", "title": "Node" }
+    {
+      "const": "block",
+      "title": "Block"
+    },
+    {
+      "const": "system",
+      "title": "System"
+    },
+    {
+      "const": "node",
+      "title": "Node"
+    },
+    {
+      "const": "canvas",
+      "title": "Drupal Canvas"
+    },
+    {
+      "const": "canvas_test_sdc",
+      "title": "Canvas test SDC"
+    },
+    {
+      "const": "options",
+      "title": "Options"
+    }
   ]
 }

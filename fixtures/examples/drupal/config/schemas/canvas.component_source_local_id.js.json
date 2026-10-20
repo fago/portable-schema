@@ -1,0 +1,6 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component_source_local_id.js",
+  "title": "JS Component ID",
+  "$ref": "drupal:catalog/config/canvas.js_component"
+}

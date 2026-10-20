@@ -1,0 +1,28 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:versioned_config_entity",
+  "title": "Versioned config entity",
+  "description": "Open base type: a config entity with version history of some of its properties.",
+  "$ref": "drupal:config_entity",
+  "properties": {
+    "active_version": {
+      "title": "Active version",
+      "type": "string"
+    },
+    "versioned_properties": {
+      "title": "Version history",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z0-9]{3,}$"
+      },
+      "additionalProperties": {
+        "type": "object"
+      }
+    }
+  },
+  "required": [
+    "active_version",
+    "versioned_properties"
+  ]
+}
