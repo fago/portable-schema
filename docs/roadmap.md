@@ -24,7 +24,7 @@ Planned work that isn't started yet.
 - **TypeScript integration.**
   - Type inference from schemas (`Infer<typeof schema>`).
   - Generated `.d.ts` files with literal union types for type, catalog and widget IDs, so `tsc` checks references and editors complete them.
-- **Agent support.**
+- **Agent support** (plan: [`architecture/agents.md`](architecture/agents.md)).
   - An MCP server with `describe_schema`, `list_types`, `get_catalog` and `validate`: standalone from a site schema dump, and live through the Drupal integration.
   - A Claude Code skill and a hook that validates edited config files.
   - A generator for an `AGENTS.md` / `CLAUDE.md` snippet that tells agents how to validate in a project.
