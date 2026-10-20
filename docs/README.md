@@ -1,7 +1,9 @@
 # Docs
 
-Non-normative documentation. The normative definition is in [`spec/`](../spec).
+Non-normative documentation. The normative definition of the language is in [`spec/`](../spec).
 
-| Document | Covers |
+| Path | Covers |
 |---|---|
 | [`scope.md`](scope.md) | What Portable Schema covers, and what it leaves to others |
+| [`architecture/`](architecture) | How our PHP and JS implementations are built. Binding for them, so they mirror each other; not for other implementations |
+| [`decisions/`](decisions) | Decision records: context, decision, consequences |
