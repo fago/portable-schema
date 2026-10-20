@@ -19,7 +19,7 @@ Validation returns data, not text. Messages are produced from this data by a for
     }
   ],
   "unchecked": [
-    { "instanceLocation": "/id", "code": "check.UniqueField", "reason": "noProvider" }
+    { "instanceLocation": "/title", "code": "check.drupal:UniqueField", "reason": "noProvider" }
   ]
 }
 ```
@@ -27,7 +27,11 @@ Validation returns data, not text. Messages are produced from this data by a for
 - **`valid`** is `false` if `errors` is not empty. Entries in `unchecked` don't make a result invalid.
 - **Locations** are JSON Pointers (RFC 6901). `keywordLocation` follows `$ref`s, as in the JSON Schema output formats.
 - **`code`** is a stable identifier (table below). **`params`** are plain JSON values; their keys are fixed per code.
-- **`unchecked`** lists checks that could not run, with `reason`: `noProvider` (no provider registered) or `offline` (static validation without the needed catalog).
+- **`unchecked`** lists checks that could not run, with a `reason`:
+  - `noProvider`: no provider and no local callback is registered for the check;
+  - `pending`: synchronous validation in a runtime where the check only runs asynchronously; it runs with asynchronous validation;
+  - `offline`: static validation against a site schema dump, and the check needs the live system;
+  - `error`: the provider failed. Never reported as valid.
 - The shape follows the "list" output format of the next JSON Schema release, extended with `code`, `params` and `unchecked`.
 
 ## Codes
@@ -53,7 +57,7 @@ Validation returns data, not text. Messages are produced from this data by a for
 | `oneOf`, `anyOf` | same, when no branch can be singled out | `matched` (number of matching branches) |
 | `typeBy.unresolved` | `portable-typeBy` | `value`, `resolved` (the URI tried) |
 | `compare.<op>` | `portable-compare`; `<op>` is `lt`, `le`, `eq`, `ne`, `ge`, `gt` | `other` (the compared value), `otherLocation` |
-| `check.<Name>` | `portable-check` | the check's options, plus check-specific values |
+| `check.<name>` | `portable-check`, e.g. `check.drupal:UniqueField`; checks may define sub-codes `check.<name>.<sub>` | defined by the check's manifest |
 
 Errors from a schema returned by `portable-refine` carry the code of the failing keyword.
 
