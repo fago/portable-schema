@@ -45,6 +45,8 @@ Validating the cases with Ajv (2020-12, `strict: false`, with the files above as
 
 ## Canvas component
 
+Converted from Drupal Canvas 1.10.1.
+
 | File | Generated from |
 |---|---|
 | [`schemas/canvas.component.json`](schemas/canvas.component.json) | `canvas.component.*` in Drupal Canvas' `config/schema/canvas.schema.yml` |
@@ -63,15 +65,17 @@ Validating the cases with Ajv (2020-12, `strict: false`, with the files above as
 | `source`: `PluginExists` + `NotEqualTo: fallback` | `$ref` to the source plugin catalog + `not: {const: fallback}`, with Canvas' message as `x-portable-messages` |
 | `source_local_id: type: canvas.component_source_local_id.[%parent.source]` | `portable-typeBy` on `1/source`; each target is its own catalog: SDC components, code components (`ConfigExists`), block plugins |
 | `settings: type: canvas.component_source_settings.[%parent.%parent.%parent.source]` | `portable-typeBy` on `3/source` |
-| `default_settings: type: block.settings.[%parent.%parent.%parent.%parent.source_local_id]` | `portable-typeBy` on `4/source_local_id`, with the block showcase's `block_settings` as base and `block.settings.*` as fallback. `{+source_local_id}` keeps derivative IDs like `system_menu_block:main` intact |
+| `default_settings: type: block.settings.[%parent.%parent.%parent.%parent.source_local_id]` | `portable-typeBy` on `4/source_local_id`, with the block showcase's `block_settings` as base and `block.settings.*` as fallback. A derivative ID like `system_menu_block:main` selects `block.settings.*`; config schema's wildcard lookup would pick `block.settings.system_menu_block:*` (see the progressive wildcards gap) |
 | `versioned_properties` items: `canvas.component.versioned.[%key].[%parent.%parent.active_version]` | A two-variable template on `0#` and `2/active_version` |
 | Config schema's wildcard lookup: `versioned.active.<hash>` → `versioned.active.*` → `versioned.*.*` | `fallback` to `canvas.component.versioned.*`, which selects `versioned.{key}.*` with its own `portable-typeBy` and falls back to `versioned.*.*` |
 | `type: canvas.component.versioned.*.*` inherited by `.active.*` | `$ref` to `versioned.*.*`; `.active.*` adds the typed `settings` |
 | `SequenceKeysMatchRegex` on version keys | `propertyNames` with the pattern |
-| `id`: `StringParts`; `active_version`: `Callback`; `prop_field_definitions`: `KeyForEverySdcProp`, `SequenceKeysMustMatch` | Named checks `drupal:<Constraint>` with the constraint's options |
+| `id`: `StringParts`; `active_version`: `Callback`; `prop_field_definitions`: `KeyForEverySdcProp`, `SequenceKeysMustMatch` | Named checks `drupal:<Constraint>` with the constraint's options; `%parent…` paths become Relative JSON Pointers, and `KeyForEverySdcProp`'s single value becomes `{"source_local_id": "4/source_local_id"}` |
+| `source`: `Regex /^[a-z0-9_]+$/` | `pattern` |
+| `derived_schema_metadata` (required) | Required in `canvas.prop_field_definition`; its keys are left out |
 | `PluginExists` for field types and widgets | `$ref`s to catalogs |
 
-Left out: `ComponentStatusConstraint` and `ExtensionName`/`Callback` on `provider`, the per-prop constraints (`MatchesComponentPropRequiredness`, `NotNullIfRequiredComponentProp`, `ValidStructuredDataPropExpression`, `ValidSlotName`), the typed `field.storage_settings.*` / `field.value.*` and `derived_schema_metadata`'s keys. They follow the same patterns. The temporary `Choice` on `source` is left out too; the catalog takes its place.
+Left out: `ComponentStatusConstraint` and `ExtensionName`/`Callback` on `provider`, the per-prop constraints (`MatchesComponentPropRequiredness`, `NotNullIfRequiredComponentProp`, `ValidStructuredDataPropExpression`, `ValidSlotName`), the typed `field.storage_settings.*` / `field.value.*` and `derived_schema_metadata`'s keys (`string_shape`). They follow the same patterns. The temporary `Choice` on `source` is left out too; the catalog takes its place.
 
 ### What the cases show
 

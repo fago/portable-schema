@@ -36,8 +36,8 @@
           ],
           "reservedCharactersSubstitute": ".",
           "parts": [
-            "%parent.source",
-            "%parent.source_local_id"
+            "1/source",
+            "1/source_local_id"
           ]
         }
       }
@@ -53,6 +53,7 @@
     "source": {
       "title": "Source plugin",
       "$ref": "drupal:catalog/plugins/canvas_component_source",
+      "pattern": "^[a-z0-9_]+$",
       "not": {
         "const": "fallback"
       },
