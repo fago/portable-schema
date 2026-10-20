@@ -23,6 +23,9 @@ final class Shaper
     /** Keywords that report a `false` subschema as an unknown property. */
     private const PROPERTIES = ['properties', 'patternProperties', 'additionalProperties', 'unevaluatedProperties'];
 
+    /** Keywords that apply only where no other subschema evaluated. */
+    private const UNEVALUATED = ['unevaluatedProperties', 'unevaluatedItems'];
+
     private const ANNOTATIONS_ONLY = ['title', 'description', '$comment', 'examples', 'default', 'deprecated', 'readOnly', 'writeOnly'];
 
     /**
@@ -138,15 +141,15 @@ final class Shaper
         }
 
         $shaped = new Shaped();
-        $evaluated = null;
+        $evaluated = in_array($node->keyword, self::UNEVALUATED, true) ? $this->evaluated($parent, $node) : [];
         $names = $instance instanceof \stdClass ? array_keys(get_object_vars($instance)) : [];
         foreach ($node->children as $i => $child) {
+            if (isset($evaluated[$child->instanceLocation])) {
+                continue;
+            }
             if ($child->boolean && !$child->valid && in_array($node->keyword, self::PROPERTIES, true)) {
-                $evaluated ??= $node->keyword === 'unevaluatedProperties' ? $this->evaluated($parent) : [];
-                if (!isset($evaluated[$child->instanceLocation])) {
-                    $segments = Pointer::segments($child->instanceLocation);
-                    $shaped->errors[] = $error('unknownProperty', ['property' => end($segments)]);
-                }
+                $segments = Pointer::segments($child->instanceLocation);
+                $shaped->errors[] = $error('unknownProperty', ['property' => end($segments)]);
                 continue;
             }
             if ($node->keyword === 'propertyNames' && !$child->valid) {
@@ -181,21 +184,21 @@ final class Shaper
     }
 
     /**
-     * Instance locations evaluated by a schema other than `false`, without the subschemas that drop their
-     * annotations: failed `anyOf`/`oneOf` branches and `if` conditions, and `not`. For `unevaluatedProperties`,
-     * since the base libraries differ in what a failed subschema evaluated.
+     * Instance locations evaluated by a schema other than `false`, without $skip and the subschemas that drop their
+     * annotations: failed `anyOf`/`oneOf` branches, `if` conditions and `contains` items, and `not`. For the
+     * unevaluated* keywords, since the base libraries differ in what a failed subschema evaluated.
      *
      * @return array<string, true>
      */
-    private function evaluated(SchemaNode $node, array &$locations = []): array
+    private function evaluated(SchemaNode $node, ?KeywordNode $skip = null, array &$locations = []): array
     {
         if (!$node->boolean) {
             $locations[$node->instanceLocation] = true;
         }
         foreach ($node->keywords as $keyword) {
-            foreach ($keyword->children as $child) {
+            foreach ($keyword === $skip ? [] : $keyword->children as $child) {
                 if (!$this->discarded($keyword, $child)) {
-                    $this->evaluated($child, $locations);
+                    $this->evaluated($child, null, $locations);
                 }
             }
         }
@@ -206,7 +209,7 @@ final class Shaper
     {
         return match ($keyword->keyword) {
             'not' => true,
-            'anyOf', 'oneOf' => !$child->valid,
+            'anyOf', 'oneOf', 'contains' => !$child->valid,
             'if' => !$child->valid && str_ends_with($child->uri, '/if'),
             default => false,
         };
@@ -537,7 +540,7 @@ final class Shaper
         $seen = [];
         $unique = [];
         foreach ($items as $item) {
-            $k = serialize(Json::toArray($key($item)));
+            $k = Json::key($key($item));
             if (!isset($seen[$k])) {
                 $seen[$k] = true;
                 $unique[] = $item;

@@ -1,0 +1,43 @@
+[
+  {
+    "description": "additionalProperties fails",
+    "data": {
+      "c": {}
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/c",
+        "code": "type",
+        "params": {
+          "expected": [
+            "number"
+          ],
+          "actual": "object"
+        }
+      }
+    ]
+  },
+  {
+    "description": "items fails",
+    "data": {
+      "l": [
+        "a",
+        1
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/l/1",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  }
+]

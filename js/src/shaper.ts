@@ -15,6 +15,9 @@ const OWN_ERROR = ["not", "contains"];
 /** Keywords that report a `false` subschema as an unknown property. */
 const PROPERTIES = ["properties", "patternProperties", "additionalProperties", "unevaluatedProperties"];
 
+/** Keywords that apply only where no other subschema evaluated. */
+const UNEVALUATED = ["unevaluatedProperties", "unevaluatedItems"];
+
 const ANNOTATIONS_ONLY = ["title", "description", "$comment", "examples", "default", "deprecated", "readOnly", "writeOnly"];
 
 type Annotation = [location: string, name: "title" | "messages" | "allowedTitles", value: unknown];
@@ -150,14 +153,12 @@ export class Shaper {
 
     const shaped = new Shaped();
     const names = isObject(instance) ? Object.keys(instance) : [];
-    let known: Set<string> | null = null;
+    const known = UNEVALUATED.includes(node.keyword) ? evaluated(parent, node) : new Set<string>();
     node.children.forEach((child, i) => {
+      if (known.has(child.instanceLocation)) return;
       if (child.boolean && !child.valid && PROPERTIES.includes(node.keyword)) {
-        known ??= node.keyword === "unevaluatedProperties" ? evaluated(parent) : new Set();
-        if (!known.has(child.instanceLocation)) {
-          const segments = Pointer.segments(child.instanceLocation);
-          shaped.errors.push(error("unknownProperty", { property: segments[segments.length - 1] }));
-        }
+        const segments = Pointer.segments(child.instanceLocation);
+        shaped.errors.push(error("unknownProperty", { property: segments[segments.length - 1] }));
       } else if (node.keyword === "propertyNames" && !child.valid) {
         shaped.errors.push(error("propertyNames", { property: names[i] ?? null }));
       } else {
@@ -349,15 +350,16 @@ const withoutReportedProperties = (errors: ValidationError[]): ValidationError[]
   });
 
 /**
- * Instance locations evaluated by a schema other than `false`, without the subschemas that drop their
- * annotations: failed `anyOf`/`oneOf` branches and `if` conditions, and `not`. For `unevaluatedProperties`,
- * since the base libraries differ in what a failed subschema evaluated.
+ * Instance locations evaluated by a schema other than `false`, without `skip` and the subschemas that drop their
+ * annotations: failed `anyOf`/`oneOf` branches, `if` conditions and `contains` items, and `not`. For the
+ * unevaluated* keywords, since the base libraries differ in what a failed subschema evaluated.
  */
-const evaluated = (node: SchemaNode, locations = new Set<string>()): Set<string> => {
+const evaluated = (node: SchemaNode, skip: KeywordNode | null = null, locations = new Set<string>()): Set<string> => {
   if (!node.boolean) locations.add(node.instanceLocation);
   for (const keyword of node.keywords) {
+    if (keyword === skip) continue;
     for (const child of keyword.children) {
-      if (!discarded(keyword, child)) evaluated(child, locations);
+      if (!discarded(keyword, child)) evaluated(child, null, locations);
     }
   }
   return locations;
@@ -369,6 +371,7 @@ const discarded = (keyword: KeywordNode, child: SchemaNode): boolean => {
       return true;
     case "anyOf":
     case "oneOf":
+    case "contains":
       return !child.valid;
     case "if":
       return !child.valid && child.uri.endsWith("/if");
