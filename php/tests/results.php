@@ -14,7 +14,7 @@ use PortableSchema\Tests\Fixtures;
 foreach (Fixtures::files() as $file) {
     [$schemaFile, $tests] = Fixtures::load($file);
     foreach ($tests as $case) {
-        $result = Fixtures::run($schemaFile, $case);
+        $result = Fixtures::run($file, $schemaFile, $case);
         $messages = Formatter::create()->messages($result);
         echo json_encode([$file, $case->description, $result, $messages], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
     }

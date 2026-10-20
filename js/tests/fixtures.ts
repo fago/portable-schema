@@ -1,5 +1,5 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { registerSchema, validate, unregisterSchema } from "@hyperjump/json-schema/draft-2020-12";
 import { BASIC } from "@hyperjump/json-schema/experimental";
@@ -56,8 +56,21 @@ export const check = async (schemaFile: SchemaFile, tests: Case[]): Promise<stri
   return problems;
 };
 
-export const validator = async (schemaFile: SchemaFile, testCase: Case): Promise<Validator> => {
+/** For examples: the `schemas/` and `catalogs/` directories next to the fixture and above it, below fixtures/examples/. */
+export const registryDirectories = (testFile: string): string[] => {
+  const directories: string[] = [];
+  for (let dir = dirname(testFile); dir.startsWith("examples/"); dir = dirname(dir)) {
+    for (const name of ["schemas", "catalogs"]) {
+      const path = join(DIRECTORY, dir, name);
+      if (existsSync(path)) directories.push(path);
+    }
+  }
+  return directories;
+};
+
+export const validator = async (testFile: string, schemaFile: SchemaFile, testCase: Case): Promise<Validator> => {
   const registry = Registry.withTypes().add(schemaFile.schema as never, SCHEMA_ID);
+  for (const directory of registryDirectories(testFile)) registry.addDirectory(directory);
   for (const [id, schema] of Object.entries(schemaFile.registry ?? {})) registry.add(schema as never, id);
   let validator = await Validator.create(registry);
   for (const [name, canned] of Object.entries(testCase.checks ?? {})) {
@@ -66,8 +79,8 @@ export const validator = async (schemaFile: SchemaFile, testCase: Case): Promise
   return validator;
 };
 
-export const run = async (schemaFile: SchemaFile, testCase: Case): Promise<Result> =>
-  (await validator(schemaFile, testCase)).validate(testCase.data, SCHEMA_ID, testCase.options ?? {});
+export const run = async (testFile: string, schemaFile: SchemaFile, testCase: Case): Promise<Result> =>
+  (await validator(testFile, schemaFile, testCase)).validate(testCase.data, SCHEMA_ID, testCase.options ?? {});
 
 /** The result projected to the compared keys, with sorted object keys. */
 export const actual = (result: Result): Record<string, unknown> => canonical({

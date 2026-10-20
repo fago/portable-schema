@@ -45,7 +45,7 @@ final class FixturesTest extends TestCase
         [$schemaFile, $tests] = Fixtures::load($file);
         $case = $tests[$index];
         $expected = Fixtures::expected($case);
-        $actual = array_intersect_key(Fixtures::actual(Fixtures::run($schemaFile, $case)), $expected);
+        $actual = array_intersect_key(Fixtures::actual(Fixtures::run($file, $schemaFile, $case)), $expected);
         ksort($actual);
         $this->assertSame($expected, $actual);
     }

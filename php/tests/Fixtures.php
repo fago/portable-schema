@@ -67,9 +67,30 @@ final class Fixtures
 
     public const SCHEMA_ID = 'urn:portable-schema:fixture';
 
-    public static function validator(\stdClass $schemaFile, \stdClass $case): Validator
+    /**
+     * For examples: the `schemas/` and `catalogs/` directories next to the fixture and above it, below fixtures/examples/.
+     *
+     * @return list<string>
+     */
+    public static function registryDirectories(string $testFile): array
+    {
+        $directories = [];
+        for ($dir = dirname($testFile); str_starts_with($dir, 'examples/'); $dir = dirname($dir)) {
+            foreach (['schemas', 'catalogs'] as $name) {
+                if (is_dir(self::DIRECTORY . "/$dir/$name")) {
+                    $directories[] = self::DIRECTORY . "/$dir/$name";
+                }
+            }
+        }
+        return $directories;
+    }
+
+    public static function validator(string $testFile, \stdClass $schemaFile, \stdClass $case): Validator
     {
         $registry = Registry::withTypes()->add($schemaFile->schema, self::SCHEMA_ID);
+        foreach (self::registryDirectories($testFile) as $directory) {
+            $registry->addDirectory($directory);
+        }
         foreach (get_object_vars($schemaFile->registry ?? new \stdClass()) as $id => $schema) {
             $registry->add($schema, $id);
         }
@@ -81,10 +102,10 @@ final class Fixtures
         return $validator;
     }
 
-    public static function run(\stdClass $schemaFile, \stdClass $case): Result
+    public static function run(string $testFile, \stdClass $schemaFile, \stdClass $case): Result
     {
         $options = $case->options ?? new \stdClass();
-        return self::validator($schemaFile, $case)->validate(
+        return self::validator($testFile, $schemaFile, $case)->validate(
             $case->data,
             self::SCHEMA_ID,
             partial: $options->partial ?? false,

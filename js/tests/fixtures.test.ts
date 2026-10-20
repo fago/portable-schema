@@ -10,7 +10,7 @@ describe.each(Fixtures.files())("%s", (file) => {
 
   test.each(tests.map((testCase) => [testCase.description, testCase] as const))("%s", async (_description, testCase) => {
     const expected = Fixtures.expected(testCase);
-    const actual = Fixtures.actual(await Fixtures.run(schemaFile, testCase));
+    const actual = Fixtures.actual(await Fixtures.run(file, schemaFile, testCase));
     const compared = Object.fromEntries(Object.keys(expected).map((key) => [key, actual[key]]));
     expect(compared).toStrictEqual(expected);
   });
