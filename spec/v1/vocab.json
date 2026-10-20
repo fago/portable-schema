@@ -18,6 +18,11 @@
       "type": "array",
       "items": { "$ref": "#/$defs/link" }
     },
+    "x-portable-messages": {
+      "description": "Custom message source texts per error code, in the source language.",
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
     "x-portable-unchecked": {
       "type": "array",
       "items": { "type": "string" }
