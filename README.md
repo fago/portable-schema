@@ -60,7 +60,7 @@ Portable Schema itself is not tied to any framework. Integrations, such as one f
 | [JSON, RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) and [I-JSON, RFC 7493](https://www.rfc-editor.org/rfc/rfc7493) | Standards | Data model; number range, no duplicate keys |
 | [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) | Standard | Dates and times |
 | [YAML 1.2](https://yaml.org/spec/1.2.2/) core schema | Standard | YAML input |
-| [JSON-Schema-Test-Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) format and [Bowtie](https://bowtie.report) | De-facto | Fixture format, conformance runs |
+| [JSON-Schema-Test-Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) and [Bowtie](https://bowtie.report) | De-facto | Fixture format; the suite filtered to the profile as part of conformance; Bowtie as oracle for base libraries |
 
 ## Layout
 

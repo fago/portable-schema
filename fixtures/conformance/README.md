@@ -2,6 +2,8 @@
 
 Cases both implementations must pass. Together with the spec, they define correct behaviour.
 
+Conformance also includes the official [JSON-Schema-Test-Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) for 2020-12, filtered to the profile: tests for keywords outside the profile are skipped, and format tests follow the pinned checks ([decision 0005](../../docs/decisions/0005-profile-only-validators.md)).
+
 ## Layout
 
 | Path | Covers |

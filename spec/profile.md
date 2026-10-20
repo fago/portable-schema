@@ -2,6 +2,12 @@
 
 Status: draft. This document starts with formats; the rest of the profile follows.
 
+Schemas outside the profile are refused when they are loaded ([decision 0005](../docs/decisions/0005-profile-only-validators.md)).
+
+## Keywords
+
+The full list of allowed keywords follows. Annotations include `$comment`.
+
 ## Formats
 
 Formats come from the [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) ([decision 0003](../docs/decisions/0003-formats-from-the-registry.md)).
