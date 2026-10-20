@@ -1,0 +1,7 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:timestamp",
+  "title": "Timestamp",
+  "description": "A point in time as Unix seconds.",
+  "$ref": "portable:integer"
+}

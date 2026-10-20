@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:date",
+  "title": "Date",
+  "description": "A calendar date, without time or time zone.",
+  "type": "string",
+  "format": "date"
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:identifier",
+  "title": "Identifier",
+  "description": "A machine name: lowercase letters, digits and underscores.",
+  "type": "string",
+  "pattern": "^[a-z0-9_]+$"
+}

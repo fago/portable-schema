@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:date-time",
+  "title": "Date and time",
+  "description": "A point in time with a time zone offset (RFC 3339).",
+  "type": "string",
+  "format": "date-time"
+}

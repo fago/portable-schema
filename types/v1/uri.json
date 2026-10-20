@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:uri",
+  "title": "URI",
+  "description": "An absolute URI.",
+  "type": "string",
+  "format": "uri"
+}

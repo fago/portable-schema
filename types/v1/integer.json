@@ -1,0 +1,9 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:integer",
+  "title": "Integer",
+  "description": "A whole number within the I-JSON range, so PHP and JS agree.",
+  "type": "integer",
+  "minimum": -9007199254740991,
+  "maximum": 9007199254740991
+}

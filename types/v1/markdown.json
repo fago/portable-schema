@@ -1,0 +1,9 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:markdown",
+  "title": "Markdown",
+  "description": "Formatted text as CommonMark.",
+  "type": "string",
+  "format": "commonmark",
+  "contentMediaType": "text/markdown"
+}

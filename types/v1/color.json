@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:color",
+  "title": "Color",
+  "description": "A hex color: #rgb or #rrggbb; the # is optional, as in Drupal's color_hex.",
+  "type": "string",
+  "pattern": "^#?([0-9a-fA-F]{3}){1,2}$"
+}

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:boolean",
+  "title": "Boolean",
+  "type": "boolean"
+}

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:label",
+  "title": "Label",
+  "description": "Short, single-line, translatable text.",
+  "type": "string",
+  "pattern": "^[^\\r\\n]*$",
+  "x-portable-translatable": true
+}

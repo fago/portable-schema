@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:weight",
+  "title": "Weight",
+  "description": "A sort order: lower comes first.",
+  "type": "integer",
+  "format": "int32"
+}

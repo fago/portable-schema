@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:text",
+  "title": "Text",
+  "description": "Multi-line, translatable plain text.",
+  "type": "string",
+  "x-portable-translatable": true
+}

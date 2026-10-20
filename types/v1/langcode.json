@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:langcode",
+  "title": "Language code",
+  "description": "A BCP 47 language tag, e.g. en, pt-br, zh-hans.",
+  "type": "string",
+  "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{1,8})*$"
+}

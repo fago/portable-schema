@@ -1,0 +1,9 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:html",
+  "title": "HTML",
+  "description": "Formatted text as HTML. Filtering is up to the host.",
+  "type": "string",
+  "format": "html",
+  "contentMediaType": "text/html"
+}

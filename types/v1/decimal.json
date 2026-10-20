@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:decimal",
+  "title": "Decimal",
+  "description": "A fixed-point decimal number as a string, so no precision is lost.",
+  "type": "string",
+  "format": "decimal"
+}

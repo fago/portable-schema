@@ -1,0 +1,7 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:string",
+  "title": "String",
+  "description": "Any text.",
+  "type": "string"
+}

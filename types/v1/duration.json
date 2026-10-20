@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:duration",
+  "title": "Duration",
+  "description": "An ISO 8601 duration, e.g. PT30M.",
+  "type": "string",
+  "format": "duration"
+}
