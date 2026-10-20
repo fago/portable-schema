@@ -1,0 +1,46 @@
+[
+  {
+    "description": "the branch evaluating b matches",
+    "data": {
+      "a": "s",
+      "b": "t"
+    },
+    "valid": true
+  },
+  {
+    "description": "the branch evaluating b fails, another matches",
+    "data": {
+      "a": "s",
+      "b": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "b"
+        }
+      }
+    ]
+  },
+  {
+    "description": "all branches fail: the best branch's error, no unknown property",
+    "data": {
+      "b": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/b",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  }
+]

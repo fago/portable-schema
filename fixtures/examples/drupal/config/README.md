@@ -41,7 +41,7 @@ Both runners run the cases. The registry of each case is the repo's `types/v1/` 
 Validating the cases with Ajv (2020-12, `strict: false`, with the files above as registry):
 
 - The four cases that only need standard keywords give the expected result, catalogs included.
-- The two cases that need `portable-typeBy` (an unknown key in plugin-specific settings, a region outside the theme) **pass**. Generic validators ignore `portable-typeBy`, so the result is more permissive, never wrong in the other direction.
+- The two cases that need `portable-typeBy` (an unknown key in plugin-specific settings, a region outside the theme) **pass**. Generic validators ignore `portable-typeBy`, so here the result is more permissive. It can also be stricter: where `unevaluatedProperties: false` sits next to a `portable-typeBy`, the properties only the target declares count as unevaluated.
 
 ## Canvas component
 

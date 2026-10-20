@@ -49,10 +49,10 @@ final class Shaper
         }
         $checked = fn (string $code, string $location) => !str_starts_with($code, 'check.') || !isset($mistyped[$location]);
 
-        $errors = array_values(array_filter(
-            $this->withoutKnownProperties($shaped->errors, $this->evaluated($root)),
+        $errors = $this->withoutKnownProperties($this->evaluated($root), array_values(array_filter(
+            $shaped->errors,
             fn (ValidationError $e) => $this->reported($e->instanceLocation) && $checked($e->code, $e->instanceLocation),
-        ));
+        )));
         usort($errors, fn (ValidationError $a, ValidationError $b) => Pointer::compare($a->instanceLocation, $b->instanceLocation) ?: Pointer::compare($a->keywordLocation, $b->keywordLocation));
         $errors = $this->unique($errors, fn (ValidationError $e) => [$e->instanceLocation, $e->code, $e->params]);
 
@@ -155,23 +155,35 @@ final class Shaper
     }
 
     /**
-     * Drops `unknownProperty` errors for properties a subschema evaluated, also one that failed: the base libraries
-     * differ in whether a failed subschema's properties count as evaluated.
+     * Drops `unknownProperty` errors for properties that are evaluated or have another error at or below them:
+     * one error per problem, also where the base libraries differ in what a failed subschema evaluated.
      *
-     * @param list<ValidationError> $errors
      * @param array<string, true> $evaluated
+     * @param list<ValidationError> $errors
      * @return list<ValidationError>
      */
-    private function withoutKnownProperties(array $errors, array $evaluated): array
+    private function withoutKnownProperties(array $evaluated, array $errors): array
     {
-        return array_values(array_filter(
-            $errors,
-            fn (ValidationError $e) => $e->code !== 'unknownProperty' || !isset($evaluated[Pointer::append($e->instanceLocation, $e->params['property'])]),
-        ));
+        return array_values(array_filter($errors, function (ValidationError $e) use ($evaluated, $errors) {
+            if ($e->code !== 'unknownProperty') {
+                return true;
+            }
+            $property = Pointer::append($e->instanceLocation, (string) $e->params['property']);
+            if (isset($evaluated[$property])) {
+                return false;
+            }
+            foreach ($errors as $other) {
+                if (Pointer::isWithin($other->instanceLocation, $property)) {
+                    return false;
+                }
+            }
+            return true;
+        }));
     }
 
     /**
-     * Instance locations evaluated by a schema other than `false`.
+     * Instance locations evaluated by a schema other than `false`, without the subschemas that drop their
+     * annotations and whose errors are not reported: failed `anyOf`/`oneOf` branches and `if` conditions, and `not`.
      *
      * @return array<string, true>
      */
@@ -182,10 +194,22 @@ final class Shaper
         }
         foreach ($node->keywords as $keyword) {
             foreach ($keyword->children as $child) {
-                $this->evaluated($child, $locations);
+                if (!$this->discarded($keyword, $child)) {
+                    $this->evaluated($child, $locations);
+                }
             }
         }
         return $locations;
+    }
+
+    private function discarded(KeywordNode $keyword, SchemaNode $child): bool
+    {
+        return match ($keyword->keyword) {
+            'not' => true,
+            'anyOf', 'oneOf' => !$child->valid,
+            'if' => !$child->valid && str_ends_with($child->uri, '/if'),
+            default => false,
+        };
     }
 
     /**

@@ -56,8 +56,10 @@ export class Shaper {
     const mistyped = new Set(shaped.errors.filter((e) => e.code === "type").map((e) => e.instanceLocation));
     const checked = (code: string, location: string): boolean => !code.startsWith("check.") || !mistyped.has(location);
 
-    let errors = withoutKnownProperties(shaped.errors, evaluated(root))
-      .filter((e) => this.reported(e.instanceLocation) && checked(e.code, e.instanceLocation));
+    let errors = withoutKnownProperties(
+      evaluated(root),
+      shaped.errors.filter((e) => this.reported(e.instanceLocation) && checked(e.code, e.instanceLocation)),
+    );
     errors.sort((a, b) => Pointer.compare(a.instanceLocation, b.instanceLocation) || Pointer.compare(a.keywordLocation, b.keywordLocation));
     errors = unique(errors, (e) => [e.instanceLocation, e.code, e.params]);
 
@@ -335,19 +337,42 @@ export class Shaper {
 }
 
 /**
- * Drops `unknownProperty` errors for properties a subschema evaluated, also one that failed: the base libraries
- * differ in whether a failed subschema's properties count as evaluated.
+ * Drops `unknownProperty` errors for properties that are evaluated or have another error at or below them:
+ * one error per problem, also where the base libraries differ in what a failed subschema evaluated.
  */
-const withoutKnownProperties = (errors: ValidationError[], evaluated: Set<string>): ValidationError[] =>
-  errors.filter((e) => e.code !== "unknownProperty" || !evaluated.has(Pointer.append(e.instanceLocation, String(e.params["property"]))));
+const withoutKnownProperties = (evaluated: Set<string>, errors: ValidationError[]): ValidationError[] =>
+  errors.filter((e) => {
+    if (e.code !== "unknownProperty") return true;
+    const property = Pointer.append(e.instanceLocation, String(e.params["property"]));
+    return !evaluated.has(property) && !errors.some((other) => Pointer.isWithin(other.instanceLocation, property));
+  });
 
-/** Instance locations evaluated by a schema other than `false`. */
+/**
+ * Instance locations evaluated by a schema other than `false`, without the subschemas that drop their
+ * annotations and whose errors are not reported: failed `anyOf`/`oneOf` branches and `if` conditions, and `not`.
+ */
 const evaluated = (node: SchemaNode, locations = new Set<string>()): Set<string> => {
   if (!node.boolean) locations.add(node.instanceLocation);
   for (const keyword of node.keywords) {
-    for (const child of keyword.children) evaluated(child, locations);
+    for (const child of keyword.children) {
+      if (!discarded(keyword, child)) evaluated(child, locations);
+    }
   }
   return locations;
+};
+
+const discarded = (keyword: KeywordNode, child: SchemaNode): boolean => {
+  switch (keyword.keyword) {
+    case "not":
+      return true;
+    case "anyOf":
+    case "oneOf":
+      return !child.valid;
+    case "if":
+      return !child.valid && child.uri.endsWith("/if");
+    default:
+      return false;
+  }
 };
 
 /** The branch whose const discriminator matches, else the one with the fewest errors; ties go to the first. */
