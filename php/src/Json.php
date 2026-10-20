@@ -61,6 +61,35 @@ final class Json
     }
 
     /**
+     * Equality in the JSON data model: numbers by value, objects regardless of key order, objects never equal arrays.
+     */
+    public static function equals(mixed $a, mixed $b): bool
+    {
+        return self::key($a) === self::key($b);
+    }
+
+    /**
+     * A string that is the same for equal values.
+     */
+    public static function key(mixed $value): string
+    {
+        return json_encode(self::canonical($value), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+    }
+
+    private static function canonical(mixed $value): mixed
+    {
+        if ($value instanceof \stdClass) {
+            $properties = get_object_vars($value);
+            ksort($properties, SORT_STRING);
+            return ['o', array_map(fn ($k, $v) => [(string) $k, self::canonical($v)], array_keys($properties), $properties)];
+        }
+        if (is_array($value)) {
+            return ['a', array_map(self::canonical(...), $value)];
+        }
+        return is_float($value) && self::typeOf($value) === 'integer' && abs($value) < 2 ** 53 ? (int) $value : $value;
+    }
+
+    /**
      * Number of Unicode code points.
      */
     public static function length(string $value): int

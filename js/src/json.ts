@@ -18,6 +18,19 @@ export const typeOf = (value: unknown): string => {
 export const isEmpty = (value: unknown): boolean =>
   value === "" || (Array.isArray(value) && value.length === 0) || (isObject(value) && Object.keys(value).length === 0);
 
+/** Equality in the JSON data model: numbers by value, objects regardless of key order, objects never equal arrays. */
+export const equals = (a: unknown, b: unknown): boolean => key(a) === key(b);
+
+/** A string that is the same for equal values. */
+export const key = (value: unknown): string => JSON.stringify(canonical(value));
+
+const canonical = (value: unknown): unknown => {
+  if (isObject(value)) {
+    return ["o", Object.keys(value).sort(compareStrings).map((k) => [k, canonical(value[k])])];
+  }
+  return Array.isArray(value) ? ["a", value.map(canonical)] : value;
+};
+
 /** Number of Unicode code points. */
 export const length = (value: string): number => [...value].length;
 

@@ -345,7 +345,7 @@ final class Shaper
                 continue;
             }
             foreach ($discriminators as $name => $property) {
-                if (!property_exists($instance, $name) || $instance->{$name} !== $property->const) {
+                if (!property_exists($instance, $name) || !Json::equals($instance->{$name}, $property->const)) {
                     continue 2;
                 }
             }
@@ -492,7 +492,7 @@ final class Shaper
         $seen = [];
         $indexes = [];
         foreach ($items as $i => $item) {
-            $key = json_encode(Json::toArray($item));
+            $key = Json::key($item);
             if (isset($seen[$key])) {
                 $indexes[] = $i;
             }

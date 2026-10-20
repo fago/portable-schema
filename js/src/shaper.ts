@@ -1,5 +1,5 @@
 import type { CheckRequest } from "./checks.js";
-import { isEmpty, isObject, length, typeOf, type JsonObject } from "./json.js";
+import { equals, isEmpty, isObject, key, length, typeOf, type JsonObject } from "./json.js";
 import * as Pointer from "./pointer.js";
 import type { Registry } from "./registry.js";
 import { Annotations, Result, Unchecked, ValidationError } from "./result.js";
@@ -384,7 +384,7 @@ const bestBranch = (branches: unknown[], instance: JsonObject, results: Shaped[]
     if (!isObject(properties)) continue;
     const discriminators = Object.entries(properties).filter(([, p]) => isObject(p) && Object.hasOwn(p, "const"));
     if (discriminators.length === 0) continue;
-    if (discriminators.every(([name, p]) => Object.hasOwn(instance, name) && instance[name] === (p as JsonObject)["const"])) {
+    if (discriminators.every(([name, p]) => Object.hasOwn(instance, name) && equals(instance[name], (p as JsonObject)["const"]))) {
       return i;
     }
   }
@@ -400,9 +400,9 @@ const duplicates = (items: unknown[]): number[] => {
   const seen = new Set<string>();
   const indexes: number[] = [];
   items.forEach((item, i) => {
-    const key = JSON.stringify(item);
-    if (seen.has(key)) indexes.push(i);
-    seen.add(key);
+    const k = key(item);
+    if (seen.has(k)) indexes.push(i);
+    seen.add(k);
   });
   return indexes;
 };
