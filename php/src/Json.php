@@ -61,6 +61,33 @@ final class Json
     }
 
     /**
+     * A number as text, as JavaScript's Number#toString() writes it.
+     */
+    public static function number(int|float $value): string
+    {
+        if (is_int($value)) {
+            return (string) $value;
+        }
+        if ($value == 0) {
+            return '0';
+        }
+        // Shortest round-trip digits and the decimal point's position n, per ECMA-262 Number::toString.
+        preg_match('/^([0-9]+)(?:\.([0-9]+))?(?:e([+-]?[0-9]+))?$/', json_encode(abs($value)), $m);
+        $all = $m[1] . ($m[2] ?? '');
+        $trimmed = ltrim($all, '0');
+        $n = strlen($m[1]) + (int) ($m[3] ?? 0) - (strlen($all) - strlen($trimmed));
+        $digits = rtrim($trimmed, '0');
+        $k = strlen($digits);
+        $sign = $value < 0 ? '-' : '';
+        return $sign . match (true) {
+            $k <= $n && $n <= 21 => $digits . str_repeat('0', $n - $k),
+            0 < $n && $n <= 21 => substr($digits, 0, $n) . '.' . substr($digits, $n),
+            -6 < $n && $n <= 0 => '0.' . str_repeat('0', -$n) . $digits,
+            default => $digits[0] . ($k > 1 ? '.' . substr($digits, 1) : '') . 'e' . ($n - 1 >= 0 ? '+' : '-') . abs($n - 1),
+        };
+    }
+
+    /**
      * Equality in the JSON data model: numbers by value, objects regardless of key order, objects never equal arrays.
      */
     public static function equals(mixed $a, mixed $b): bool

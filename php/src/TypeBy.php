@@ -55,7 +55,7 @@ final class TypeBy
     {
         return match (Json::typeOf($value)) {
             'string' => $value,
-            'integer' => (string) (int) $value,
+            'integer' => Json::number($value),
             'boolean' => $value ? 'true' : 'false',
             default => null,
         };

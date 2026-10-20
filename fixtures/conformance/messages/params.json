@@ -1,5 +1,5 @@
 {
-  "description": "params as text: the root label, lists, dependent labels, typeBy values",
+  "description": "params as text: the root label, lists, dependent labels, typeBy values, numbers",
   "registry": {
     "test:settings.a": {
       "type": "object"
@@ -28,6 +28,12 @@
             "kind": "1/kind"
           }
         }
+      },
+      "amount": {
+        "title": "Amount",
+        "type": "number",
+        "maximum": 1e+19,
+        "multipleOf": 0.5
       }
     },
     "dependentRequired": {

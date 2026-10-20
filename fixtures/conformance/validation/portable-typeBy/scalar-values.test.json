@@ -16,6 +16,14 @@
     "valid": true
   },
   {
+    "description": "an integer written with a fraction",
+    "data": {
+      "kind": 1.0,
+      "value": "x"
+    },
+    "valid": true
+  },
+  {
     "description": "integer selects its type",
     "data": {
       "kind": 1,
@@ -49,6 +57,24 @@
         "params": {
           "value": null,
           "resolved": null
+        }
+      }
+    ]
+  },
+  {
+    "description": "a large integer is written out in full",
+    "data": {
+      "kind": 1e+20,
+      "value": "x"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/value",
+        "code": "typeBy.unresolved",
+        "params": {
+          "value": 1e+20,
+          "resolved": "test:value.100000000000000000000"
         }
       }
     ]

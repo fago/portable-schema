@@ -100,7 +100,7 @@ final class Formatter
             is_string($value) => $value,
             is_bool($value) => $value ? 'true' : 'false',
             $value === null => 'null',
-            is_int($value), is_float($value) => json_encode($value),
+            is_int($value), is_float($value) => Json::number($value),
             is_array($value) => implode(', ', array_map(self::text(...), $value)),
             default => implode(', ', array_map(self::text(...), array_values(get_object_vars($value)))),
         };

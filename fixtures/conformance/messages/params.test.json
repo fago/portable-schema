@@ -57,5 +57,43 @@
     "messages": [
       "Settings: there is no definition for “foo”."
     ]
+  },
+  {
+    "description": "numbers as JavaScript writes them",
+    "data": {
+      "amount": 1e+20
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/amount",
+        "code": "maximum",
+        "params": {
+          "limit": 1e+19
+        }
+      }
+    ],
+    "messages": [
+      "Amount must be at most 10000000000000000000."
+    ]
+  },
+  {
+    "description": "a fraction",
+    "data": {
+      "amount": 0.3
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/amount",
+        "code": "multipleOf",
+        "params": {
+          "divisor": 0.5
+        }
+      }
+    ],
+    "messages": [
+      "Amount must be a multiple of 0.5."
+    ]
   }
 ]
