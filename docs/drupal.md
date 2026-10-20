@@ -166,7 +166,7 @@ public function getPortableSchema(PortableSchemaContextInterface $context): arra
 
 | Companion | Lives on | Contract | Default |
 |---|---|---|---|
-| DataType | DataType plugins | The attribute declares the portable type: `#[DataType(id: 'email', portable: 'portable:email')]`. Precedent: `#[JsonSchema]` on DataType classes since 11.2 | Inherited from the parent class |
+| DataType | DataType plugins | The attribute declares the portable type: `#[DataType(id: 'email', portable: 'portable:email')]`. Precedent: `#[JsonSchema]` on DataType classes since 11.2 | None: required. A DataType without a mapping is invalid |
 | Constraint | Constraint plugins | `PortableConstraintInterface::getPortableSchema(array $options): array` | A custom check (`portable-check: {Name: options}`), run on the server |
 | Catalog provider | Plugin managers, entity type manager | A catalog service per source: plugins per manager, bundles, config entities, modules, themes, languages | Generic from discovery; managers with special filtering override |
 
@@ -174,37 +174,36 @@ public function getPortableSchema(PortableSchemaContextInterface $context): arra
 
 ### Fully portable
 
+- **DataTypes always have a mapping.** The interface enforces it, and the set of primitive DataTypes in Typed Data is small; complex data is built from its property definitions.
 - **Constraints don't all need a mapping.** A constraint without one is a **custom check**: validation logic in code, run on the server through `portable-check`. Custom validation code always has to be possible, so this is a regular case, not a gap.
-- **DataTypes do need a mapping.** A DataType without one falls back to `{}`, which loses the structure.
-- **A report** (like config_inspector's validatability report) lists, per schema:
-  - DataTypes that fall back;
-  - the custom checks it contains, so it's visible what runs only on the server.
-- **A core test fails** when a core DataType falls back, or when a generic core constraint (`Length`, `Choice`, `Regex`, `Range`, …) is missing its mapping. That mirrors how the config validation initiative tracks `FullyValidatable`.
+- **A report** (like config_inspector's validatability report) lists the custom checks per schema, so it's visible what runs only on the server.
+- **A core test fails** when a generic core constraint (`Length`, `Choice`, `Regex`, `Range`, …) is missing its mapping. That mirrors how the config validation initiative tracks `FullyValidatable`.
 
-### Phases
+### Core patch
 
-1. **Contrib** (`portable_schema` module, no core changes):
-   - converter services per definition class, tagged and alterable, written so each moves 1:1 into the class's `getPortableSchema()` later;
-   - mapping tables for DataTypes and constraints;
-   - catalog providers, a site schema dump command;
-   - a `PortableSchema` constraint;
-   - a parity test that diffs Symfony validation and Portable Schema validation on core config.
-2. **Core, minor release:**
-   - the library becomes a core dependency;
-   - **new interfaces**, implemented by the base classes: `PortableSchemaDefinitionInterface`, `PortableConstraintInterface`, plus the `portable` DataType attribute property;
-   - core constraints and DataTypes declare their mappings;
-   - catalog providers move into core;
-   - the core `json_schema` serialization format aligns with the same output.
-3. **Core, later minor releases:**
-   - config validation runs through Portable Schema; Symfony validation keeps running for unmapped constraints;
-   - classes that don't implement the new interfaces get deprecated.
-4. **Core, next major:**
-   - the new interfaces merge into `DataDefinitionInterface` and the constraint base;
-   - config schema YAML becomes a legacy input format handled by the converter, or is generated from Portable Schemas.
+A core patch in two variants, so core can choose between enforcing the API and adding it compatibly. **We prototype variant A first.**
+
+**Common to both:**
+- the library as a core dependency;
+- the `portable` property on the DataType attribute, declared by core DataTypes;
+- mappings for core constraints;
+- catalog providers and a site schema dump command;
+- a `PortableSchema` constraint;
+- a parity test that diffs Symfony validation and Portable Schema validation on core config;
+- the core `json_schema` serialization format aligned with the same output.
+
+| | Variant A: enforced API | Variant B: optional addition (BC) |
+|---|---|---|
+| Definitions | `getPortableSchema()` on `DataDefinitionInterface` | A new `PortableSchemaDefinitionInterface`, implemented by the core base classes |
+| Constraints | `PortableConstraintInterface` optional: a constraint without it is a custom check | Same |
+| Definition classes without the method | Not possible: every definition class implements it | Built generically from the definition interface |
+| Consumers | Call the method | Check `instanceof`, otherwise use the generic build |
+| BC | Breaks classes implementing the interfaces directly; fits a major release | Compatible; fits a minor release |
+| Config validation | Runs through Portable Schema | Opt-in, e.g. per schema |
 
 ### Open questions
 
-- **BC policy:** a new interface plus deprecation is the usual route for adding methods. Whether core would accept adding the method to `DataDefinitionInterface` directly, given the base classes, is unverified.
+- **Which variant:** core's BC policy decides whether variant A is possible before a major release. Variant B can be followed by A, with a deprecation in between.
 - **License:** the PHP implementation's dependencies must be compatible with GPL-2.0-or-later for core. opis/json-schema is Apache-2.0.
 - **Runtime-dependent definitions** (hook alters, field config, enabled modules): schemas are generated per site and cached, so the cache invalidation needs care.
 - **Two validators during the transition:** for mapped constraints, the Portable Schema result is authoritative; custom checks keep running on the server via `portable-check`.
