@@ -5,8 +5,11 @@ export const DRAFT_2020_12 = "https://json-schema.org/draft/2020-12/schema";
 
 export const DRAFT_04 = "http://json-schema.org/draft-04/schema#";
 
-/** Formats draft-04 defines; others are dropped from draft-04 exports. */
-const DRAFT_04_FORMATS = ["date-time", "email", "hostname", "ipv4", "ipv6", "uri"];
+/**
+ * Formats kept in draft-04 exports: the ones draft-04 defines, and uri-reference, which SDC uses and
+ * justinrainbow/json-schema checks.
+ */
+const DRAFT_04_FORMATS = ["date-time", "email", "hostname", "ipv4", "ipv6", "uri", "uri-reference"];
 
 type Value = unknown;
 
