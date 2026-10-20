@@ -7,7 +7,7 @@ namespace PortableSchema;
 /**
  * A check that could not run.
  */
-final class Unchecked
+final class Unchecked implements \JsonSerializable
 {
     public function __construct(
         public readonly string $instanceLocation,
@@ -22,5 +22,10 @@ final class Unchecked
     public function toArray(): array
     {
         return ['instanceLocation' => $this->instanceLocation, 'code' => $this->code, 'reason' => $this->reason];
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
     }
 }

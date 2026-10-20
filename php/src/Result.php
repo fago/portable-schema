@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PortableSchema;
 
-final class Result
+final class Result implements \JsonSerializable
 {
     public readonly bool $valid;
 
@@ -36,5 +36,10 @@ final class Result
             'errors' => array_map(fn (ValidationError $e) => $e->toArray(), $this->errors),
             'unchecked' => array_map(fn (Unchecked $u) => $u->toArray(), $this->unchecked),
         ];
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return ['valid' => $this->valid, 'errors' => $this->errors, 'unchecked' => $this->unchecked];
     }
 }

@@ -7,7 +7,7 @@ namespace PortableSchema;
 /**
  * One problem, in the result format of spec/errors.md.
  */
-final class ValidationError
+final class ValidationError implements \JsonSerializable
 {
     /**
      * @param array<string, mixed> $params
@@ -38,5 +38,10 @@ final class ValidationError
             $array['message'] = $this->message;
         }
         return $array;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return array_replace($this->toArray(), ['params' => (object) $this->params]);
     }
 }
