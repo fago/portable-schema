@@ -6,6 +6,8 @@ namespace PortableSchema\Opis;
 
 use Opis\JsonSchema\Parsers\Drafts\Draft202012;
 use Opis\JsonSchema\Parsers\KeywordParser;
+use Opis\JsonSchema\Parsers\Keywords\AllOfKeywordParser;
+use Opis\JsonSchema\Parsers\Keywords\ContainsKeywordParser;
 use Opis\JsonSchema\Parsers\Keywords\FormatKeywordParser;
 use Opis\JsonSchema\Parsers\Keywords\IfThenElseKeywordParser;
 use Opis\JsonSchema\Parsers\Keywords\PropertyNamesKeywordParser;
@@ -33,7 +35,7 @@ final class Draft extends Draft202012
         foreach (parent::getKeywordParsers() as $parser) {
             $parsers[] = match (true) {
                 $parser instanceof FormatKeywordParser => new FormatParser('format'),
-                $parser instanceof PropertyNamesKeywordParser => new PropertyNamesParser('propertyNames'),
+                $parser instanceof PropertyNamesKeywordParser, $parser instanceof AllOfKeywordParser, $parser instanceof ContainsKeywordParser => new FullParser($parser),
                 $parser instanceof IfThenElseKeywordParser => new IfParser('if', 'then', 'else'),
                 default => $parser,
             };
