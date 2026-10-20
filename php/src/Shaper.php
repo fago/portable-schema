@@ -502,15 +502,16 @@ final class Shaper
     }
 
     /**
-     * With partial and emptyAsMissing, an empty value counts as missing.
+     * With partial and emptyAsMissing, an empty property value counts as missing.
      */
     private function missing(string $location): bool
     {
         if (!$this->partial || !$this->emptyAsMissing || $location === '') {
             return false;
         }
+        [, $parent] = Pointer::get($this->data, Pointer::fromSegments(array_slice(Pointer::segments($location), 0, -1)));
         [$found, $value] = Pointer::get($this->data, $location);
-        return $found && Json::isEmpty($value);
+        return $parent instanceof \stdClass && $found && Json::isEmpty($value);
     }
 
     private function reported(string $location): bool

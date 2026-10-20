@@ -327,11 +327,12 @@ export class Shaper {
     return location;
   }
 
-  /** With partial and emptyAsMissing, an empty value counts as missing. */
+  /** With partial and emptyAsMissing, an empty property value counts as missing. */
   private missing(location: string): boolean {
     if (!this.partial || !this.emptyAsMissing || location === "") return false;
+    const [, parent] = Pointer.get(this.data, Pointer.fromSegments(Pointer.segments(location).slice(0, -1)));
     const [found, value] = Pointer.get(this.data, location);
-    return found && isEmpty(value);
+    return isObject(parent) && found && isEmpty(value);
   }
 
   private reported(location: string): boolean {

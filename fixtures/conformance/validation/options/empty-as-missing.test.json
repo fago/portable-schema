@@ -50,5 +50,28 @@
         }
       }
     ]
+  },
+  {
+    "description": "array items are not properties: an empty item is validated",
+    "options": {
+      "partial": true,
+      "emptyAsMissing": true
+    },
+    "data": {
+      "tags": [
+        ""
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/tags/0",
+        "code": "minLength",
+        "params": {
+          "limit": 2,
+          "actual": 0
+        }
+      }
+    ]
   }
 ]
