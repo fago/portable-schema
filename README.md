@@ -29,7 +29,7 @@ Status: early planning. Nothing here is stable yet.
   - `format` is an assertion;
   - results use the new output formats.
   Where the next release standardizes something we need, such as keyword namespacing or vocabularies, we adopt it instead of keeping our own.
-- **Generic, driven by Drupal's needs.** Drupal's needs drive the design. But Portable Schema is not only for Drupal and has no Drupal dependency: it describes and validates data for any system. Integrations generate their types and catalogs and provide backend checks.
+- **Generic, driven by Drupal's needs.** Drupal's needs drive the design. But Portable Schema is not only for Drupal and has no Drupal dependency: it describes and validates data for any system. Integrations generate their types and catalogs and provide backend checks. See [Portable Schema and Drupal](docs/drupal.md).
 
 ## What it is
 
