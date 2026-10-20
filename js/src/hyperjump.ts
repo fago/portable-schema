@@ -115,9 +115,14 @@ export const compile = (registry: Registry): Promise<Compiled> => {
   return compiled;
 };
 
+/** Ids in Hyperjump's store, from the last compile. */
+let registered: string[] = [];
+
 const compileNow = async (registry: Registry): Promise<Compiled> => {
   setUp();
-  for (const id of registry.ids()) {
+  registered.forEach((id) => unregisterSchema(id));
+  registered = [...registry.ids()];
+  for (const id of registered) {
     unregisterSchema(id);
     registerSchema(structuredClone(registry.get(id)), id, DIALECT);
   }
