@@ -8,12 +8,14 @@ declare(strict_types=1);
 
 require __DIR__ . '/../../vendor/autoload.php';
 
+use PortableSchema\Message\Formatter;
 use PortableSchema\Tests\Fixtures;
 
 foreach (Fixtures::files() as $file) {
     [$schemaFile, $tests] = Fixtures::load($file);
     foreach ($tests as $case) {
         $result = Fixtures::run($schemaFile, $case);
-        echo json_encode([$file, $case->description, $result], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION), "\n";
+        $messages = Formatter::create()->messages($result);
+        echo json_encode([$file, $case->description, $result, $messages], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
     }
 }

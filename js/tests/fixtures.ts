@@ -3,7 +3,7 @@ import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { registerSchema, validate, unregisterSchema } from "@hyperjump/json-schema/draft-2020-12";
 import { BASIC } from "@hyperjump/json-schema/experimental";
-import { CheckResult, Registry, Validator, type Result } from "../src/index.js";
+import { CheckResult, Formatter, Registry, Validator, type Result } from "../src/index.js";
 
 /** Finds the shared fixtures and runs their cases. */
 export const DIRECTORY = fileURLToPath(new URL("../../fixtures", import.meta.url));
@@ -19,6 +19,7 @@ export type Case = {
   errors?: unknown[];
   unchecked?: unknown[];
   options?: { partial?: boolean; emptyAsMissing?: boolean; locations?: string[] };
+  messages?: string[];
   checks?: Record<string, { errors: { code: string; params: Record<string, unknown> }[] }>;
 };
 
@@ -70,6 +71,7 @@ export const run = async (schemaFile: SchemaFile, testCase: Case): Promise<Resul
 
 /** The result projected to the compared keys, with sorted object keys. */
 export const actual = (result: Result): Record<string, unknown> => canonical({
+  messages: Formatter.create().messages(result),
   valid: result.valid,
   errors: result.errors.map((e) => ({ instanceLocation: e.instanceLocation, code: e.code, params: e.params })),
   unchecked: result.unchecked.map((u) => u.toJSON()),
@@ -80,6 +82,7 @@ export const expected = (testCase: Case): Record<string, unknown> => {
   const expect: Record<string, unknown> = { valid: testCase.valid };
   if (testCase.errors !== undefined || testCase.valid) expect["errors"] = testCase.errors ?? [];
   expect["unchecked"] = testCase.unchecked ?? [];
+  if (testCase.messages !== undefined) expect["messages"] = testCase.messages;
   return canonical(expect) as Record<string, unknown>;
 };
 

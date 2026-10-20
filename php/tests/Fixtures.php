@@ -7,6 +7,7 @@ namespace PortableSchema\Tests;
 use Opis\JsonSchema\Validator as OpisValidator;
 use PortableSchema\Check\CheckResult;
 use PortableSchema\Json;
+use PortableSchema\Message\Formatter;
 use PortableSchema\Registry;
 use PortableSchema\Result;
 use PortableSchema\Validator;
@@ -95,11 +96,12 @@ final class Fixtures
     /**
      * The result projected to the compared keys, with sorted object keys.
      *
-     * @return array{valid: bool, errors: list<array<string, mixed>>, unchecked: list<array<string, mixed>>}
+     * @return array{messages: list<string>, valid: bool, errors: list<array<string, mixed>>, unchecked: list<array<string, mixed>>}
      */
     public static function actual(Result $result): array
     {
         return self::canonical([
+            'messages' => Formatter::create()->messages($result),
             'valid' => $result->valid,
             'errors' => array_map(fn ($e) => ['instanceLocation' => $e->instanceLocation, 'code' => $e->code, 'params' => Json::toArray($e->params)], $result->errors),
             'unchecked' => array_map(fn ($u) => $u->toArray(), $result->unchecked),
@@ -109,7 +111,7 @@ final class Fixtures
     /**
      * What the case expects. Without `errors`, errors are not compared unless the case is valid.
      *
-     * @return array{valid: bool, errors?: list<array<string, mixed>>, unchecked: list<array<string, mixed>>}
+     * @return array{valid: bool, errors?: list<array<string, mixed>>, unchecked: list<array<string, mixed>>, messages?: list<string>}
      */
     public static function expected(\stdClass $case): array
     {
@@ -118,6 +120,9 @@ final class Fixtures
             $expected['errors'] = Json::toArray($case->errors ?? []);
         }
         $expected['unchecked'] = Json::toArray($case->unchecked ?? []);
+        if (isset($case->messages)) {
+            $expected['messages'] = $case->messages;
+        }
         return self::canonical($expected);
     }
 
