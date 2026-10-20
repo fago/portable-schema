@@ -1,0 +1,28 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:tool.update_image_alt.input",
+  "title": "Update image alt text",
+  "description": "Change the alt text of a photo.",
+  "type": "object",
+  "properties": {
+    "image_id": {
+      "title": "Image ID",
+      "$ref": "drupal:field_item.image#/properties/target_id",
+      "portable-check": {
+        "drupal:ValidReference": {
+          "target_type": "file"
+        }
+      }
+    },
+    "alt": {
+      "$ref": "drupal:field_item.image#/properties/alt",
+      "description": "Plain text describing the image for screen readers.",
+      "maxLength": 512
+    }
+  },
+  "required": [
+    "image_id",
+    "alt"
+  ],
+  "unevaluatedProperties": false
+}

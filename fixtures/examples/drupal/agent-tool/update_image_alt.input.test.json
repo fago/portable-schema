@@ -1,0 +1,117 @@
+[
+  {
+    "description": "valid",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      }
+    },
+    "data": {
+      "image_id": 7,
+      "alt": "Two skiers on a ridge above the clouds"
+    },
+    "valid": true
+  },
+  {
+    "description": "without a callback the reference is unchecked",
+    "data": {
+      "image_id": 7,
+      "alt": "Two skiers"
+    },
+    "valid": true,
+    "unchecked": [
+      {
+        "instanceLocation": "/image_id",
+        "code": "check.drupal:ValidReference",
+        "reason": "noProvider"
+      }
+    ]
+  },
+  {
+    "description": "empty alt text",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      }
+    },
+    "data": {
+      "image_id": 7,
+      "alt": ""
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/alt",
+        "code": "minLength",
+        "params": {
+          "limit": 1,
+          "actual": 0
+        }
+      }
+    ],
+    "messages": [
+      "Alternative text must be at least 1 character long."
+    ]
+  },
+  {
+    "description": "an ID as a string",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      }
+    },
+    "data": {
+      "image_id": "7",
+      "alt": "Two skiers"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/image_id",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "string"
+        }
+      }
+    ],
+    "messages": [
+      "Image ID has the wrong type."
+    ]
+  },
+  {
+    "description": "an image that doesn't exist",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": [
+          {
+            "code": "check.drupal:ValidReference",
+            "params": {
+              "id": 70
+            },
+            "message": "The referenced file (70) does not exist."
+          }
+        ]
+      }
+    },
+    "data": {
+      "image_id": 70,
+      "alt": "Two skiers"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/image_id",
+        "code": "check.drupal:ValidReference",
+        "params": {
+          "id": 70
+        }
+      }
+    ],
+    "messages": [
+      "The referenced file (70) does not exist."
+    ]
+  }
+]

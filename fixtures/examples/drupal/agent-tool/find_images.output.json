@@ -1,0 +1,7 @@
+{
+  "description": "find_images: tool output, reusing the image field's properties",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$ref": "drupal:tool.find_images.output"
+  }
+}

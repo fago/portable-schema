@@ -1,0 +1,94 @@
+[
+  {
+    "description": "a query",
+    "data": {
+      "query": "ski"
+    },
+    "valid": true
+  },
+  {
+    "description": "a query and a limit",
+    "data": {
+      "query": "ski",
+      "limit": 5
+    },
+    "valid": true
+  },
+  {
+    "description": "empty query",
+    "data": {
+      "query": ""
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/query",
+        "code": "minLength",
+        "params": {
+          "limit": 1,
+          "actual": 0
+        }
+      }
+    ],
+    "messages": [
+      "Query must be at least 1 character long."
+    ]
+  },
+  {
+    "description": "limit too high",
+    "data": {
+      "query": "ski",
+      "limit": 100
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/limit",
+        "code": "maximum",
+        "params": {
+          "limit": 50
+        }
+      }
+    ],
+    "messages": [
+      "Limit must be at most 50."
+    ]
+  },
+  {
+    "description": "an argument the tool doesn't have",
+    "data": {
+      "query": "ski",
+      "sort": "date"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "sort"
+        }
+      }
+    ],
+    "messages": [
+      "Find images: “sort” is not allowed here."
+    ]
+  },
+  {
+    "description": "missing query",
+    "data": {},
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "query"
+        }
+      }
+    ],
+    "messages": [
+      "Query is required."
+    ]
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "description": "find_images: tool input",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$ref": "drupal:tool.find_images.input"
+  }
+}
