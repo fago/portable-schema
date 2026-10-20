@@ -9,6 +9,12 @@ export const escape = (segment: string): string => segment.replaceAll("~", "~0")
 
 export const unescape = (segment: string): string => segment.replaceAll("~1", "/").replaceAll("~0", "~");
 
+/** A pointer as URI fragment: every byte outside RFC 3986's fragment characters percent-encoded. */
+export const toFragment = (pointer: string): string =>
+  [...new TextEncoder().encode(pointer)]
+    .map((b) => /[A-Za-z0-9\-._~!$&'()*+,;=:@/?]/u.test(String.fromCharCode(b)) && b < 128 ? String.fromCharCode(b) : "%" + b.toString(16).toUpperCase().padStart(2, "0"))
+    .join("");
+
 export const fromSegments = (segments: (string | number)[]): string =>
   segments.map((segment) => "/" + escape(String(segment))).join("");
 

@@ -12,6 +12,14 @@ final class Pointer
     public const RELATIVE_PATTERN = '@^(0|[1-9][0-9]*)(#|(/([^~/]|~[01])*)*)$@u';
 
     /**
+     * A pointer as URI fragment: every byte outside RFC 3986's fragment characters percent-encoded.
+     */
+    public static function toFragment(string $pointer): string
+    {
+        return preg_replace_callback("@[^A-Za-z0-9\\-._~!$&'()*+,;=:\@/?]@", fn (array $m) => sprintf('%%%02X', ord($m[0])), $pointer);
+    }
+
+    /**
      * @param list<string|int> $segments
      */
     public static function fromSegments(array $segments): string

@@ -479,7 +479,7 @@ final class Shaper
     private function childLocation(KeywordNode $node, SchemaNode $child, SchemaNode $parent, string $parentLocation, string $location): string
     {
         if (!in_array($node->keyword, self::REFERENCES, true) && str_starts_with($child->uri, $parent->uri . '/')) {
-            return $parentLocation . substr($child->uri, strlen($parent->uri));
+            return $parentLocation . rawurldecode(substr($child->uri, strlen($parent->uri)));
         }
         return $location;
     }

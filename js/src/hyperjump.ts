@@ -135,15 +135,22 @@ const compileNow = async (registry: Registry): Promise<Compiled> => {
   return { ast, urls };
 };
 
+/** A Hyperjump URI with the fragment encoding of the PHP validator: Hyperjump leaves `#` unencoded. */
+const normalize = (url: string): string => {
+  const hash = url.indexOf("#");
+  return hash === -1 ? url : url.slice(0, hash + 1) + Pointer.toFragment(decodeURIComponent(url.slice(hash + 1)));
+};
+
 /** Evaluates a compiled schema, recording the evaluation with the tracer. */
 export const evaluate = (compiled: Compiled, url: string, data: unknown, tracer: Tracer, checks: Checks): void => {
   const plugin: EvaluationPlugin = {
     beforeSchema: (schemaUrl, instance, context) => {
-      tracer.enterSchema(schemaUrl, instance.pointer, typeof context.ast[schemaUrl] === "boolean");
+      tracer.enterSchema(normalize(schemaUrl), instance.pointer, typeof context.ast[schemaUrl] === "boolean");
     },
     beforeKeyword: (node, instance) => {
-      const segments = Pointer.segments(node[1].split("#")[1] ?? "");
-      tracer.enterKeyword(segments[segments.length - 1] ?? "", node[1], instance.pointer);
+      const url = normalize(node[1]);
+      const segments = Pointer.segments(decodeURIComponent(url.split("#")[1] ?? ""));
+      tracer.enterKeyword(segments[segments.length - 1] ?? "", url, instance.pointer);
     },
     afterKeyword: (_node, _instance, _context, valid) => tracer.leave(valid),
     afterSchema: (_url, _instance, _context, valid) => tracer.leave(valid),

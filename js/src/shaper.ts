@@ -322,7 +322,7 @@ export class Shaper {
   /** The keyword location of a subschema: below its keyword in the same schema, or at the keyword for references. */
   private childLocation(node: KeywordNode, child: SchemaNode, parent: SchemaNode, parentLocation: string, location: string): string {
     if (!REFERENCES.includes(node.keyword) && child.uri.startsWith(parent.uri + "/")) {
-      return parentLocation + child.uri.slice(parent.uri.length);
+      return parentLocation + decodeURIComponent(child.uri.slice(parent.uri.length));
     }
     return location;
   }

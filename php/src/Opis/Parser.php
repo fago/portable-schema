@@ -69,6 +69,6 @@ final class Parser extends SchemaParser
     {
         $root = $info->root() ?? $info->base() ?? $info->id();
         $document = explode('#', (string) $root, 2)[0];
-        return $document . '#' . \PortableSchema\Pointer::fromSegments($info->path());
+        return $document . '#' . \PortableSchema\Pointer::toFragment(\PortableSchema\Pointer::fromSegments($info->path()));
     }
 }
