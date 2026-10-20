@@ -5,3 +5,6 @@ export * as Pointer from "./pointer.js";
 export { Registry, type Schema } from "./registry.js";
 export { Annotations, Result, Unchecked, ValidationError } from "./result.js";
 export { Validator, type ValidateOptions } from "./validator.js";
+export { Catalog } from "./message/catalog.js";
+export { Formatter } from "./message/formatter.js";
+export { MessageRequest, StandaloneTranslator, type Translator } from "./message/translator.js";
