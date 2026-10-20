@@ -16,6 +16,12 @@ Status: early planning. Nothing here is stable yet.
 - **Schemas that depend on values.** Types selected by a data value from an open set, computed narrowing and cross-field rules. All of them can only narrow what is valid.
 - **System facts as data.** References to things a system provides (plugins, bundles, fields, modules) are checked against catalogs. Catalogs come from the live system or from a schema dump, so validation can also run offline.
 - **Stay standard.** Every Portable Schema is valid JSON Schema 2020-12. Generic validators ignore the added keywords and still check the structure; a standard-only export serves tools that need plain JSON Schema.
+- **Aligned with the next JSON Schema release.** The profile already follows its rules, so moving to it needs no schema changes:
+  - `x-` keywords are annotations only;
+  - unknown keywords are an error;
+  - `format` is an assertion;
+  - results use the new output formats.
+  Where the next release standardizes something we need, such as keyword namespacing or vocabularies, we adopt it instead of keeping our own.
 - **Generic, driven by Drupal's needs.** Drupal's needs drive the design. But Portable Schema is not only for Drupal and has no Drupal dependency: it describes and validates data for any system. Integrations generate their types and catalogs and provide backend checks.
 
 ## Scope
