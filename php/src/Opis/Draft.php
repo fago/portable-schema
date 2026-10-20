@@ -41,9 +41,12 @@ final class Draft extends Draft202012
         $parsers[] = new TypeByParser('portable-typeBy', $this->tracer);
         $parsers[] = new CheckParser('portable-check', $this->tracer, $this->checks);
 
-        return array_map(
-            fn (KeywordParser $parser) => new TracingKeywordParser($parser, TracingKeywordParser::name($parser), $this->tracer),
-            $parsers,
-        );
+        return [
+            new BooleanSchemas(),
+            ...array_map(
+                fn (KeywordParser $parser) => new TracingKeywordParser($parser, TracingKeywordParser::name($parser), $this->tracer),
+                $parsers,
+            ),
+        ];
     }
 }

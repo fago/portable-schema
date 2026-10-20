@@ -20,6 +20,6 @@ final class RegistryResolver extends SchemaResolver
     public function resolve(Uri $uri)
     {
         $id = explode('#', (string) $uri, 2)[0];
-        return $this->registry->has($id) ? $this->registry->get($id) : null;
+        return $this->registry->has($id) ? BooleanSchemas::replace($this->registry->get($id)) : null;
     }
 }

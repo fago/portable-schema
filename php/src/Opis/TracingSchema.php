@@ -27,7 +27,7 @@ final class TracingSchema implements Schema
         $this->tracer->enterSchema(
             Parser::uri($this->inner->info()),
             Pointer::fromSegments($context->fullDataPath()),
-            $this->inner->info()->isBoolean(),
+            BooleanSchemas::is($this->inner->info()),
         );
         $error = $this->inner->validate($context);
         $this->tracer->leave($error === null);

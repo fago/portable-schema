@@ -1,0 +1,13 @@
+{
+  "description": "a false prefix item, later items still evaluated",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "array",
+    "prefixItems": [
+      false,
+      {
+        "type": "string"
+      }
+    ]
+  }
+}
