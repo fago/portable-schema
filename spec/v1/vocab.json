@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portable-schema.dev/v1/vocab",
+  "$dynamicAnchor": "meta",
+  "title": "Portable Schema v1 vocabulary meta-schema",
+  "description": "Syntax of the keywords Portable Schema adds. Their semantics are defined in spec/vocabulary.md.",
+  "type": ["object", "boolean"],
+  "properties": {
+    "portable-typeBy": { "$ref": "#/$defs/typeBy" },
+    "portable-refine": { "$ref": "#/$defs/refine" },
+    "portable-check": { "$ref": "#/$defs/check" },
+    "portable-compare": { "$ref": "#/$defs/compare" },
+    "x-portable-type": { "type": "string", "minLength": 1 },
+    "x-portable-translatable": { "type": "boolean" },
+    "x-portable-provider": { "type": "string", "minLength": 1 },
+    "x-portable-ui": { "$ref": "#/$defs/ui" },
+    "x-portable-links": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/link" }
+    },
+    "x-portable-unchecked": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "relativePointer": {
+      "description": "Relative JSON Pointer: levels up from the evaluated location, then a JSON Pointer or '#' for the key name.",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)(#|(/([^~/]|~[01])*)*)$"
+    },
+    "source": {
+      "description": "Maps names to Relative JSON Pointers into the instance.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/relativePointer" }
+    },
+    "typeBy": {
+      "type": "object",
+      "required": ["href", "source"],
+      "properties": {
+        "href": { "type": "string", "format": "uri-template" },
+        "source": { "$ref": "#/$defs/source" },
+        "fallback": { "type": "string", "format": "uri-reference" }
+      },
+      "additionalProperties": false
+    },
+    "refine": {
+      "type": "object",
+      "required": ["provider", "source"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "source": { "$ref": "#/$defs/source" }
+      },
+      "additionalProperties": false
+    },
+    "check": {
+      "description": "One named check with its options.",
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "additionalProperties": { "type": "object" }
+    },
+    "compare": {
+      "type": "object",
+      "required": ["op", "pointer"],
+      "properties": {
+        "op": { "enum": ["<", "<=", "==", "!=", ">=", ">"] },
+        "pointer": { "$ref": "#/$defs/relativePointer" }
+      },
+      "additionalProperties": false
+    },
+    "ui": {
+      "type": "object",
+      "properties": {
+        "widget": { "type": "string", "minLength": 1 },
+        "options": { "type": "object" },
+        "fallback": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "group": { "type": "string" },
+        "weight": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "link": {
+      "description": "Data source for forms, shaped like a JSON Hyper-Schema Link Description Object.",
+      "type": "object",
+      "required": ["rel", "href"],
+      "properties": {
+        "rel": { "type": "string", "minLength": 1 },
+        "href": { "type": "string", "format": "uri-template" },
+        "source": { "$ref": "#/$defs/source" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
