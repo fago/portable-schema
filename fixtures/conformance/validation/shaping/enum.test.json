@@ -1,0 +1,25 @@
+[
+  {
+    "description": "allowed",
+    "data": "a",
+    "valid": true
+  },
+  {
+    "description": "not allowed",
+    "data": "c",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "enum",
+        "params": {
+          "value": "c",
+          "allowed": [
+            "a",
+            "b"
+          ]
+        }
+      }
+    ]
+  }
+]

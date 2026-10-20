@@ -1,0 +1,26 @@
+[
+  {
+    "description": "known keys only",
+    "data": {
+      "name": "x"
+    },
+    "valid": true
+  },
+  {
+    "description": "unknown key",
+    "data": {
+      "name": "x",
+      "extra": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "extra"
+        }
+      }
+    ]
+  }
+]

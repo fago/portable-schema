@@ -1,0 +1,15 @@
+{
+  "description": "locations: only results at or below the given pointers are reported",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "a": {
+        "$ref": "portable:integer"
+      },
+      "b": {
+        "$ref": "portable:integer"
+      }
+    }
+  }
+}

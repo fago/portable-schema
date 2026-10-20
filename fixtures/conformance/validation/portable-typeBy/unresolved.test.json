@@ -1,0 +1,40 @@
+[
+  {
+    "description": "known value",
+    "data": {
+      "plugin": "branding",
+      "settings": {
+        "use_logo": true
+      }
+    },
+    "valid": true
+  },
+  {
+    "description": "unknown value",
+    "data": {
+      "plugin": "other",
+      "settings": {}
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/settings",
+        "code": "typeBy.unresolved",
+        "params": {
+          "value": "other",
+          "resolved": "test:settings.other"
+        }
+      }
+    ]
+  },
+  {
+    "description": "partial: missing source value is not an error",
+    "options": {
+      "partial": true
+    },
+    "data": {
+      "settings": {}
+    },
+    "valid": true
+  }
+]

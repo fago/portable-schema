@@ -1,0 +1,21 @@
+{
+  "description": "a catalog is a schema with $id, referenced by $ref",
+  "registry": {
+    "test:catalog/plugins": {
+      "oneOf": [
+        {
+          "const": "branding",
+          "title": "Site branding"
+        },
+        {
+          "const": "powered_by",
+          "title": "Powered by"
+        }
+      ]
+    }
+  },
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$ref": "test:catalog/plugins"
+  }
+}

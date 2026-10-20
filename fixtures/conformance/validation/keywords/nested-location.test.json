@@ -1,0 +1,23 @@
+[
+  {
+    "description": "nested type error",
+    "data": {
+      "a": {
+        "b": "x"
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a/b",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "string"
+        }
+      }
+    ]
+  }
+]

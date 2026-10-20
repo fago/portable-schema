@@ -74,6 +74,6 @@ Raw JSON Schema evaluation reports many errors for one problem. Implementations 
 3. **`portable-typeBy`:** report only errors of the resolved schema, or `typeBy.unresolved` if neither the target nor the fallback exists.
 4. **`if` / `then` / `else`:** report the errors of the applied branch, not of `if`.
 5. **`$ref`:** errors keep the location of the referencing keyword.
-6. **Order:** by `instanceLocation`, then by `keywordLocation`.
+6. **Order:** by `instanceLocation`, then by `keywordLocation`. Ties keep the order of the keyword's value, e.g. the order of the `required` list.
 
 Annotations such as `title` are not part of errors. Formatters take them from the annotations collected during validation.

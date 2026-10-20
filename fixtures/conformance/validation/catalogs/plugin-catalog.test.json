@@ -1,0 +1,25 @@
+[
+  {
+    "description": "known plugin",
+    "data": "branding",
+    "valid": true
+  },
+  {
+    "description": "unknown plugin",
+    "data": "foo",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "enum",
+        "params": {
+          "value": "foo",
+          "allowed": [
+            "branding",
+            "powered_by"
+          ]
+        }
+      }
+    ]
+  }
+]

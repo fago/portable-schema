@@ -1,0 +1,70 @@
+[
+  {
+    "description": "all errors",
+    "data": {
+      "a": "x",
+      "b": "y"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "string"
+        }
+      },
+      {
+        "instanceLocation": "/b",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "string"
+        }
+      }
+    ]
+  },
+  {
+    "description": "only /a",
+    "options": {
+      "locations": [
+        "/a"
+      ]
+    },
+    "data": {
+      "a": "x",
+      "b": "y"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "string"
+        }
+      }
+    ]
+  },
+  {
+    "description": "only /b, which is fine",
+    "options": {
+      "locations": [
+        "/b"
+      ]
+    },
+    "data": {
+      "a": "x",
+      "b": 1
+    },
+    "valid": true
+  }
+]

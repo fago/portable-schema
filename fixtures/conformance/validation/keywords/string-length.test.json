@@ -1,0 +1,40 @@
+[
+  {
+    "description": "one emoji is one character",
+    "data": {
+      "short": "😀"
+    },
+    "valid": true
+  },
+  {
+    "description": "one emoji is too short for minLength 2",
+    "data": {
+      "long": "😀"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/long",
+        "code": "minLength",
+        "params": {
+          "limit": 2,
+          "actual": 1
+        }
+      }
+    ]
+  },
+  {
+    "description": "two emoji are long enough",
+    "data": {
+      "long": "😀😀"
+    },
+    "valid": true
+  },
+  {
+    "description": "an umlaut is one character",
+    "data": {
+      "short": "ä"
+    },
+    "valid": true
+  }
+]

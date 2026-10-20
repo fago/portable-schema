@@ -1,0 +1,18 @@
+{
+  "description": "named checks: no provider, local callback, partial",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "title": {
+        "$ref": "portable:label",
+        "portable-check": {
+          "test:Unique": {}
+        }
+      }
+    },
+    "required": [
+      "title"
+    ]
+  }
+}

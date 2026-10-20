@@ -1,0 +1,56 @@
+[
+  {
+    "description": "no provider: reported as unchecked, still valid",
+    "data": {
+      "title": "Hello"
+    },
+    "valid": true,
+    "unchecked": [
+      {
+        "instanceLocation": "/title",
+        "code": "check.test:Unique",
+        "reason": "noProvider"
+      }
+    ]
+  },
+  {
+    "description": "local callback reports a duplicate",
+    "checks": {
+      "test:Unique": {
+        "errors": [
+          {
+            "code": "check.test:Unique",
+            "params": {
+              "value": "Hello"
+            }
+          }
+        ]
+      }
+    },
+    "data": {
+      "title": "Hello"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/title",
+        "code": "check.test:Unique",
+        "params": {
+          "value": "Hello"
+        }
+      }
+    ]
+  },
+  {
+    "description": "local callback finds nothing",
+    "checks": {
+      "test:Unique": {
+        "errors": []
+      }
+    },
+    "data": {
+      "title": "Hello"
+    },
+    "valid": true
+  }
+]

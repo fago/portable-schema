@@ -1,0 +1,48 @@
+[
+  {
+    "description": "small integer",
+    "data": 1,
+    "valid": true
+  },
+  {
+    "description": "1.0 counts as an integer",
+    "data": 1.0,
+    "valid": true
+  },
+  {
+    "description": "largest safe integer",
+    "data": 9007199254740991,
+    "valid": true
+  },
+  {
+    "description": "beyond the I-JSON range",
+    "data": 9007199254740992,
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "maximum",
+        "params": {
+          "limit": 9007199254740991
+        }
+      }
+    ]
+  },
+  {
+    "description": "not an integer",
+    "data": 1.5,
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "number"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "description": "true",
+    "data": true,
+    "valid": true
+  },
+  {
+    "description": "a string is not a boolean",
+    "data": "true",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "type",
+        "params": {
+          "expected": [
+            "boolean"
+          ],
+          "actual": "string"
+        }
+      }
+    ]
+  }
+]

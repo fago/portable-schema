@@ -1,0 +1,13 @@
+{
+  "description": "unevaluatedProperties: false reports unknown keys at the object's location",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "name": {
+        "$ref": "portable:string"
+      }
+    },
+    "unevaluatedProperties": false
+  }
+}

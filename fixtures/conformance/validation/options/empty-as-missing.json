@@ -1,0 +1,20 @@
+{
+  "description": "emptyAsMissing: with partial, empty values count as missing",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "minLength": 1
+      },
+      "age": {
+        "$ref": "portable:integer"
+      }
+    },
+    "required": [
+      "name",
+      "age"
+    ]
+  }
+}

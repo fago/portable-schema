@@ -1,0 +1,7 @@
+{
+  "description": "portable:boolean",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$ref": "portable:boolean"
+  }
+}

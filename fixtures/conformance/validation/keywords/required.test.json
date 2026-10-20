@@ -1,0 +1,23 @@
+[
+  {
+    "description": "present",
+    "data": {
+      "name": "x"
+    },
+    "valid": true
+  },
+  {
+    "description": "missing",
+    "data": {},
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "name"
+        }
+      }
+    ]
+  }
+]

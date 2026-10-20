@@ -1,0 +1,31 @@
+{
+  "description": "without a fallback, an unknown value is reported as typeBy.unresolved",
+  "registry": {
+    "test:settings.branding": {
+      "type": "object",
+      "properties": {
+        "use_logo": {
+          "$ref": "portable:boolean"
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "plugin": {
+        "type": "string"
+      },
+      "settings": {
+        "portable-typeBy": {
+          "href": "test:settings.{plugin}",
+          "source": {
+            "plugin": "1/plugin"
+          }
+        }
+      }
+    }
+  }
+}

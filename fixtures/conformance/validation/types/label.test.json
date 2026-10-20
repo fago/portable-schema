@@ -1,0 +1,21 @@
+[
+  {
+    "description": "single line",
+    "data": "Site branding",
+    "valid": true
+  },
+  {
+    "description": "line break",
+    "data": "Site\nbranding",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "pattern",
+        "params": {
+          "pattern": "^[^\\r\\n]*$"
+        }
+      }
+    ]
+  }
+]

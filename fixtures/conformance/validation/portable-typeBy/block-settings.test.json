@@ -1,0 +1,72 @@
+[
+  {
+    "description": "specific type: its own key is allowed",
+    "data": {
+      "plugin": "branding",
+      "settings": {
+        "label": "Logo",
+        "use_logo": true
+      }
+    },
+    "valid": true
+  },
+  {
+    "description": "specific type: unknown key",
+    "data": {
+      "plugin": "branding",
+      "settings": {
+        "label": "Logo",
+        "use_motto": true
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/settings",
+        "code": "unknownProperty",
+        "params": {
+          "property": "use_motto"
+        }
+      }
+    ]
+  },
+  {
+    "description": "no specific type: the fallback closes the base",
+    "data": {
+      "plugin": "other",
+      "settings": {
+        "label": "Other",
+        "use_logo": true
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/settings",
+        "code": "unknownProperty",
+        "params": {
+          "property": "use_logo"
+        }
+      }
+    ]
+  },
+  {
+    "description": "the open base is checked too: label is required",
+    "data": {
+      "plugin": "branding",
+      "settings": {
+        "use_logo": true
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/settings",
+        "code": "required",
+        "params": {
+          "property": "label"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "description": "portable:integer stays within the I-JSON range",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$ref": "portable:integer"
+  }
+}

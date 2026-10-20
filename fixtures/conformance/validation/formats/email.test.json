@@ -1,0 +1,36 @@
+[
+  {
+    "description": "plain address",
+    "data": "joe@example.com",
+    "valid": true
+  },
+  {
+    "description": "single-label domain is allowed by WHATWG",
+    "data": "joe@localhost",
+    "valid": true
+  },
+  {
+    "description": "quoted local part is not allowed by WHATWG",
+    "data": "\"joe bloggs\"@example.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "missing @",
+    "data": "joe.example.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  }
+]

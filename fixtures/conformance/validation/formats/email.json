@@ -1,0 +1,8 @@
+{
+  "description": "format email follows the pinned WHATWG check",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "string",
+    "format": "email"
+  }
+}

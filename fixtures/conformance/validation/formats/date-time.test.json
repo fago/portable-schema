@@ -1,0 +1,53 @@
+[
+  {
+    "description": "UTC",
+    "data": "2026-10-20T14:30:00Z",
+    "valid": true
+  },
+  {
+    "description": "with offset",
+    "data": "2026-10-20T14:30:00+02:00",
+    "valid": true
+  },
+  {
+    "description": "fraction of a second",
+    "data": "2026-10-20T14:30:00.123Z",
+    "valid": true
+  },
+  {
+    "description": "no offset, as Drupal stores it",
+    "data": "2026-10-20T14:30:00",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.date-time",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "not a real date",
+    "data": "2026-02-30T00:00:00Z",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.date-time",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "leap second",
+    "data": "2026-12-31T23:59:60Z",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.date-time",
+        "params": {}
+      }
+    ]
+  }
+]

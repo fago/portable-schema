@@ -1,0 +1,7 @@
+{
+  "description": "portable:label is a single line",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$ref": "portable:label"
+  }
+}

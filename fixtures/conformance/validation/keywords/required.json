@@ -1,0 +1,15 @@
+{
+  "description": "required reports the missing property at the object's location",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "name": {
+        "$ref": "portable:string"
+      }
+    },
+    "required": [
+      "name"
+    ]
+  }
+}

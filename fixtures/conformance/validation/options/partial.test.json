@@ -1,0 +1,53 @@
+[
+  {
+    "description": "without partial, missing values are errors",
+    "data": {},
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "name"
+        }
+      },
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "age"
+        }
+      }
+    ]
+  },
+  {
+    "description": "partial: missing values are fine",
+    "options": {
+      "partial": true
+    },
+    "data": {},
+    "valid": true
+  },
+  {
+    "description": "partial: a present value is still validated",
+    "options": {
+      "partial": true
+    },
+    "data": {
+      "age": "x"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/age",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "string"
+        }
+      }
+    ]
+  }
+]

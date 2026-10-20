@@ -1,0 +1,21 @@
+[
+  {
+    "description": "matches",
+    "data": "abc",
+    "valid": true
+  },
+  {
+    "description": "does not match",
+    "data": "Abc",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "pattern",
+        "params": {
+          "pattern": "^[a-z]+$"
+        }
+      }
+    ]
+  }
+]

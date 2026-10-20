@@ -1,0 +1,17 @@
+{
+  "description": "errors carry the JSON Pointer of the nested value",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "a": {
+        "type": "object",
+        "properties": {
+          "b": {
+            "$ref": "portable:integer"
+          }
+        }
+      }
+    }
+  }
+}

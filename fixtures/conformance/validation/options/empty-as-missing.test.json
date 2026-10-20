@@ -1,0 +1,54 @@
+[
+  {
+    "description": "partial without emptyAsMissing: an empty string is validated",
+    "options": {
+      "partial": true
+    },
+    "data": {
+      "name": ""
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/name",
+        "code": "minLength",
+        "params": {
+          "limit": 1,
+          "actual": 0
+        }
+      }
+    ]
+  },
+  {
+    "description": "partial with emptyAsMissing: an empty string is missing",
+    "options": {
+      "partial": true,
+      "emptyAsMissing": true
+    },
+    "data": {
+      "name": ""
+    },
+    "valid": true
+  },
+  {
+    "description": "without partial, emptyAsMissing has no effect",
+    "options": {
+      "emptyAsMissing": true
+    },
+    "data": {
+      "name": "",
+      "age": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/name",
+        "code": "minLength",
+        "params": {
+          "limit": 1,
+          "actual": 0
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "description": "oneOf of consts reports one enum error, not one error per branch",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "oneOf": [
+      {
+        "const": "a",
+        "title": "Option A"
+      },
+      {
+        "const": "b",
+        "title": "Option B"
+      }
+    ]
+  }
+}
