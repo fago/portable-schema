@@ -49,18 +49,6 @@ final class Json
     }
 
     /**
-     * Converts plain PHP values to the JSON data model: associative arrays become objects.
-     */
-    public static function fromArray(mixed $value): mixed
-    {
-        if (is_array($value)) {
-            $value = array_map(self::fromArray(...), $value);
-            return array_is_list($value) ? $value : (object) $value;
-        }
-        return $value;
-    }
-
-    /**
      * A number as text, as JavaScript's Number#toString() writes it.
      */
     public static function number(int|float $value): string

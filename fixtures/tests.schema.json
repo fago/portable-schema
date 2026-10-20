@@ -22,7 +22,7 @@
         "type": "boolean"
       },
       "errors": {
-        "description": "Exactly the expected errors, in shaped order. Message text is not compared.",
+        "description": "Exactly the expected errors, in shaped order. Message texts are compared under messages.",
         "type": "array",
         "items": {
           "$ref": "#/$defs/error"

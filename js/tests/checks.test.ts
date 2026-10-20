@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { CheckResult, Registry, Validator, type CheckProvider, type CheckRequest, type Result } from "../src/index.js";
+import { CheckResult, Formatter, Registry, Validator, type CheckProvider, type CheckRequest, type Result } from "../src/index.js";
 
 const SCHEMA = { $schema: "https://portable-schema.dev/v1/schema", type: "array", items: { type: "string", "portable-check": { "test:Unique": { scope: "tags" } } } };
 
@@ -58,5 +58,11 @@ describe("named checks", () => {
     });
     const result = v.validate(["a", 1], "test:schema");
     expect(result.errors.map((e) => `${e.instanceLocation} ${e.code}`)).toEqual(["/0 check.test:Unique", "/1 type"]);
+  });
+
+  test("the message of an unchecked entry", async () => {
+    const result = (await validator()).validate(["a"], "test:schema");
+    const request = Formatter.create().formatUnchecked(result.unchecked[0]!, result);
+    expect([request.id, request.source, request.params]).toEqual(["unchecked", "{label} could not be checked.", { label: "0" }]);
   });
 });

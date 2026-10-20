@@ -39,11 +39,6 @@ final class Validator
         $this->loader = new SchemaLoader(new Parser($this->tracer, $this->checks), new RegistryResolver($registry), false);
     }
 
-    public function registry(): Registry
-    {
-        return $this->registry;
-    }
-
     /**
      * A validator that runs $callback for the named check, overriding any provider.
      *

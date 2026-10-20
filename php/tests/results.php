@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Prints the full result of every fixture case as JSON lines, for comparing with js/tests/results.mjs.
+ * Prints the full result of every fixture case as JSON lines, for comparing with js/tests/results.ts.
  */
 
 declare(strict_types=1);

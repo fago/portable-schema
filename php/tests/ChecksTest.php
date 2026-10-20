@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use PortableSchema\Check\CheckProvider;
 use PortableSchema\Check\CheckResult;
 use PortableSchema\Json;
+use PortableSchema\Message\Formatter;
 use PortableSchema\Registry;
 use PortableSchema\Validator;
 
@@ -75,5 +76,12 @@ final class ChecksTest extends TestCase
         });
         $result = $validator->validate(['a', 1], 'test:schema');
         $this->assertSame(['/0 check.test:Unique', '/1 type'], array_map(fn ($e) => $e->instanceLocation . ' ' . $e->code, $result->errors));
+    }
+
+    public function testUncheckedMessage(): void
+    {
+        $result = $this->validator()->validate(['a'], 'test:schema');
+        $request = Formatter::create()->formatUnchecked($result->unchecked[0], $result);
+        $this->assertSame(['unchecked', '{label} could not be checked.', ['label' => '0']], [$request->id, $request->source, $request->params]);
     }
 }
