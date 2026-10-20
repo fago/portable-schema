@@ -16,7 +16,7 @@ The `portable-schema.dev` base URI is a placeholder until a domain is chosen.
 | Document | Covers |
 |---|---|
 | [`errors.md`](errors.md) | Result format, error codes and params, shaping rules (draft) |
-| `profile.md` (planned) | Allowed and restricted standard keywords; rules where JSON Schema leaves a choice |
+| [`profile.md`](profile.md) | Allowed and restricted standard keywords; rules where JSON Schema leaves a choice. Formats so far (draft) |
 | `vocabulary.md` (planned) | Semantics, errors and degradation of each added keyword |
 | `normalization.md` (planned) | JSON data model, object vs list, coercion cast table |
 | `catalogs.md` (planned) | Catalogs, registry resolution (live and static), site schema dumps |

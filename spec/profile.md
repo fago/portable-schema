@@ -1,0 +1,44 @@
+# Profile
+
+Status: draft. This document starts with formats; the rest of the profile follows.
+
+## Formats
+
+Formats come from the [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) ([decision 0003](../docs/decisions/0003-formats-from-the-registry.md)).
+
+- **`format` is an assertion.**
+- **A schema using a format outside this list is refused.**
+- **Each check below is pinned,** so PHP and JS give the same verdict. Fixtures under `fixtures/conformance/validation/format/` define the edge cases.
+
+| Format | Check | Based on |
+|---|---|---|
+| `date` | `YYYY-MM-DD`, a real calendar date (month and day ranges, leap years) | RFC 3339 full-date |
+| `time` | `HH:MM:SS`, optional fraction, offset (`Z` or `±HH:MM`) required. No leap seconds | RFC 3339 full-time |
+| `date-time` | `date`, `T` or `t`, `time` | RFC 3339 date-time |
+| `duration` | ISO 8601 duration as in RFC 3339 appendix A, e.g. `P1Y2M`, `PT30M`, `P2W` | RFC 3339 |
+| `email` | WHATWG "valid email address" (ASCII, the pattern browsers use for `<input type="email">`) | WHATWG HTML |
+| `hostname` | Dot-separated labels of letters, digits and hyphens, 1–63 characters each, at most 253 in total; ASCII only | RFC 1123 |
+| `ipv4` | Dotted quad, 0–255 per part, no leading zeros | RFC 2673 |
+| `ipv6` | RFC 4291 text form, incl. `::` compression and an embedded IPv4 tail; no zone ID | RFC 4291 |
+| `uri` | An absolute URI per the RFC 3986 grammar: scheme required | RFC 3986 |
+| `uri-reference` | A URI or relative reference per the RFC 3986 grammar | RFC 3986 |
+| `uri-template` | RFC 6570 syntax (levels 1–4) | RFC 6570 |
+| `uuid` | 8-4-4-4-12 hex digits, case-insensitive; any version | RFC 9562 |
+| `json-pointer` | RFC 6901 syntax | RFC 6901 |
+| `relative-json-pointer` | The core form of [decision 0002](../docs/decisions/0002-relative-json-pointer.md): no index adjustments | Relative JSON Pointer draft |
+| `regex` | Within the portable regex subset (see Patterns, planned) | ECMA-262 |
+| `decimal` | A string `-?(0\|[1-9][0-9]*)(\.[0-9]+)?`; numbers are not accepted | Registry |
+| `int32` | An integer from −2^31 to 2^31 − 1 | Registry |
+| `html` | Not checked: any string. The format names the content for hosts and widgets | Registry |
+| `commonmark` | Not checked: any string | Registry |
+
+**Not allowed in v1:**
+- `idn-email`, `idn-hostname`, `iri`, `iri-reference`: IDNA and Unicode handling would differ between PHP and JS.
+- `int64`, `uint8`, `int8`, `int16`, `double-int`, `float`, `double`, `decimal128`: number ranges beyond what JS represents exactly, or not needed yet.
+- `byte`, `binary`, `base64url`, `char`, `http-date`, `media-range`, `sf-*`: not needed yet.
+
+Adding a format later means pinning its check here and adding fixtures.
+
+## Errors
+
+A failed format check reports the code `format.<name>`, e.g. `format.email` (see [`errors.md`](errors.md)).
