@@ -10,13 +10,16 @@ Nothing is decided yet.
 
 | Group | Types |
 |---|---|
-| Text | `label` (short, translatable), `text` (multi-line), `html`, `markdown` |
-| Identifiers | `identifier` (machine-name style), `uuid`, `langcode` (BCP 47) |
-| Web | `uri`, `email`, `link` (`uri` + `title`), `image` (`src`, `alt`, `width`, `height`) |
-| Numbers | `decimal` (as string), `color` (hex) |
-| Time | `date`, `date-time`, `time`, `duration`, `timestamp` |
+| Text | `label` (short, single line, translatable), `text` (multi-line, translatable), `html`, `markdown` |
+| Identifiers | `identifier` (machine-name style), `langcode` (BCP 47) |
+| Web | `email` (format `email` + `maxLength: 254`), `link` (`uri` + `title`), `image` (`src`, `alt`, `width`, `height`) |
+| Other | `timestamp` (Unix seconds), `color` (hex), `weight` (sort order), `secret` (`writeOnly`) |
+
+Values the format registry already covers (`uuid`, `date`, `date-time`, `time`, `duration`, `decimal`, `uri`, …) are used as formats, not types.
 
 ## Rules
 
+- **Formats first.** If a format from the registry says it, use the format directly (`format: uri`, `format: date-time`). A type is only for a meaning that needs a name: a bundle of constraints (`email` = format + length limit), translatability, or a shape.
+- **Types can build on formats** and carry their own messages (`x-portable-messages`), so every use gets the same check and the same wording.
 - **Each type is a stable reference.** Consumers match types by `$ref` or `x-portable-type`, never by comparing resolved schema structure.
 - **Base types stay open** (no `unevaluatedProperties: false`). Concrete types close the object.
