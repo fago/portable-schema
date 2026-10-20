@@ -10,6 +10,9 @@ namespace PortableSchema;
  *
  * Lost in the export: the added keywords (`portable-typeBy`, `portable-check`, …), `x-portable-*` annotations and the
  * pinned formats: generic validators treat `format` as an annotation and know neither `decimal` nor `int32`.
+ *
+ * Draft-04 exports refuse schemas whose meaning draft-04 can't express: `unevaluatedProperties` next to
+ * `additionalProperties` or an in-place applicator, and the keywords in DRAFT_04_REFUSED.
  */
 final class Exporter
 {
@@ -29,6 +32,12 @@ final class Exporter
         'unevaluatedProperties' => ['properties', 'patternProperties', 'additionalProperties', 'unevaluatedProperties', 'allOf', 'anyOf', 'oneOf', 'if', 'then', 'else', 'dependentSchemas'],
         'items' => ['prefixItems', 'items', 'unevaluatedItems', 'contains', 'allOf', 'anyOf', 'oneOf', 'if', 'then', 'else'],
         'unevaluatedItems' => ['prefixItems', 'items', 'unevaluatedItems', 'contains', 'allOf', 'anyOf', 'oneOf', 'if', 'then', 'else'],
+        'contains' => ['minContains', 'maxContains'],
+        'minContains' => ['contains'],
+        'maxContains' => ['contains'],
+        'if' => ['then', 'else'],
+        'then' => ['if'],
+        'else' => ['if'],
     ];
 
     /** Keywords that only annotate: the using schema's value wins. */
@@ -41,10 +50,13 @@ final class Exporter
     ];
 
     /** Draft-04 keywords kept as they are; everything else not converted is dropped. */
-    private const DRAFT_04_KEYWORDS = ['title', 'description', 'default', 'type', 'enum', 'multipleOf', 'maxLength', 'minLength', 'pattern', 'maxItems', 'minItems', 'uniqueItems', 'maxProperties', 'minProperties', 'required'];
+    private const DRAFT_04_KEYWORDS = ['title', 'description', 'default', 'type', 'multipleOf', 'maxLength', 'minLength', 'pattern', 'maxItems', 'minItems', 'uniqueItems', 'maxProperties', 'minProperties', 'required'];
 
     /** Keywords that evaluate properties in place, which draft-04's additionalProperties doesn't see. */
-    private const IN_PLACE = ['allOf', 'anyOf', 'oneOf', 'if', 'then', 'else', 'dependentSchemas', '$ref'];
+    private const IN_PLACE = ['allOf', 'anyOf', 'oneOf', 'if', 'then', 'else', 'dependentSchemas'];
+
+    /** Validation keywords draft-04 has no equivalent for. */
+    private const DRAFT_04_REFUSED = ['contains', 'minContains', 'maxContains', 'if', 'then', 'else', 'propertyNames', 'unevaluatedItems'];
 
     public function __construct(private readonly Registry $registry)
     {
@@ -55,9 +67,7 @@ final class Exporter
      */
     public function inline(string $id): \stdClass
     {
-        $schema = $this->resolve($id, []);
-        $schema = (object) (['$schema' => self::DRAFT_2020_12] + get_object_vars($schema));
-        return $schema;
+        return (object) (['$schema' => self::DRAFT_2020_12] + get_object_vars($this->resolve($id, [])));
     }
 
     /**
@@ -99,11 +109,11 @@ final class Exporter
         }
         $use = new \stdClass();
         foreach (get_object_vars($schema) as $key => $value) {
-            if (in_array($key, ['$ref', '$schema', '$id'], true) || str_starts_with($key, 'portable-') || str_starts_with($key, 'x-portable-')) {
+            if (in_array($key, ['$ref', '$schema', '$id', '$defs'], true) || str_starts_with($key, 'portable-') || str_starts_with($key, 'x-portable-')) {
                 continue;
             }
             $use->{$key} = match ($key) {
-                'properties', 'patternProperties', '$defs', 'dependentSchemas' => $this->map($value, $base, $seen),
+                'properties', 'patternProperties', 'dependentSchemas' => $this->map($value, $base, $seen),
                 'items', 'additionalProperties', 'unevaluatedProperties', 'unevaluatedItems', 'not', 'if', 'then', 'else', 'contains', 'propertyNames' => $this->schema($value, $base, $seen),
                 'allOf', 'anyOf', 'oneOf', 'prefixItems' => array_map(fn ($s) => $this->schema($s, $base, $seen), $value),
                 default => $value,
@@ -143,7 +153,7 @@ final class Exporter
             return false;
         }
         foreach (get_object_vars($use) as $key => $value) {
-            if (!property_exists($target, $key) || $key === 'required' || isset(self::BOUNDS[$key]) || in_array($key, self::ANNOTATIONS, true) || Json::toArray($target->{$key}) === Json::toArray($value)) {
+            if (!property_exists($target, $key) || $key === 'required' || isset(self::BOUNDS[$key]) || in_array($key, self::ANNOTATIONS, true) || Json::equals($target->{$key}, $value)) {
                 continue;
             }
             if ($key !== 'properties') {
@@ -208,14 +218,23 @@ final class Exporter
         if (!$schema instanceof \stdClass) {
             return $schema;
         }
-        if (isset($schema->unevaluatedProperties) && array_intersect(self::IN_PLACE, array_keys(get_object_vars($schema))) !== []) {
-            throw new \RuntimeException('Draft-04 has no unevaluatedProperties: additionalProperties would not see the properties of ' . implode(', ', array_intersect(self::IN_PLACE, array_keys(get_object_vars($schema)))));
+        $keys = array_keys(get_object_vars($schema));
+        if (isset($schema->unevaluatedProperties) && ($inPlace = array_intersect([...self::IN_PLACE, 'additionalProperties'], $keys)) !== []) {
+            throw new \RuntimeException('Draft-04 has no unevaluatedProperties, and additionalProperties can\'t replace it next to ' . implode(', ', $inPlace));
+        }
+        if (($refused = array_intersect(self::DRAFT_04_REFUSED, $keys)) !== []) {
+            throw new \RuntimeException('Draft-04 has no ' . implode(', ', $refused));
+        }
+        if (self::allowed($schema) === []) {
+            // Draft-04 requires a non-empty enum.
+            return (object) ['not' => new \stdClass()];
         }
         $out = new \stdClass();
         foreach (get_object_vars($schema) as $key => $value) {
             switch ($key) {
                 case 'const':
-                    $out->enum = [$value];
+                case 'enum':
+                    $out->enum ??= self::allowed($schema);
                     break;
                 case 'minimum':
                 case 'maximum':
@@ -293,6 +312,22 @@ final class Exporter
         } else {
             $out->{$keyword} = $inclusive;
         }
+    }
+
+    /**
+     * The values `const` and `enum` both allow, or null for any value.
+     *
+     * @return list<mixed>|null
+     */
+    private static function allowed(\stdClass $schema): ?array
+    {
+        if (!property_exists($schema, 'const')) {
+            return $schema->enum ?? null;
+        }
+        if (!property_exists($schema, 'enum')) {
+            return [$schema->const];
+        }
+        return array_values(array_filter($schema->enum, fn ($value) => Json::equals($value, $schema->const)));
     }
 
     private function mapDraft04(\stdClass $schemas): \stdClass

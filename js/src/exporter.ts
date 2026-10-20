@@ -1,4 +1,4 @@
-import { isObject, type JsonObject } from "./json.js";
+import { equals, isObject, type JsonObject } from "./json.js";
 import type { Registry } from "./registry.js";
 
 export const DRAFT_2020_12 = "https://json-schema.org/draft/2020-12/schema";
@@ -19,6 +19,9 @@ type Value = unknown;
  *
  * Lost in the export: the added keywords (`portable-typeBy`, `portable-check`, …), `x-portable-*` annotations and the
  * pinned formats: generic validators treat `format` as an annotation and know neither `decimal` nor `int32`.
+ *
+ * Draft-04 exports refuse schemas whose meaning draft-04 can't express: `unevaluatedProperties` next to
+ * `additionalProperties` or an in-place applicator, and the keywords in DRAFT_04_REFUSED.
  */
 export class Exporter {
   constructor(private readonly registry: Registry) {}
@@ -51,8 +54,8 @@ export class Exporter {
     if (!isObject(schema)) return schema;
     const use: JsonObject = {};
     for (const [key, value] of Object.entries(schema)) {
-      if (["$ref", "$schema", "$id"].includes(key) || key.startsWith("portable-") || key.startsWith("x-portable-")) continue;
-      if (["properties", "patternProperties", "$defs", "dependentSchemas"].includes(key)) {
+      if (["$ref", "$schema", "$id", "$defs"].includes(key) || key.startsWith("portable-") || key.startsWith("x-portable-")) continue;
+      if (["properties", "patternProperties", "dependentSchemas"].includes(key)) {
         use[key] = this.map(value as JsonObject, base, seen);
       } else if (["items", "additionalProperties", "unevaluatedProperties", "unevaluatedItems", "not", "if", "then", "else", "contains", "propertyNames"].includes(key)) {
         use[key] = this.schema(value, base, seen) as JsonObject;
@@ -81,6 +84,12 @@ const DEPENDENT: Record<string, string[]> = {
   unevaluatedProperties: ["properties", "patternProperties", "additionalProperties", "unevaluatedProperties", "allOf", "anyOf", "oneOf", "if", "then", "else", "dependentSchemas"],
   items: ["prefixItems", "items", "unevaluatedItems", "contains", "allOf", "anyOf", "oneOf", "if", "then", "else"],
   unevaluatedItems: ["prefixItems", "items", "unevaluatedItems", "contains", "allOf", "anyOf", "oneOf", "if", "then", "else"],
+  contains: ["minContains", "maxContains"],
+  minContains: ["contains"],
+  maxContains: ["contains"],
+  if: ["then", "else"],
+  then: ["if"],
+  else: ["if"],
 };
 
 /** Keywords that only annotate: the using schema's value wins. */
@@ -101,7 +110,7 @@ const mergeable = (target: Value, use: JsonObject): boolean => {
   if (target === true) return true;
   if (!isObject(target)) return false;
   for (const [key, value] of Object.entries(use)) {
-    if (!(key in target) || key === "required" || key in BOUNDS || ANNOTATIONS.includes(key) || JSON.stringify(target[key]) === JSON.stringify(value)) continue;
+    if (!(key in target) || key === "required" || key in BOUNDS || ANNOTATIONS.includes(key) || equals(target[key], value)) continue;
     if (key !== "properties") return false;
     const properties = target["properties"] as JsonObject;
     for (const [name, schema] of Object.entries(value as JsonObject)) {
@@ -143,24 +152,32 @@ const merge = (target: Value, use: JsonObject): Value => {
 };
 
 /** Draft-04 keywords kept as they are; everything else not converted is dropped. */
-const DRAFT_04_KEYWORDS = ["title", "description", "default", "type", "enum", "multipleOf", "maxLength", "minLength", "pattern", "maxItems", "minItems", "uniqueItems", "maxProperties", "minProperties", "required"];
+const DRAFT_04_KEYWORDS = ["title", "description", "default", "type", "multipleOf", "maxLength", "minLength", "pattern", "maxItems", "minItems", "uniqueItems", "maxProperties", "minProperties", "required"];
 
 /** Keywords that evaluate properties in place, which draft-04's additionalProperties doesn't see. */
-const IN_PLACE = ["allOf", "anyOf", "oneOf", "if", "then", "else", "dependentSchemas", "$ref"];
+const IN_PLACE = ["allOf", "anyOf", "oneOf", "if", "then", "else", "dependentSchemas"];
+
+/** Validation keywords draft-04 has no equivalent for. */
+const DRAFT_04_REFUSED = ["contains", "minContains", "maxContains", "if", "then", "else", "propertyNames", "unevaluatedItems"];
 
 /** @param booleanAllowed whether draft-04 allows a boolean here (additionalProperties, additionalItems) */
 const toDraft04 = (schema: Value, booleanAllowed = false): Value => {
   if (typeof schema === "boolean") return booleanAllowed ? schema : schema ? {} : { not: {} };
   if (!isObject(schema)) return schema;
-  const inPlace = IN_PLACE.filter((k) => k in schema);
+  const inPlace = [...IN_PLACE, "additionalProperties"].filter((k) => k in schema);
   if ("unevaluatedProperties" in schema && inPlace.length > 0) {
-    throw new Error("Draft-04 has no unevaluatedProperties: additionalProperties would not see the properties of " + inPlace.join(", "));
+    throw new Error("Draft-04 has no unevaluatedProperties, and additionalProperties can't replace it next to " + inPlace.join(", "));
   }
+  const refused = DRAFT_04_REFUSED.filter((k) => k in schema);
+  if (refused.length > 0) throw new Error("Draft-04 has no " + refused.join(", "));
+  // Draft-04 requires a non-empty enum.
+  if (allowed(schema)?.length === 0) return { not: {} };
   const out: Record<string, Value> = {};
   for (const [key, value] of Object.entries(schema)) {
     switch (key) {
       case "const":
-        out["enum"] = [value];
+      case "enum":
+        out["enum"] ??= allowed(schema);
         break;
       case "minimum":
       case "maximum":
@@ -223,6 +240,13 @@ const bound = (out: Record<string, Value>, schema: JsonObject, keyword: "minimum
   } else {
     out[keyword] = inclusive;
   }
+};
+
+/** The values `const` and `enum` both allow, or null for any value. */
+const allowed = (schema: JsonObject): Value[] | null => {
+  if (!("const" in schema)) return (schema["enum"] as Value[] | undefined) ?? null;
+  if (!("enum" in schema)) return [schema["const"]];
+  return (schema["enum"] as Value[]).filter((value) => equals(value, schema["const"]));
 };
 
 const mapDraft04 = (schemas: JsonObject): JsonObject =>

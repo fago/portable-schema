@@ -172,5 +172,245 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "const outside enum: nothing is allowed",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d20",
+      "const": "c",
+      "enum": [
+        "a",
+        "b"
+      ]
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "not": {}
+    },
+    "tests": [
+      {
+        "data": "a",
+        "valid": false
+      },
+      {
+        "data": "c",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "enum before const outside it: nothing is allowed",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d21",
+      "enum": [
+        "a",
+        "b"
+      ],
+      "const": "c"
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "not": {}
+    },
+    "tests": [
+      {
+        "data": "c",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "const and enum intersect",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d22",
+      "const": "a",
+      "enum": [
+        "a",
+        "b"
+      ]
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "enum": [
+        "a"
+      ]
+    },
+    "tests": [
+      {
+        "data": "a",
+        "valid": true
+      },
+      {
+        "data": "b",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "const next to a ref with enum",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:ab",
+        "enum": [
+          "a",
+          "b"
+        ]
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d23",
+      "$ref": "test:ab",
+      "const": "a"
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "enum": [
+        "a"
+      ]
+    },
+    "tests": [
+      {
+        "data": "a",
+        "valid": true
+      },
+      {
+        "data": "b",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedProperties next to additionalProperties is refused",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d24",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "unevaluatedProperties": false
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": {
+          "a": "x"
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "a": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "contains is refused",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d25",
+      "type": "array",
+      "contains": {
+        "const": 1
+      }
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": [
+          1
+        ],
+        "valid": true
+      },
+      {
+        "data": [
+          2
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "if/then is refused",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d26",
+      "if": {
+        "const": 1
+      },
+      "then": false
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": 1,
+        "valid": false
+      },
+      {
+        "data": 2,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "propertyNames is refused",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d27",
+      "type": "object",
+      "propertyNames": {
+        "maxLength": 1
+      }
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": {
+          "a": 1
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "ab": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedItems is refused",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d28",
+      "type": "array",
+      "prefixItems": [
+        true
+      ],
+      "unevaluatedItems": false
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": [
+          1
+        ],
+        "valid": true
+      },
+      {
+        "data": [
+          1,
+          2
+        ],
+        "valid": false
+      }
+    ]
   }
 ]
