@@ -11,12 +11,12 @@ The normative definition of Portable Schema. The spec plus the [fixtures](../fix
 
 The `portable-schema.dev` base URI is a placeholder until a domain is chosen.
 
-## Prose (planned)
+## Prose
 
 | Document | Covers |
 |---|---|
-| `profile.md` | Allowed and restricted standard keywords; rules where JSON Schema leaves a choice |
-| `vocabulary.md` | Semantics, errors and degradation of each added keyword |
-| `normalization.md` | JSON data model, object vs list, coercion cast table |
-| `catalogs.md` | Catalogs, registry resolution (live and static), site schema dumps |
-| `errors.md` | Result and error format, message catalog |
+| [`errors.md`](errors.md) | Result format, error codes and params, shaping rules (draft) |
+| `profile.md` (planned) | Allowed and restricted standard keywords; rules where JSON Schema leaves a choice |
+| `vocabulary.md` (planned) | Semantics, errors and degradation of each added keyword |
+| `normalization.md` (planned) | JSON data model, object vs list, coercion cast table |
+| `catalogs.md` (planned) | Catalogs, registry resolution (live and static), site schema dumps |
