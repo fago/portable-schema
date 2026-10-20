@@ -41,7 +41,7 @@ Validation returns data, not text. Messages are produced from this data by a for
 | `enum` | `enum`, `oneOf` of `const`s | `value`, `allowed` (array) |
 | `minLength`, `maxLength` | same | `limit`, `actual` |
 | `pattern` | `pattern` | `pattern` |
-| `format` | `format` | `format` |
+| `format.<name>` | `format`, e.g. `format.email`, `format.uri` | none |
 | `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum` | same | `limit` |
 | `multipleOf` | same | `divisor` |
 | `minItems`, `maxItems` | same | `limit`, `actual` |

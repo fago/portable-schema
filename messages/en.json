@@ -1,9 +1,19 @@
 {
-  "type": { "text": "{label} has the wrong type." },
-  "required": { "text": "{label} is required." },
-  "unknownProperty": { "text": "{label}: “{property}” is not allowed here." },
-  "const": { "text": "{label} must be “{expected}”." },
-  "enum": { "text": "{label}: “{value}” is not an allowed value. Allowed: {allowed}." },
+  "type": {
+    "text": "{label} has the wrong type."
+  },
+  "required": {
+    "text": "{label} is required."
+  },
+  "unknownProperty": {
+    "text": "{label}: “{property}” is not allowed here."
+  },
+  "const": {
+    "text": "{label} must be “{expected}”."
+  },
+  "enum": {
+    "text": "{label}: “{value}” is not an allowed value. Allowed: {allowed}."
+  },
   "minLength": {
     "plural": "limit",
     "one": "{label} must be at least {limit} character long.",
@@ -14,13 +24,75 @@
     "one": "{label} must be at most {limit} character long.",
     "other": "{label} must be at most {limit} characters long."
   },
-  "pattern": { "text": "{label} has an invalid format." },
-  "format": { "text": "{label} is not a valid {format}." },
-  "minimum": { "text": "{label} must be at least {limit}." },
-  "maximum": { "text": "{label} must be at most {limit}." },
-  "exclusiveMinimum": { "text": "{label} must be greater than {limit}." },
-  "exclusiveMaximum": { "text": "{label} must be less than {limit}." },
-  "multipleOf": { "text": "{label} must be a multiple of {divisor}." },
+  "pattern": {
+    "text": "{label} has an invalid format."
+  },
+  "format.date": {
+    "text": "{label} must be a valid date."
+  },
+  "format.time": {
+    "text": "{label} must be a valid time."
+  },
+  "format.date-time": {
+    "text": "{label} must be a valid date and time."
+  },
+  "format.duration": {
+    "text": "{label} must be a valid duration."
+  },
+  "format.email": {
+    "text": "{label} must be a valid email address."
+  },
+  "format.hostname": {
+    "text": "{label} must be a valid host name."
+  },
+  "format.ipv4": {
+    "text": "{label} must be a valid IPv4 address."
+  },
+  "format.ipv6": {
+    "text": "{label} must be a valid IPv6 address."
+  },
+  "format.uri": {
+    "text": "{label} must be a valid URL."
+  },
+  "format.uri-reference": {
+    "text": "{label} must be a valid URL or path."
+  },
+  "format.uri-template": {
+    "text": "{label} must be a valid URI template."
+  },
+  "format.uuid": {
+    "text": "{label} must be a valid UUID."
+  },
+  "format.json-pointer": {
+    "text": "{label} must be a valid JSON Pointer."
+  },
+  "format.relative-json-pointer": {
+    "text": "{label} must be a valid relative JSON Pointer."
+  },
+  "format.regex": {
+    "text": "{label} must be a valid regular expression."
+  },
+  "format.decimal": {
+    "text": "{label} must be a decimal number."
+  },
+  "format.int32": {
+    "text": "{label} must be a whole number between −2147483648 and 2147483647."
+  },
+  "minimum": {
+    "text": "{label} must be at least {limit}."
+  },
+  "maximum": {
+    "text": "{label} must be at most {limit}."
+  },
+  "exclusiveMinimum": {
+    "text": "{label} must be greater than {limit}."
+  },
+  "exclusiveMaximum": {
+    "text": "{label} must be less than {limit}."
+  },
+  "multipleOf": {
+    "text": "{label} must be a multiple of {divisor}."
+  },
   "minItems": {
     "plural": "limit",
     "one": "{label} must have at least {limit} item.",
@@ -31,7 +103,9 @@
     "one": "{label} must have at most {limit} item.",
     "other": "{label} must have at most {limit} items."
   },
-  "uniqueItems": { "text": "{label} must not contain duplicates." },
+  "uniqueItems": {
+    "text": "{label} must not contain duplicates."
+  },
   "minProperties": {
     "plural": "limit",
     "one": "{label} must have at least {limit} entry.",
@@ -42,17 +116,43 @@
     "one": "{label} must have at most {limit} entry.",
     "other": "{label} must have at most {limit} entries."
   },
-  "propertyNames": { "text": "{label}: “{property}” is not a valid key." },
-  "dependentRequired": { "text": "{label} is required when {dependencyLabel} is set." },
-  "not": { "text": "{label} has a value that is not allowed." },
-  "oneOf": { "text": "{label} must match exactly one of the allowed variants." },
-  "anyOf": { "text": "{label} must match at least one of the allowed variants." },
-  "typeBy.unresolved": { "text": "{label}: there is no definition for “{value}”." },
-  "compare.lt": { "text": "{label} must be less than {otherLabel}." },
-  "compare.le": { "text": "{label} must not be greater than {otherLabel}." },
-  "compare.eq": { "text": "{label} must be equal to {otherLabel}." },
-  "compare.ne": { "text": "{label} must differ from {otherLabel}." },
-  "compare.ge": { "text": "{label} must not be less than {otherLabel}." },
-  "compare.gt": { "text": "{label} must be greater than {otherLabel}." },
-  "unchecked": { "text": "{label} could not be checked." }
+  "propertyNames": {
+    "text": "{label}: “{property}” is not a valid key."
+  },
+  "dependentRequired": {
+    "text": "{label} is required when {dependencyLabel} is set."
+  },
+  "not": {
+    "text": "{label} has a value that is not allowed."
+  },
+  "oneOf": {
+    "text": "{label} must match exactly one of the allowed variants."
+  },
+  "anyOf": {
+    "text": "{label} must match at least one of the allowed variants."
+  },
+  "typeBy.unresolved": {
+    "text": "{label}: there is no definition for “{value}”."
+  },
+  "compare.lt": {
+    "text": "{label} must be less than {otherLabel}."
+  },
+  "compare.le": {
+    "text": "{label} must not be greater than {otherLabel}."
+  },
+  "compare.eq": {
+    "text": "{label} must be equal to {otherLabel}."
+  },
+  "compare.ne": {
+    "text": "{label} must differ from {otherLabel}."
+  },
+  "compare.ge": {
+    "text": "{label} must not be less than {otherLabel}."
+  },
+  "compare.gt": {
+    "text": "{label} must be greater than {otherLabel}."
+  },
+  "unchecked": {
+    "text": "{label} could not be checked."
+  }
 }
