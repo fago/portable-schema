@@ -10,23 +10,42 @@
       "$comment": "Core uses /^(?!\\.)[a-z0-9_.]+$/. Lookahead is outside the portable regex subset, so the converter rewrites it.",
       "pattern": "^[a-z0-9_][a-z0-9_.]*$"
     },
-    "theme": { "title": "Theme", "$ref": "drupal:catalog/themes" },
+    "theme": {
+      "title": "Theme",
+      "$ref": "drupal:catalog/themes"
+    },
     "region": {
       "title": "Region",
       "type": "string",
       "portable-typeBy": {
         "href": "drupal:catalog/regions/{theme}",
-        "source": { "theme": "1/theme" }
+        "source": {
+          "theme": "1/theme"
+        }
       }
     },
-    "weight": { "title": "Weight", "type": "integer" },
-    "provider": { "title": "Provider", "type": ["string", "null"] },
-    "plugin": { "title": "Plugin", "$ref": "drupal:catalog/plugins/block" },
+    "weight": {
+      "title": "Weight",
+      "$ref": "portable:weight"
+    },
+    "provider": {
+      "title": "Provider",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "plugin": {
+      "title": "Plugin",
+      "$ref": "drupal:catalog/plugins/block"
+    },
     "settings": {
       "$ref": "drupal:block_settings",
       "portable-typeBy": {
         "href": "drupal:block.settings.{plugin}",
-        "source": { "plugin": "1/plugin" },
+        "source": {
+          "plugin": "1/plugin"
+        },
         "fallback": "drupal:block.settings.*"
       }
     },
@@ -37,12 +56,22 @@
         "$ref": "drupal:condition.plugin",
         "portable-typeBy": {
           "href": "drupal:condition.plugin.{id}",
-          "source": { "id": "0/id" },
+          "source": {
+            "id": "0/id"
+          },
           "fallback": "drupal:condition.plugin.*"
         }
       }
     }
   },
-  "required": ["id", "theme", "region", "weight", "plugin", "settings", "visibility"],
+  "required": [
+    "id",
+    "theme",
+    "region",
+    "weight",
+    "plugin",
+    "settings",
+    "visibility"
+  ],
   "unevaluatedProperties": false
 }

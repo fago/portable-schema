@@ -5,19 +5,51 @@
   "description": "Open base type for all config entities.",
   "type": "object",
   "properties": {
-    "uuid": { "type": "string", "format": "uuid" },
-    "langcode": { "type": "string", "title": "Language code" },
-    "status": { "type": "boolean", "title": "Status" },
+    "uuid": {
+      "$ref": "portable:uuid"
+    },
+    "langcode": {
+      "title": "Language code",
+      "$ref": "portable:langcode"
+    },
+    "status": {
+      "title": "Status",
+      "$ref": "portable:boolean"
+    },
     "dependencies": {
       "type": "object",
       "properties": {
-        "config": { "type": "array", "items": { "type": "string" } },
-        "content": { "type": "array", "items": { "type": "string" } },
-        "module": { "type": "array", "items": { "$ref": "drupal:catalog/modules" } },
-        "theme": { "type": "array", "items": { "$ref": "drupal:catalog/themes" } }
+        "config": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "module": {
+          "type": "array",
+          "items": {
+            "$ref": "drupal:catalog/modules"
+          }
+        },
+        "theme": {
+          "type": "array",
+          "items": {
+            "$ref": "drupal:catalog/themes"
+          }
+        }
       },
       "additionalProperties": false
     }
   },
-  "required": ["langcode", "status", "dependencies"]
+  "required": [
+    "langcode",
+    "status",
+    "dependencies"
+  ]
 }

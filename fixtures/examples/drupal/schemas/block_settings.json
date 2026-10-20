@@ -5,13 +5,25 @@
   "description": "Open base type: the keys every block plugin's settings have.",
   "type": "object",
   "properties": {
-    "id": { "type": "string", "title": "ID" },
-    "label": { "type": "string", "title": "Description", "x-portable-translatable": true },
+    "id": {
+      "type": "string",
+      "title": "ID"
+    },
+    "label": {
+      "$ref": "portable:label",
+      "title": "Description"
+    },
     "label_display": {
       "title": "Display title",
       "oneOf": [
-        { "const": "0", "title": "Hidden" },
-        { "const": "visible", "title": "Visible" }
+        {
+          "const": "0",
+          "title": "Hidden"
+        },
+        {
+          "const": "visible",
+          "title": "Visible"
+        }
       ]
     },
     "provider": {
@@ -21,8 +33,15 @@
     "context_mapping": {
       "type": "object",
       "title": "Context assignments",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     }
   },
-  "required": ["id", "label", "label_display", "provider"]
+  "required": [
+    "id",
+    "label",
+    "label_display",
+    "provider"
+  ]
 }

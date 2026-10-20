@@ -11,7 +11,7 @@ What a Drupal integration would generate for `block.block.*` config entities, co
 | [`schemas/block.settings.system_branding_block.json`](schemas/block.settings.system_branding_block.json) | `block.settings.system_branding_block` in `system.schema.yml` |
 | [`schemas/condition.plugin.json`](schemas/condition.plugin.json), [`schemas/condition.plugin.fallback.json`](schemas/condition.plugin.fallback.json) | `condition.plugin` and `condition.plugin.*` |
 | [`catalogs/`](catalogs) | Site facts from one code base and module set: block plugins (`PluginExists`), modules, themes, Olivero's regions |
-| [`block.block.cases.json`](block.block.cases.json) | Example config, valid and invalid, in the conformance format. All files in `schemas/` and `catalogs/` form the registry |
+| [`block.block.cases.json`](block.block.cases.json) | Example config, valid and invalid, in the conformance format. All files in `schemas/`, `catalogs/` and the repo's `types/v1/` form the registry |
 
 ## What it shows
 
@@ -24,6 +24,26 @@ What a Drupal integration would generate for `block.block.*` config entities, co
 - **`region`** depends on `theme`: `portable-typeBy` selects the theme's region catalog. Core uses a PHP callback for this.
 - **Core's id pattern** uses a lookahead (`(?!\.)`), which is outside the portable regex subset. The converter rewrites it to an equivalent pattern.
 - **Base types stay open; concrete types close the object.**
+
+## Mapping Drupal types to portable types
+
+| Drupal | Portable Schema |
+|---|---|
+| Typed Data `string`, `integer`, `float`, `boolean`, `binary`, `decimal`, `email`, `uri`, `duration_iso8601`, `timestamp`, `timespan` | `portable:string`, `integer`, `number`, `boolean`, `binary`, `decimal`, `email`, `uri`, `duration`, `timestamp`, `timespan` |
+| Typed Data `datetime_iso8601` | `portable:date-time`, or `portable:date` for date-only fields. Drupal stores datetimes as UTC without an offset (`Y-m-d\TH:i:s`); the integration adds `Z` on export and removes it on import |
+| Typed Data `enum` | `enum` / `oneOf` + `const` |
+| Typed Data `any`, `map`, `list` | `{}`, `object`, `array` |
+| Typed Data `language_reference`, config `langcode` | `portable:langcode` + `$ref` to the site's language catalog (core uses a `Choice` callback) |
+| Config `label`, `required_label` | `portable:label` (+ `minLength: 1`) |
+| Config `text` | `portable:text` |
+| Config `machine_name` | `portable:identifier` + `maxLength: 166` (core's config entity ID limit) |
+| Config `color_hex` | `portable:color` |
+| Config `weight` | `portable:weight` |
+| Config `uuid` | `portable:uuid` |
+| Config `mapping`, `sequence` | `object`; `array` or keyed `object` |
+| Typed Data `entity`, `entity_reference`, `field_item:*`, `filter_format`, `layout_section`, `resolvable_uri`; config `path`, `date_format`, `plural_label`, `bytes`, `config_dependencies`, `config_object`, `config_entity`, `ignore`, `undefined` | Drupal integration types, generated |
+
+Core's `#[JsonSchema]` attribute on `DecimalData` emits `format: number`, which is not in the format registry; the integration maps it to `portable:decimal`.
 
 ## In a generic JSON Schema validator
 
