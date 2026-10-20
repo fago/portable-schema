@@ -6,14 +6,11 @@ on:
 
 jobs:
   php:
-    runs-on: ubuntu-latest
+    # Ships PHP 8.3 and Composer; third-party setup actions are not allowed in this organization.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, intl
-          coverage: none
+      - run: php -r 'exit(PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION === "8.3" ? 0 : 1);'
       - run: composer install --no-interaction --no-progress
       - run: composer test
 
