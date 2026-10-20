@@ -80,6 +80,18 @@
     ]
   },
   {
+    "description": "invalid: \"::1\\n\"",
+    "data": "::1\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.ipv6",
+        "params": {}
+      }
+    ]
+  },
+  {
     "description": "other types are not checked",
     "data": 1,
     "valid": true

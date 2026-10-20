@@ -68,6 +68,18 @@
     ]
   },
   {
+    "description": "invalid: \"https://example.com/\\n\"",
+    "data": "https://example.com/\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri",
+        "params": {}
+      }
+    ]
+  },
+  {
     "description": "other types are not checked",
     "data": 1,
     "valid": true

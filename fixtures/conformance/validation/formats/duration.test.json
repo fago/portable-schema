@@ -97,6 +97,18 @@
     ]
   },
   {
+    "description": "invalid: \"P1D\\n\"",
+    "data": "P1D\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.duration",
+        "params": {}
+      }
+    ]
+  },
+  {
     "description": "other types are not checked",
     "data": 1,
     "valid": true

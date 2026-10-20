@@ -49,5 +49,17 @@
         "params": {}
       }
     ]
+  },
+  {
+    "description": "invalid: \"2020-01-01T10:00:00Z\\n\"",
+    "data": "2020-01-01T10:00:00Z\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.date-time",
+        "params": {}
+      }
+    ]
   }
 ]

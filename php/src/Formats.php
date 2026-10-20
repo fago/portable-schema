@@ -53,7 +53,7 @@ final class Formats
         return match ($format) {
             'date' => self::date($value),
             'time' => self::time($value),
-            'date-time' => (bool) preg_match('/^([^Tt]+)[Tt](.+)$/', $value, $m) && self::date($m[1]) && self::time($m[2]),
+            'date-time' => (bool) preg_match('/^([^Tt]+)[Tt](.+)$/D', $value, $m) && self::date($m[1]) && self::time($m[2]),
             'hostname' => self::hostname($value),
             'ipv6' => self::ipv6($value),
             'uri' => self::match('^' . self::URI . '$', $value),
@@ -66,12 +66,12 @@ final class Formats
 
     private static function match(string $pattern, string $value): bool
     {
-        return (bool) preg_match('~' . str_replace('~', '\~', $pattern) . '~u', $value);
+        return (bool) preg_match('~' . str_replace('~', '\~', $pattern) . '~uD', $value);
     }
 
     private static function date(string $value): bool
     {
-        if (!preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/', $value, $m)) {
+        if (!preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/D', $value, $m)) {
             return false;
         }
         [$y, $mo, $d] = [(int) $m[1], (int) $m[2], (int) $m[3]];
@@ -85,7 +85,7 @@ final class Formats
 
     private static function time(string $value): bool
     {
-        if (!preg_match('/^([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]+)?([Zz]|[+\-]([0-9]{2}):([0-9]{2}))$/', $value, $m)) {
+        if (!preg_match('/^([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]+)?([Zz]|[+\-]([0-9]{2}):([0-9]{2}))$/D', $value, $m)) {
             return false;
         }
         if ((int) $m[1] > 23 || (int) $m[2] > 59 || (int) $m[3] > 59) {
@@ -100,7 +100,7 @@ final class Formats
             return false;
         }
         foreach (explode('.', $value) as $label) {
-            if (!preg_match('/^[A-Za-z0-9\-]{1,63}$/', $label)) {
+            if (!preg_match('/^[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?$/D', $label)) {
                 return false;
             }
         }
@@ -110,7 +110,7 @@ final class Formats
     private static function ipv6(string $value): bool
     {
         $groups = 8;
-        if (preg_match('/^(.*:)((?:[0-9]{1,3}\.){3}[0-9]{1,3})$/', $value, $m)) {
+        if (preg_match('/^(.*:)((?:[0-9]{1,3}\.){3}[0-9]{1,3})$/D', $value, $m)) {
             if (!self::match(self::PATTERNS['ipv4'], $m[2])) {
                 return false;
             }
@@ -120,7 +120,7 @@ final class Formats
         if (count($parts) > 2) {
             return false;
         }
-        $hex = '/^[0-9A-Fa-f]{1,4}$/';
+        $hex = '/^[0-9A-Fa-f]{1,4}$/D';
         $count = 0;
         foreach ($parts as $part) {
             if ($part === '') {

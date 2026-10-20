@@ -79,7 +79,7 @@ const time = (value: string): boolean => {
 
 const hostname = (value: string): boolean => {
   if (value === "" || new TextEncoder().encode(value).length > 253) return false;
-  return value.split(".").every((label) => /^[A-Za-z0-9-]{1,63}$/u.test(label));
+  return value.split(".").every((label) => /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/u.test(label));
 };
 
 const ipv6 = (value: string): boolean => {

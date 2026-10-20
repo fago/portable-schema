@@ -75,6 +75,42 @@
     ]
   },
   {
+    "description": "invalid: \"example.com\\n\"",
+    "data": "example.com\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"-a.com\"",
+    "data": "-a.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"a-.com\"",
+    "data": "a-.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
     "description": "other types are not checked",
     "data": 1,
     "valid": true

@@ -63,6 +63,18 @@
     ]
   },
   {
+    "description": "invalid: \"1.2.3.4\\n\"",
+    "data": "1.2.3.4\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.ipv4",
+        "params": {}
+      }
+    ]
+  },
+  {
     "description": "other types are not checked",
     "data": 1,
     "valid": true

@@ -63,6 +63,18 @@
     ]
   },
   {
+    "description": "invalid: \"a{b}\\n\"",
+    "data": "a{b}\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri-template",
+        "params": {}
+      }
+    ]
+  },
+  {
     "description": "other types are not checked",
     "data": 1,
     "valid": true

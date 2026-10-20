@@ -63,6 +63,18 @@
     ]
   },
   {
+    "description": "invalid: \"10:00:00Z\\n\"",
+    "data": "10:00:00Z\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.time",
+        "params": {}
+      }
+    ]
+  },
+  {
     "description": "other types are not checked",
     "data": 1,
     "valid": true

@@ -58,6 +58,18 @@
     ]
   },
   {
+    "description": "invalid: \"2020-01-01\\n\"",
+    "data": "2020-01-01\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.date",
+        "params": {}
+      }
+    ]
+  },
+  {
     "description": "other types are not checked",
     "data": 1,
     "valid": true

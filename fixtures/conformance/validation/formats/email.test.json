@@ -32,5 +32,17 @@
         "params": {}
       }
     ]
+  },
+  {
+    "description": "invalid: \"a@example.com\\n\"",
+    "data": "a@example.com\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
   }
 ]

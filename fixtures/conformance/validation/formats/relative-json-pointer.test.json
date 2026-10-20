@@ -80,6 +80,18 @@
     ]
   },
   {
+    "description": "invalid: \"0\\n\"",
+    "data": "0\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.relative-json-pointer",
+        "params": {}
+      }
+    ]
+  },
+  {
     "description": "other types are not checked",
     "data": 1,
     "valid": true

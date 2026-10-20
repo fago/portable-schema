@@ -73,5 +73,17 @@
         "params": {}
       }
     ]
+  },
+  {
+    "description": "invalid: \"1.5\\n\"",
+    "data": "1.5\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.decimal",
+        "params": {}
+      }
+    ]
   }
 ]
