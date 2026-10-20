@@ -1,0 +1,8 @@
+{
+  "name": "portable-schema-monorepo",
+  "private": true,
+  "license": "MIT",
+  "workspaces": [
+    "js"
+  ]
+}

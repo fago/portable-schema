@@ -1,0 +1,25 @@
+{
+    "name": "fago/portable-schema",
+    "description": "Portable Schema: a typed JSON Schema dialect with the same validation in PHP and JS.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wolfgang Ziegler",
+            "homepage": "https://github.com/fago"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "PortableSchema\\": "php/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PortableSchema\\Tests\\": "php/tests/"
+        }
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "portable-schema",
+  "version": "0.0.0",
+  "description": "Portable Schema: a typed JSON Schema dialect with the same validation in PHP and JS.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fago/portable-schema.git",
+    "directory": "js"
+  }
+}
