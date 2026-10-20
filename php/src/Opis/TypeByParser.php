@@ -30,8 +30,7 @@ final class TypeByParser extends KeywordParser
             return null;
         }
         $value = $this->keywordValue($schema);
-        UriTemplate::assertTypeBy($value->href);
-        UriTemplate::assertTypeBy($value->fallback ?? '');
+        UriTemplate::assertTypeBy($value->href, $value->fallback ?? null);
         return new TypeByKeyword(
             $value->href,
             get_object_vars($value->source),

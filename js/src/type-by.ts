@@ -41,7 +41,7 @@ export class TypeBy {
     }
     if (missing.length > 0) return new TypeBy(values, missing, null, null);
     const resolved = resolve(UriTemplate.expand(href, strings), base);
-    if (exists(resolved)) return new TypeBy(values, [], resolved, resolved);
+    if (!resolved.includes("#") && exists(resolved)) return new TypeBy(values, [], resolved, resolved);
     const resolvedFallback = fallback === null ? null : resolve(fallback, base);
     return new TypeBy(values, [], resolved, resolvedFallback !== null && exists(resolvedFallback) ? resolvedFallback : null);
   }

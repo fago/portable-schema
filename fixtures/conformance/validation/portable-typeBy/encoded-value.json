@@ -1,0 +1,25 @@
+{
+  "description": "{var} percent-encodes reserved characters in the selected id",
+  "registry": {
+    "test:s.a%2Bb": {
+      "const": "plus"
+    }
+  },
+  "schema": {
+    "type": "object",
+    "properties": {
+      "p": {
+        "type": "string"
+      },
+      "v": {
+        "portable-typeBy": {
+          "href": "test:s.{p}",
+          "source": {
+            "p": "1/p"
+          }
+        }
+      }
+    },
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

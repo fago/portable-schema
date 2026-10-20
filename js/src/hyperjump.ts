@@ -49,8 +49,7 @@ const setUp = (): void => {
     id: KEYWORD + "typeBy",
     compile: async (schema, ast, parentSchema) => {
       const value = Browser.value<{ href: string; source: Record<string, string>; fallback?: string }>(schema);
-      UriTemplate.assertTypeBy(value.href);
-      UriTemplate.assertTypeBy(value.fallback ?? "");
+      UriTemplate.assertTypeBy(value.href, value.fallback ?? null);
       const base = canonicalUri(parentSchema).split("#")[0]!;
       const fallback = value.fallback === undefined ? null : resolve(value.fallback, base);
       const pattern = templatePattern(resolve(value.href, base));
@@ -103,7 +102,8 @@ const setUp = (): void => {
 const templatePattern = (template: string): RegExp =>
   new RegExp("^" + template.split(/\{[^}]*\}/u).map((part) => part.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")).join(".*") + "$", "u");
 
-export type Compiled = { ast: Parameters<typeof Validation.interpret>[2]["ast"]; urls: Map<string, string> };
+/** `urls`: Hyperjump URL by registry id; `ids`: registry id by Hyperjump URL without fragment. */
+export type Compiled = { ast: Parameters<typeof Validation.interpret>[2]["ast"]; urls: Map<string, string>; ids: Map<string, string> };
 
 /** Hyperjump's schema store is global: compiles run one at a time. */
 let queue: Promise<unknown> = Promise.resolve();
@@ -123,32 +123,41 @@ const compileNow = async (registry: Registry): Promise<Compiled> => {
   }
   const ast = { metaData: {}, plugins: new Set<EvaluationPlugin>() } as unknown as Compiled["ast"];
   const urls = new Map<string, string>();
+  const ids = new Map<string, string>();
   compiling = registry;
   try {
     for (const id of registry.ids()) {
       const schema = await getSchema(id);
-      urls.set(id, await Validation.compile(schema, ast, schema));
+      const url = await Validation.compile(schema, ast, schema);
+      urls.set(id, url);
+      ids.set(url.split("#")[0]!, id);
     }
   } finally {
     compiling = null;
   }
-  return { ast, urls };
+  return { ast, urls, ids };
 };
 
-/** A Hyperjump URI with the fragment encoding of the PHP validator: Hyperjump leaves `#` unencoded. */
-const normalize = (url: string): string => {
+/**
+ * A Hyperjump URL as the PHP validator writes it:
+ * - the registry id, since Hyperjump normalizes percent-encoding (`%2B` → `+`)
+ * - the fragment encoded, since Hyperjump leaves `#` unencoded
+ */
+const normalize = (url: string, ids: Map<string, string>): string => {
   const hash = url.indexOf("#");
-  return hash === -1 ? url : url.slice(0, hash + 1) + Pointer.toFragment(decodeURIComponent(url.slice(hash + 1)));
+  const base = hash === -1 ? url : url.slice(0, hash);
+  const id = ids.get(base) ?? base;
+  return hash === -1 ? id : id + "#" + Pointer.toFragment(decodeURIComponent(url.slice(hash + 1)));
 };
 
 /** Evaluates a compiled schema, recording the evaluation with the tracer. */
 export const evaluate = (compiled: Compiled, url: string, data: unknown, tracer: Tracer, checks: Checks): void => {
   const plugin: EvaluationPlugin = {
     beforeSchema: (schemaUrl, instance, context) => {
-      tracer.enterSchema(normalize(schemaUrl), instance.pointer, typeof context.ast[schemaUrl] === "boolean");
+      tracer.enterSchema(normalize(schemaUrl, compiled.ids), instance.pointer, typeof context.ast[schemaUrl] === "boolean");
     },
     beforeKeyword: (node, instance) => {
-      const url = normalize(node[1]);
+      const url = normalize(node[1], compiled.ids);
       const segments = Pointer.segments(decodeURIComponent(url.split("#")[1] ?? ""));
       tracer.enterKeyword(segments[segments.length - 1] ?? "", url, instance.pointer);
     },

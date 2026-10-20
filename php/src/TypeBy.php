@@ -44,7 +44,7 @@ final class TypeBy
             return new self($values, $missing, null, null);
         }
         $resolved = self::resolve(UriTemplate::expand($href, $strings), $base);
-        if ($exists($resolved)) {
+        if (!str_contains($resolved, '#') && $exists($resolved)) {
             return new self($values, [], $resolved, $resolved);
         }
         $fallback = $fallback === null ? null : self::resolve($fallback, $base);

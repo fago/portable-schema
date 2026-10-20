@@ -32,13 +32,16 @@ final class UriTemplate
     }
 
     /**
-     * Refuses a portable-typeBy template the prototype can't select by: expressions beyond {var} and {+var}, and
-     * fragments, since targets are registry ids.
+     * Refuses a portable-typeBy href or fallback the prototype can't select by: href expressions beyond {var} and
+     * {+var}, braces outside them, any expression in the fallback, and fragments, since targets are registry ids.
      */
-    public static function assertTypeBy(string $template): void
+    public static function assertTypeBy(string $href, ?string $fallback): void
     {
-        if (str_contains($template, '#') || preg_match_all('/\{[^}]*\}/', $template) !== preg_match_all('/\{\+?' . self::NAMES . '\}/', $template)) {
-            throw new \InvalidArgumentException("portable-typeBy href $template: only {var} and {+var} without a fragment are supported");
+        if (!preg_match('/^(?:[^{}#]|\{\+?' . self::NAMES . '\})*$/D', $href)) {
+            throw new \InvalidArgumentException("portable-typeBy href $href: only {var} and {+var} without a fragment are supported");
+        }
+        if ($fallback !== null && !preg_match('/^[^{}#]*$/D', $fallback)) {
+            throw new \InvalidArgumentException("portable-typeBy fallback $fallback: only an id without a fragment is supported");
         }
     }
 
