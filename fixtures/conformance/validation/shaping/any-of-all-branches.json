@@ -1,0 +1,24 @@
+{
+  "description": "anyOf evaluates every branch: all matching branches evaluate properties",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "anyOf": [
+      {
+        "properties": {
+          "a": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "properties": {
+          "b": {
+            "type": "string"
+          }
+        }
+      }
+    ],
+    "unevaluatedProperties": false
+  }
+}
