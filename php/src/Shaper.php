@@ -192,7 +192,7 @@ final class Shaper
      */
     private function evaluated(SchemaNode $node, ?KeywordNode $skip = null, array &$locations = []): array
     {
-        if (!$node->boolean) {
+        if (!$node->boolean || $node->valid) {
             $locations[$node->instanceLocation] = true;
         }
         foreach ($node->keywords as $keyword) {

@@ -355,7 +355,7 @@ const withoutReportedProperties = (errors: ValidationError[]): ValidationError[]
  * unevaluated* keywords, since the base libraries differ in what a failed subschema evaluated.
  */
 const evaluated = (node: SchemaNode, skip: KeywordNode | null = null, locations = new Set<string>()): Set<string> => {
-  if (!node.boolean) locations.add(node.instanceLocation);
+  if (!node.boolean || node.valid) locations.add(node.instanceLocation);
   for (const keyword of node.keywords) {
     if (keyword === skip) continue;
     for (const child of keyword.children) {
