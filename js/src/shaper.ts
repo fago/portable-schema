@@ -53,7 +53,7 @@ export class Shaper {
   shape(root: SchemaNode): Result {
     const shaped = this.schema(root, "");
 
-    let errors = withoutKnownProperties(shaped.errors).filter((e) => this.reported(e.instanceLocation));
+    let errors = withoutKnownProperties(shaped.errors, evaluated(root)).filter((e) => this.reported(e.instanceLocation));
     errors.sort((a, b) => Pointer.compare(a.instanceLocation, b.instanceLocation) || Pointer.compare(a.keywordLocation, b.keywordLocation));
     errors = unique(errors, (e) => [e.instanceLocation, e.code, e.params]);
 
@@ -84,14 +84,26 @@ export class Shaper {
     }
     shaped.annotations = this.annotations(node);
 
-    const typeFailed = node.keywords.some((k) => k.keyword === "type" && !k.valid);
-    for (const keyword of node.keywords) {
+    const keywords = this.inDocumentOrder(node);
+    const typeFailed = keywords.some((k) => k.keyword === "type" && !k.valid);
+    for (const keyword of keywords) {
       if (typeFailed && keyword.keyword !== "type") continue;
       shaped.add(this.keyword(keyword, node, location));
     }
     shaped.errors = shaped.errors.filter((e) => !this.missing(e.instanceLocation));
     shaped.unchecked = shaped.unchecked.filter((u) => !this.missing(u.instanceLocation));
     return shaped;
+  }
+
+  /** The keywords of a schema in the order of the schema document, since the base libraries evaluate in different orders. */
+  private inDocumentOrder(node: SchemaNode): KeywordNode[] {
+    const [, schema] = this.registry.resolve(node.uri);
+    const keys = isObject(schema) ? Object.keys(schema) : [];
+    const position = (k: KeywordNode): number => {
+      const i = keys.indexOf(k.keyword);
+      return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+    };
+    return [...node.keywords].sort((a, b) => position(a) - position(b));
   }
 
   private keyword(node: KeywordNode, parent: SchemaNode, parentLocation: string): Shaped {
@@ -132,18 +144,17 @@ export class Shaper {
     }
 
     const shaped = new Shaped();
-    for (const child of node.children) {
+    const names = isObject(instance) ? Object.keys(instance) : [];
+    node.children.forEach((child, i) => {
       if (child.boolean && !child.valid && PROPERTIES.includes(node.keyword)) {
         const segments = Pointer.segments(child.instanceLocation);
         shaped.errors.push(error("unknownProperty", { property: segments[segments.length - 1] }));
-        continue;
+      } else if (node.keyword === "propertyNames" && !child.valid) {
+        shaped.errors.push(error("propertyNames", { property: names[i] ?? null }));
+      } else {
+        shaped.add(this.schema(child, this.childLocation(node, child, parent, parentLocation, location)));
       }
-      if (node.keyword === "propertyNames" && !child.valid) {
-        shaped.errors.push(error("propertyNames", { property: this.propertyName(child, node) }));
-        continue;
-      }
-      shaped.add(this.schema(child, this.childLocation(node, child, parent, parentLocation, location)));
-    }
+    });
     return shaped;
   }
 
@@ -297,14 +308,6 @@ export class Shaper {
     return location;
   }
 
-  private propertyName(child: SchemaNode, node: KeywordNode): unknown {
-    if (child.instanceLocation !== node.instanceLocation) {
-      const segments = Pointer.segments(child.instanceLocation);
-      return segments[segments.length - 1];
-    }
-    return null;
-  }
-
   /** With partial and emptyAsMissing, an empty value counts as missing. */
   private missing(location: string): boolean {
     if (!this.partial || !this.emptyAsMissing || location === "") return false;
@@ -318,15 +321,20 @@ export class Shaper {
 }
 
 /**
- * Drops `unknownProperty` errors for properties that have errors of their own: their schema exists, so the
- * value is the problem.
+ * Drops `unknownProperty` errors for properties a subschema evaluated, also one that failed: the base libraries
+ * differ in whether a failed subschema's properties count as evaluated.
  */
-const withoutKnownProperties = (errors: ValidationError[]): ValidationError[] =>
-  errors.filter((error) => {
-    if (error.code !== "unknownProperty") return true;
-    const property = Pointer.append(error.instanceLocation, String(error.params["property"]));
-    return !errors.some((other) => other.code !== "unknownProperty" && Pointer.isWithin(other.instanceLocation, property));
-  });
+const withoutKnownProperties = (errors: ValidationError[], evaluated: Set<string>): ValidationError[] =>
+  errors.filter((e) => e.code !== "unknownProperty" || !evaluated.has(Pointer.append(e.instanceLocation, String(e.params["property"]))));
+
+/** Instance locations evaluated by a schema other than `false`. */
+const evaluated = (node: SchemaNode, locations = new Set<string>()): Set<string> => {
+  if (!node.boolean) locations.add(node.instanceLocation);
+  for (const keyword of node.keywords) {
+    for (const child of keyword.children) evaluated(child, locations);
+  }
+  return locations;
+};
 
 /** The branch whose const discriminator matches, else the one with the fewest errors; ties go to the first. */
 const bestBranch = (branches: unknown[], instance: JsonObject, results: Shaped[]): number => {

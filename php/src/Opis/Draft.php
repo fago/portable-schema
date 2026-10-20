@@ -7,6 +7,7 @@ namespace PortableSchema\Opis;
 use Opis\JsonSchema\Parsers\Drafts\Draft202012;
 use Opis\JsonSchema\Parsers\KeywordParser;
 use Opis\JsonSchema\Parsers\Keywords\FormatKeywordParser;
+use Opis\JsonSchema\Parsers\Keywords\PropertyNamesKeywordParser;
 use PortableSchema\Check\Checks;
 use PortableSchema\Trace\Tracer;
 
@@ -29,7 +30,11 @@ final class Draft extends Draft202012
     {
         $parsers = [];
         foreach (parent::getKeywordParsers() as $parser) {
-            $parsers[] = $parser instanceof FormatKeywordParser ? new FormatParser('format') : $parser;
+            $parsers[] = match (true) {
+                $parser instanceof FormatKeywordParser => new FormatParser('format'),
+                $parser instanceof PropertyNamesKeywordParser => new PropertyNamesParser('propertyNames'),
+                default => $parser,
+            };
         }
         $parsers[] = new TypeByParser('portable-typeBy', $this->tracer);
         $parsers[] = new CheckParser('portable-check', $this->tracer, $this->checks);

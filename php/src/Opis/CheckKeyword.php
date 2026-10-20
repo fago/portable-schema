@@ -28,7 +28,7 @@ final class CheckKeyword implements Keyword
     public function validate(ValidationContext $context, Schema $schema): ?ValidationError
     {
         $path = $context->fullDataPath();
-        $root = $context->rootData();
+        $root = Context::root($context);
         [, $parent] = Pointer::get($root, Pointer::fromSegments(array_slice($path, 0, -1)));
         $requests = [];
         foreach ($this->checks as $name => $options) {

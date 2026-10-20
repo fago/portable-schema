@@ -42,7 +42,7 @@ final class TypeByKeyword implements Keyword
             $this->fallback,
             $this->base,
             Pointer::fromSegments($context->fullDataPath()),
-            $context->rootData(),
+            Context::root($context),
             fn (string $uri): bool => $loader->loadSchemaById(Uri::parse($uri, true)) !== null,
         );
         $this->tracer->current()->details = $selection;

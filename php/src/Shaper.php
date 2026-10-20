@@ -41,7 +41,7 @@ final class Shaper
     {
         $shaped = $this->schema($root, '');
 
-        $errors = array_values(array_filter($this->withoutKnownProperties($shaped->errors), fn (ValidationError $e) => $this->reported($e->instanceLocation)));
+        $errors = array_values(array_filter($this->withoutKnownProperties($shaped->errors, $this->evaluated($root)), fn (ValidationError $e) => $this->reported($e->instanceLocation)));
         usort($errors, fn (ValidationError $a, ValidationError $b) => Pointer::compare($a->instanceLocation, $b->instanceLocation) ?: Pointer::compare($a->keywordLocation, $b->keywordLocation));
         $errors = $this->unique($errors, fn (ValidationError $e) => [$e->instanceLocation, $e->code, $e->params]);
 
@@ -74,11 +74,12 @@ final class Shaper
         }
         $shaped->annotations = $this->annotations($node);
 
+        $keywords = $this->inDocumentOrder($node);
         $typeFailed = false;
-        foreach ($node->keywords as $keyword) {
+        foreach ($keywords as $keyword) {
             $typeFailed = $typeFailed || ($keyword->keyword === 'type' && !$keyword->valid);
         }
-        foreach ($node->keywords as $keyword) {
+        foreach ($keywords as $keyword) {
             if ($typeFailed && $keyword->keyword !== 'type') {
                 continue;
             }
@@ -126,14 +127,15 @@ final class Shaper
         }
 
         $shaped = new Shaped();
-        foreach ($node->children as $child) {
+        $names = $instance instanceof \stdClass ? array_keys(get_object_vars($instance)) : [];
+        foreach ($node->children as $i => $child) {
             if ($child->boolean && !$child->valid && in_array($node->keyword, self::PROPERTIES, true)) {
                 $segments = Pointer::segments($child->instanceLocation);
                 $shaped->errors[] = $error('unknownProperty', ['property' => end($segments)]);
                 continue;
             }
             if ($node->keyword === 'propertyNames' && !$child->valid) {
-                $shaped->errors[] = $error('propertyNames', ['property' => $this->propertyName($child, $node)]);
+                $shaped->errors[] = $error('propertyNames', ['property' => $names[$i] ?? null]);
                 continue;
             }
             $shaped->add($this->schema($child, $this->childLocation($node, $child, $parent, $parentLocation, $location)));
@@ -142,26 +144,51 @@ final class Shaper
     }
 
     /**
-     * Drops `unknownProperty` errors for properties that have errors of their own: their schema exists, so the
-     * value is the problem.
+     * Drops `unknownProperty` errors for properties a subschema evaluated, also one that failed: the base libraries
+     * differ in whether a failed subschema's properties count as evaluated.
      *
      * @param list<ValidationError> $errors
+     * @param array<string, true> $evaluated
      * @return list<ValidationError>
      */
-    private function withoutKnownProperties(array $errors): array
+    private function withoutKnownProperties(array $errors, array $evaluated): array
     {
-        return array_values(array_filter($errors, function (ValidationError $error) use ($errors): bool {
-            if ($error->code !== 'unknownProperty') {
-                return true;
+        return array_values(array_filter(
+            $errors,
+            fn (ValidationError $e) => $e->code !== 'unknownProperty' || !isset($evaluated[Pointer::append($e->instanceLocation, $e->params['property'])]),
+        ));
+    }
+
+    /**
+     * Instance locations evaluated by a schema other than `false`.
+     *
+     * @return array<string, true>
+     */
+    private function evaluated(SchemaNode $node, array &$locations = []): array
+    {
+        if (!$node->boolean) {
+            $locations[$node->instanceLocation] = true;
+        }
+        foreach ($node->keywords as $keyword) {
+            foreach ($keyword->children as $child) {
+                $this->evaluated($child, $locations);
             }
-            $property = Pointer::append($error->instanceLocation, $error->params['property']);
-            foreach ($errors as $other) {
-                if ($other->code !== 'unknownProperty' && Pointer::isWithin($other->instanceLocation, $property)) {
-                    return false;
-                }
-            }
-            return true;
-        }));
+        }
+        return $locations;
+    }
+
+    /**
+     * The keywords of a schema in the order of the schema document, since the base libraries evaluate in different orders.
+     *
+     * @return list<KeywordNode>
+     */
+    private function inDocumentOrder(SchemaNode $node): array
+    {
+        [, $schema] = $this->registry->resolve($node->uri);
+        $order = $schema instanceof \stdClass ? array_flip(array_keys(get_object_vars($schema))) : [];
+        $keywords = $node->keywords;
+        usort($keywords, fn (KeywordNode $a, KeywordNode $b) => ($order[$a->keyword] ?? PHP_INT_MAX) <=> ($order[$b->keyword] ?? PHP_INT_MAX));
+        return $keywords;
     }
 
     /**
@@ -399,15 +426,6 @@ final class Shaper
             return $parentLocation . substr($child->uri, strlen($parent->uri));
         }
         return $location;
-    }
-
-    private function propertyName(SchemaNode $child, KeywordNode $node): mixed
-    {
-        if ($child->instanceLocation !== $node->instanceLocation) {
-            $segments = Pointer::segments($child->instanceLocation);
-            return end($segments);
-        }
-        return null;
     }
 
     /**
