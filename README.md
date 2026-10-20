@@ -20,19 +20,9 @@ Status: early planning. Nothing here is stable yet.
 - **Agents that fully understand, write and validate data,** locally and offline.
 - **Typed APIs and components:** API contracts, component props and TypeScript types from the same schema.
 
-## Goals
+## Principles
 
-- **One schema, the same verdict everywhere.** A schema validates data with the same result and the same errors in PHP and JS. Shared fixtures prove it.
-- **PHP and JS, open to more.** PHP and JS are the supported languages. The spec and fixtures are language-neutral, so implementations in further languages are possible.
-- **Enough metadata to generate the rest.** Schemas carry the information needed to generate forms, UIs, agent tool definitions, TypeScript types and API contracts:
-  - named, reusable types;
-  - translatability;
-  - UI hints;
-  - data sources.
-- **Human, localized error messages.** Errors are structured (location, code, parameters) and shaped to one error per problem. A shared formatter turns them into messages using the schema's labels; hosts translate them with their own system, e.g. Drupal `t()` or vue-i18n. The same text in PHP and JS.
-- **Schemas that depend on values.** Types selected by a data value from an open set, computed narrowing and cross-field rules. All of them can only narrow what is valid.
-- **System facts as data.** References to things a system provides (plugins, bundles, fields, modules) are checked against catalogs. Catalogs come from the live system or from a schema dump, so validation can also run offline.
-- **Stay standard.** Every Portable Schema is valid JSON Schema 2020-12. Generic validators ignore the added keywords and still check the structure; a standard-only export serves tools that need plain JSON Schema.
+- **Open to more languages.** PHP and JS are supported; the spec and fixtures are language-neutral, so further implementations are possible.
 - **Aligned with the next JSON Schema release.** The profile already follows its rules, so moving to it needs no schema changes:
   - `x-` keywords are annotations only;
   - unknown keywords are an error;
