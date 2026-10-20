@@ -25,3 +25,16 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
+
+  parity:
+    # Full PHP and JS results compared, incl. keywordLocation and the repair loop.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: composer install --no-interaction --no-progress
+      - run: npm ci
+      - run: scripts/compare-results.sh
