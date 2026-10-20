@@ -31,12 +31,13 @@ The data shape is Typed Data's own: field → list of items → properties, e.g.
 | Computed fields and properties (`path`, `processed`, `entity`) | Left out: not part of the stored data |
 | Item property definitions | `properties` of the item; `isRequired()` → `required` |
 | Property data types | Library types per [`docs/drupal.md`](../../../../docs/drupal.md); `filter_format` and a language field's `value` → catalogs |
-| `Length`, `Range`, `Count`, `NotBlank`, `Uuid`, `ComplexData` | `minLength`/`maxLength`, `minimum`/`maximum`, `maxItems`, `minLength: 1`, `portable:uuid`, nested `properties` |
+| `Length`, `Range`, `NotBlank`, `Uuid`, `ComplexData` | `minLength`/`maxLength`, `minimum`/`maximum`, `minLength: 1`, `portable:uuid`, nested `properties` |
+| `Count` (on the field list) | `minItems`/`maxItems` |
 | `NotNull`, `PrimitiveType` | `required` and the type |
 | `AllowedValues` without choices (options providers) | Text formats and languages: their catalogs. Booleans: the type. Entity references: `ValidReference` |
 | `ValidReference` (on the field list) | Named check `drupal:ValidReference` on each item's `target_id`, where Drupal reports the violation |
 | `FileValidation` | Named check `drupal:FileExtension` with the field's `file_extensions` |
-| Other constraints, e.g. `ReferenceAccess` | Named checks `drupal:<Constraint>` with the constraint's options |
+| Other constraints, e.g. `ReferenceAccess` | Named checks `drupal:<Constraint>` with the constraint's options, on the item property, the item or the list |
 | A field's own settings (e.g. `max_length`, an image field's `alt_field_required`) | Added next to the `$ref` to the field item type. A field whose settings change a property's type, e.g. string IDs of the `type` field's config entity target, gets its own item schema |
 
 Constraints come from the definitions **and** from the item and list classes (`getConstraints()` on a Typed Data object), since classes like `StringItem` and `EntityReferenceFieldItemList` add `Length` and `ValidReference` at runtime.

@@ -83,7 +83,7 @@ $constraints = function (array $constraints) use ($constraintIds): array {
 /**
  * Applies constraints to a schema: keywords where they map, named checks otherwise.
  */
-$apply = function (array &$schema, array $constraints, string $dataType = '') use (&$apply): void {
+$apply = function (array &$schema, array $constraints) use (&$apply): void {
   foreach ($constraints as $id => $options) {
     $options = (array) $options;
     switch ($id) {
@@ -98,10 +98,10 @@ $apply = function (array &$schema, array $constraints, string $dataType = '') us
 
       case 'Range':
         if (isset($options['min'])) {
-          $schema['minimum'] = (int) $options['min'];
+          $schema['minimum'] = 0 + $options['min'];
         }
         if (isset($options['max'])) {
-          $schema['maximum'] = (int) $options['max'];
+          $schema['maximum'] = 0 + $options['max'];
         }
         break;
 
@@ -158,7 +158,7 @@ $item = function (FieldDefinitionInterface $field) use ($constraints, $apply): a
     if ($description = $property->getDescription()) {
       $propertySchema['description'] = (string) $description;
     }
-    $apply($propertySchema, $constraints($property->getConstraints()), $property->getDataType());
+    $apply($propertySchema, $constraints($property->getConstraints()));
     $schema['properties'][$name] = $propertySchema;
     if ($property->isRequired()) {
       $schema['required'][] = $name;
@@ -278,12 +278,25 @@ foreach ($fields as $name => $field) {
   if ($cardinality > 0) {
     $list['maxItems'] = $cardinality;
   }
-  $listConstraints = $constraints($node->get($name)->getConstraints());
-  if (isset($listConstraints['ValidReference'])) {
-    $list['items']['properties']['target_id']['portable-check']['drupal:ValidReference'] = new \stdClass();
+  foreach ($constraints($node->get($name)->getConstraints()) as $id => $options) {
+    $options = (array) $options;
+    if ($id === 'ValidReference') {
+      $list['items']['properties']['target_id']['portable-check']['drupal:ValidReference'] = new \stdClass();
+    }
+    elseif ($id === 'Count') {
+      if (isset($options['min'])) {
+        $list['minItems'] = (int) $options['min'];
+      }
+      if (isset($options['max'])) {
+        $list['maxItems'] = min((int) $options['max'], $list['maxItems'] ?? PHP_INT_MAX);
+      }
+    }
+    elseif (!in_array($id, COVERED, TRUE)) {
+      $list['portable-check']['drupal:' . $id] = (object) array_filter($options, fn ($v) => !is_object($v));
+    }
   }
   if ($field->isRequired()) {
-    $list['minItems'] = 1;
+    $list['minItems'] = max(1, $list['minItems'] ?? 0);
     $article['required'][] = $name;
   }
   if ($field->isReadOnly()) {
