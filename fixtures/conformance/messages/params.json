@@ -1,0 +1,40 @@
+{
+  "description": "params as text: the root label, lists, dependent labels, typeBy values",
+  "registry": {
+    "test:settings.a": {
+      "type": "object"
+    }
+  },
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "start": {
+        "title": "Start",
+        "type": "string"
+      },
+      "end": {
+        "title": "End",
+        "type": "string"
+      },
+      "kind": {
+        "type": "string"
+      },
+      "settings": {
+        "title": "Settings",
+        "portable-typeBy": {
+          "href": "test:settings.{kind}",
+          "source": {
+            "kind": "1/kind"
+          }
+        }
+      }
+    },
+    "dependentRequired": {
+      "end": [
+        "start"
+      ]
+    },
+    "minProperties": 1
+  }
+}

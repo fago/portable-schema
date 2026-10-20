@@ -16,6 +16,7 @@ validation/portable-typeBy/block-settings.test.json   its test cases
 | Path | Covers |
 |---|---|
 | `validation/<area>/` | Keywords, types, formats, shaping, catalogs, options and the added keywords |
+| `messages/` | English messages from the standalone formatter and [`messages/en.json`](../../messages/en.json) |
 | `normalization/` (planned) | Object vs list, coercion |
 
 Runners find every `*.test.json` and run it against the `.json` file of the same name.
@@ -44,8 +45,9 @@ Defined by [`../tests.schema.json`](../tests.schema.json). An array of test case
 | `description` | yes | What the case shows |
 | `data` | yes | The instance |
 | `valid` | yes | The expected verdict |
-| `errors` | no | **Exactly** the expected errors, in shaped order, compared on `instanceLocation`, `code` and `params`. Message text is never compared |
+| `errors` | no | **Exactly** the expected errors, in shaped order, compared on `instanceLocation`, `code` and `params` |
 | `unchecked` | no | Exactly the expected unchecked entries |
+| `messages` | no | The English message of each error, in order, compared as text |
 | `options` | no | Validation options: `partial`, `emptyAsMissing`, `locations` |
 | `checks` | no | Local callbacks as data: the canned result per check name, which runners turn into a callback |
 

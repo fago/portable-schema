@@ -1,0 +1,19 @@
+{
+  "description": "plural messages use the one or other form",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "code": {
+        "title": "Code",
+        "type": "string",
+        "minLength": 1
+      },
+      "tags": {
+        "title": "Tags",
+        "type": "array",
+        "minItems": 2
+      }
+    }
+  }
+}

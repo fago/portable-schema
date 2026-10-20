@@ -35,6 +35,13 @@
           "$ref": "#/$defs/unchecked"
         }
       },
+      "messages": {
+        "description": "The English messages of the errors, in order, from the standalone formatter and messages/en.json.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
       "options": {
         "type": "object",
         "properties": {
