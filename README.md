@@ -4,6 +4,22 @@ A portable, typed [JSON Schema](https://json-schema.org) dialect: one schema, th
 
 Status: early planning. Nothing here is stable yet.
 
+## What it provides
+
+- **JSON Schema based:** every Portable Schema is a valid JSON Schema 2020-12 document, for maximum interoperability. Generic tools validate the standard part; the added keywords need a Portable Schema validator.
+- **Serialization-agnostic:** validates the data model: JSON, YAML, or PHP and JS values.
+- **Dynamic types:** a value's schema is selected by another value, e.g. plugin settings by plugin ID.
+- **Catalogs:** values checked against system facts (plugins, bundles, fields, modules), live or from a schema dump.
+- **First-class PHP and JS support, with parity:** identical verdicts and errors in both.
+- **Usable error messages:** one per problem, located, coded and translatable.
+
+## What it enables
+
+- **Generated forms,** on the PHP side (e.g. Drupal Form API) or the JS side (e.g. Vue or React), validating exactly like the server.
+- **Generative UIs:** interfaces built from the schema at runtime.
+- **Agents that fully understand, write and validate data,** locally and offline.
+- **Typed APIs and components:** API contracts, component props and TypeScript types from the same schema.
+
 ## Goals
 
 - **One schema, the same verdict everywhere.** A schema validates data with the same result and the same errors in PHP and JS. Shared fixtures prove it.
