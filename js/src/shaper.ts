@@ -53,11 +53,15 @@ export class Shaper {
   shape(root: SchemaNode): Result {
     const shaped = this.schema(root, "");
 
-    let errors = withoutKnownProperties(shaped.errors, evaluated(root)).filter((e) => this.reported(e.instanceLocation));
+    const mistyped = new Set(shaped.errors.filter((e) => e.code === "type").map((e) => e.instanceLocation));
+    const checked = (code: string, location: string): boolean => !code.startsWith("check.") || !mistyped.has(location);
+
+    let errors = withoutKnownProperties(shaped.errors, evaluated(root))
+      .filter((e) => this.reported(e.instanceLocation) && checked(e.code, e.instanceLocation));
     errors.sort((a, b) => Pointer.compare(a.instanceLocation, b.instanceLocation) || Pointer.compare(a.keywordLocation, b.keywordLocation));
     errors = unique(errors, (e) => [e.instanceLocation, e.code, e.params]);
 
-    let unchecked = shaped.unchecked.filter((u) => this.reported(u.instanceLocation));
+    let unchecked = shaped.unchecked.filter((u) => this.reported(u.instanceLocation) && checked(u.code, u.instanceLocation));
     unchecked.sort((a, b) => Pointer.compare(a.instanceLocation, b.instanceLocation));
     unchecked = unique(unchecked, (u) => [u.instanceLocation, u.code, u.reason]);
 
@@ -292,12 +296,22 @@ export class Shaper {
     }
     if (isObject(schema["properties"])) {
       for (const [name, property] of Object.entries(schema["properties"])) {
-        if (isObject(property) && typeof property["title"] === "string") {
-          annotations.push([Pointer.append(location, name), "title", property["title"]]);
-        }
+        const title = this.title(property, node.uri.split("#")[0]!);
+        if (title !== null) annotations.push([Pointer.append(location, name), "title", title]);
       }
     }
     return annotations;
+  }
+
+  /** The title of a property's schema, or of the schema it references, also for missing properties. */
+  private title(schema: unknown, base: string): string | null {
+    if (!isObject(schema)) return null;
+    if (typeof schema["title"] === "string") return schema["title"];
+    const ref = schema["$ref"];
+    if (typeof ref !== "string" || ref.startsWith("portable:")) return null;
+    const uri = ref.startsWith("#") ? base + ref : ref;
+    const [, target] = this.registry.resolve(uri.includes("#") ? uri : uri + "#");
+    return isObject(target) && typeof target["title"] === "string" ? target["title"] : null;
   }
 
   /** The keyword location of a subschema: below its keyword in the same schema, or at the keyword for references. */

@@ -106,7 +106,7 @@
     ]
   },
   {
-    "description": "the check beside a $ref runs even when the referenced type fails",
+    "description": "a value with the wrong type is not checked",
     "data": {
       "tags": [
         1
@@ -123,18 +123,6 @@
           ],
           "actual": "integer"
         }
-      }
-    ],
-    "unchecked": [
-      {
-        "instanceLocation": "/tags/0",
-        "code": "check.test:Unique",
-        "reason": "noProvider"
-      },
-      {
-        "instanceLocation": "/tags/0",
-        "code": "check.test:Allowed",
-        "reason": "noProvider"
       }
     ]
   }

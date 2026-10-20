@@ -41,11 +41,22 @@ final class Shaper
     {
         $shaped = $this->schema($root, '');
 
-        $errors = array_values(array_filter($this->withoutKnownProperties($shaped->errors, $this->evaluated($root)), fn (ValidationError $e) => $this->reported($e->instanceLocation)));
+        $mistyped = [];
+        foreach ($shaped->errors as $error) {
+            if ($error->code === 'type') {
+                $mistyped[$error->instanceLocation] = true;
+            }
+        }
+        $checked = fn (string $code, string $location) => !str_starts_with($code, 'check.') || !isset($mistyped[$location]);
+
+        $errors = array_values(array_filter(
+            $this->withoutKnownProperties($shaped->errors, $this->evaluated($root)),
+            fn (ValidationError $e) => $this->reported($e->instanceLocation) && $checked($e->code, $e->instanceLocation),
+        ));
         usort($errors, fn (ValidationError $a, ValidationError $b) => Pointer::compare($a->instanceLocation, $b->instanceLocation) ?: Pointer::compare($a->keywordLocation, $b->keywordLocation));
         $errors = $this->unique($errors, fn (ValidationError $e) => [$e->instanceLocation, $e->code, $e->params]);
 
-        $unchecked = array_values(array_filter($shaped->unchecked, fn (Unchecked $u) => $this->reported($u->instanceLocation)));
+        $unchecked = array_values(array_filter($shaped->unchecked, fn (Unchecked $u) => $this->reported($u->instanceLocation) && $checked($u->code, $u->instanceLocation)));
         usort($unchecked, fn (Unchecked $a, Unchecked $b) => Pointer::compare($a->instanceLocation, $b->instanceLocation));
         $unchecked = $this->unique($unchecked, fn (Unchecked $u) => [$u->instanceLocation, $u->code, $u->reason]);
 
@@ -409,12 +420,33 @@ final class Shaper
         }
         if (($schema->properties ?? null) instanceof \stdClass) {
             foreach (get_object_vars($schema->properties) as $name => $property) {
-                if ($property instanceof \stdClass && is_string($property->title ?? null)) {
-                    $annotations[] = [Pointer::append($location, $name), 'title', $property->title];
+                $title = $this->title($property, explode('#', $node->uri, 2)[0]);
+                if ($title !== null) {
+                    $annotations[] = [Pointer::append($location, $name), 'title', $title];
                 }
             }
         }
         return $annotations;
+    }
+
+    /**
+     * The title of a property's schema, or of the schema it references, also for missing properties.
+     */
+    private function title(mixed $schema, string $base): ?string
+    {
+        if (!$schema instanceof \stdClass) {
+            return null;
+        }
+        if (is_string($schema->title ?? null)) {
+            return $schema->title;
+        }
+        $ref = $schema->{'$ref'} ?? null;
+        if (!is_string($ref) || str_starts_with($ref, 'portable:')) {
+            return null;
+        }
+        $uri = str_starts_with($ref, '#') ? $base . $ref : $ref;
+        [, $target] = $this->registry->resolve(str_contains($uri, '#') ? $uri : $uri . '#');
+        return $target instanceof \stdClass && is_string($target->title ?? null) ? $target->title : null;
     }
 
     /**
