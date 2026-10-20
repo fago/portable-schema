@@ -18,6 +18,7 @@ Every primitive has a named type ([decision 0004](../docs/decisions/0004-types-f
 | [`decimal`](v1/decimal.json) | `string`, `format: decimal` |
 | [`email`](v1/email.json) | `string`, `format: email`, `maxLength: 254` |
 | [`uri`](v1/uri.json) | `string`, `format: uri` |
+| [`uri-reference`](v1/uri-reference.json) | `string`, `format: uri-reference` |
 | [`uuid`](v1/uuid.json) | `string`, `format: uuid` |
 | [`date`](v1/date.json) | `string`, `format: date` |
 | [`date-time`](v1/date-time.json) | `string`, `format: date-time` (offset required) |
@@ -34,9 +35,14 @@ Every primitive has a named type ([decision 0004](../docs/decisions/0004-types-f
 | [`weight`](v1/weight.json) | `integer`, `format: int32` |
 | [`secret`](v1/secret.json) | `string`, `writeOnly` |
 
-## Candidates
+## Objects
 
-Shapes, not decided yet: `link` (`uri` + `title`), `image` (`src`, `alt`, `width`, `height`).
+Open object types: use sites add keys or constraints, e.g. `"required": ["alt"]` for an image whose alt text is mandatory.
+
+| Type | Definition |
+|---|---|
+| [`image`](v1/image.json) | `src` (`uri-reference`, required), `alt` (`label`), `width`, `height` (integers ≥ 1) |
+| [`link`](v1/link.json) | `uri` (`uri-reference`, required), `title` (`label`) |
 
 ## Rules
 
