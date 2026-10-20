@@ -8,7 +8,8 @@ namespace PortableSchema;
  * Exports Portable Schemas as standard-only JSON Schema for tools that can't resolve the registry, e.g. agent tool
  * definitions or Drupal SDC.
  *
- * Lost in the export: the added keywords (`portable-typeBy`, `portable-check`, …) and `x-portable-*` annotations.
+ * Lost in the export: the added keywords (`portable-typeBy`, `portable-check`, …), `x-portable-*` annotations and the
+ * pinned formats: generic validators treat `format` as an annotation and know neither `decimal` nor `int32`.
  */
 final class Exporter
 {
