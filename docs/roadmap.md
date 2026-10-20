@@ -13,6 +13,8 @@ Planned work that isn't started yet.
 
 - **CLI with JSON output.** The same tool as the linter: `portable-schema validate <file> --schema <id> --dump <path> --format json` returns the result format plus English messages, with deterministic exit codes. Coding agents with a shell use it directly.
 
+- **Licensing for Drupal core.** Clarify with the Drupal Licensing Working Group how an Apache-2.0 dependency (opis/json-schema) fits a core proposal, or which GPLv2-compatible PHP base to use instead.
+
 ## Later
 
 - **PHPStan integration.** An extension with rules on constant arguments of the PHP model:
