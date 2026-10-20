@@ -1,0 +1,7 @@
+{
+  "description": "props of an SDC hero component, using the library's image and link types",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$ref": "drupal:sdc.portable_showcase.hero"
+  }
+}

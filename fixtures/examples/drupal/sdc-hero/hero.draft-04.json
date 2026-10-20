@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Hero",
+    "description": "Props of the hero component in hero/hero.component.yml.",
+    "type": "object",
+    "properties": {
+        "heading": {
+            "type": "string",
+            "pattern": "^[^\\r\\n]*$",
+            "title": "Heading",
+            "minLength": 1
+        },
+        "text": {
+            "type": "string",
+            "contentMediaType": "text/html",
+            "title": "Text"
+        },
+        "image": {
+            "type": "object",
+            "properties": {
+                "src": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "title": "Image URL"
+                },
+                "alt": {
+                    "type": "string",
+                    "pattern": "^[^\\r\\n]*$",
+                    "title": "Alternative text",
+                    "minLength": 1
+                },
+                "width": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991,
+                    "title": "Width"
+                },
+                "height": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991,
+                    "title": "Height"
+                }
+            },
+            "required": [
+                "src",
+                "alt"
+            ],
+            "title": "Image"
+        },
+        "cta": {
+            "type": "object",
+            "properties": {
+                "uri": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "title": "URL"
+                },
+                "title": {
+                    "type": "string",
+                    "pattern": "^[^\\r\\n]*$",
+                    "title": "Link text"
+                }
+            },
+            "required": [
+                "uri"
+            ],
+            "title": "Call to action"
+        }
+    },
+    "required": [
+        "heading"
+    ],
+    "additionalProperties": false
+}

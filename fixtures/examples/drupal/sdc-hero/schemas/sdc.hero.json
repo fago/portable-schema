@@ -1,0 +1,38 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:sdc.portable_showcase.hero",
+  "title": "Hero",
+  "description": "Props of the hero component in hero/hero.component.yml.",
+  "type": "object",
+  "properties": {
+    "heading": {
+      "title": "Heading",
+      "$ref": "portable:label",
+      "minLength": 1
+    },
+    "text": {
+      "title": "Text",
+      "$ref": "portable:html"
+    },
+    "image": {
+      "title": "Image",
+      "$ref": "portable:image",
+      "properties": {
+        "alt": {
+          "minLength": 1
+        }
+      },
+      "required": [
+        "alt"
+      ]
+    },
+    "cta": {
+      "title": "Call to action",
+      "$ref": "portable:link"
+    }
+  },
+  "required": [
+    "heading"
+  ],
+  "unevaluatedProperties": false
+}
