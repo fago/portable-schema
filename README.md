@@ -87,4 +87,4 @@ MIT, see [LICENSE](LICENSE).
 
 **Dependency note:** the PHP implementation builds on [opis/json-schema](https://github.com/opis/json-schema), which is licensed under Apache-2.0. Apache-2.0 is compatible with GPLv3 but not with GPLv2. Combined with GPL-2.0-or-later software such as Drupal, a distribution that includes it can therefore only be distributed under GPLv3 (see the [Drupal licensing FAQ](https://www.drupal.org/about/licensing)). Using it in a site or a contrib module is fine; adding it to Drupal core would need a GPLv2-compatible PHP base.
 
-**To do:** clarify the licensing with the Drupal Licensing Working Group before any core proposal.
+**To do:** before any core proposal, clarify the licensing with the Drupal Licensing Working Group, or replace opis/json-schema.
