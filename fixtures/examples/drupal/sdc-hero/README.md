@@ -37,5 +37,5 @@ The export inlines the referenced types, merges the use-site constraints and con
 ## Gaps
 
 - **Core refuses `hero.component.yml` at discovery:** `ComponentValidator::validateDefinition()` reads `type` of every prop, and these props only have `$ref`.
-- **SDC can't resolve `portable:` references.** Core needs the draft-04 export, or an integration that resolves Portable Schema references in `.component.yml` files (core already resolves `json-schema-definitions://` references).
-- **The export loses keywords draft-04 doesn't have:** `propertyNames`, `contains`, `if`/`then`/`else` and the added keywords. The hero uses none of them.
+- **SDC can't resolve `portable:` references.** Core needs the draft-04 export, or an integration that resolves Portable Schema references in `.component.yml` files (Drupal Canvas resolves `json-schema-definitions://` references the same way; core has no such stream wrapper).
+- **The export refuses keywords draft-04 doesn't have** (`propertyNames`, `contains`, `if`/`then`/`else`, …) and drops the added keywords. The hero uses none of them.

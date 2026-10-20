@@ -22,7 +22,7 @@ $result->unchecked;  // Unchecked[]
 Formatter::create()->messages($result); // English messages
 ```
 
-- **Data** follows the JSON data model: objects are `\stdClass`, as `json_decode()` returns them. `Json::fromArray()` converts PHP arrays.
+- **Data** follows the JSON data model: objects are `\stdClass`, as `json_decode()` returns them.
 - **Schemas** are validated by their id in the registry.
 - **Exports:** `Exporter::inline()` (self-contained JSON Schema 2020-12) and `Exporter::draft04()`.
 
