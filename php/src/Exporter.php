@@ -22,6 +22,23 @@ final class Exporter
      */
     private const DRAFT_04_FORMATS = ['date-time', 'email', 'hostname', 'ipv4', 'ipv6', 'uri', 'uri-reference'];
 
+    /** Keywords whose result depends on the keywords listed, in the same schema. */
+    private const DEPENDENT = [
+        'additionalProperties' => ['properties', 'patternProperties', 'additionalProperties', 'unevaluatedProperties', 'allOf', 'anyOf', 'oneOf', 'if', 'then', 'else', 'dependentSchemas'],
+        'unevaluatedProperties' => ['properties', 'patternProperties', 'additionalProperties', 'unevaluatedProperties', 'allOf', 'anyOf', 'oneOf', 'if', 'then', 'else', 'dependentSchemas'],
+        'items' => ['prefixItems', 'items', 'unevaluatedItems', 'contains', 'allOf', 'anyOf', 'oneOf', 'if', 'then', 'else'],
+        'unevaluatedItems' => ['prefixItems', 'items', 'unevaluatedItems', 'contains', 'allOf', 'anyOf', 'oneOf', 'if', 'then', 'else'],
+    ];
+
+    /** Keywords that only annotate: the using schema's value wins. */
+    private const ANNOTATIONS = ['title', 'description', '$comment', 'examples', 'default', 'deprecated', 'readOnly', 'writeOnly'];
+
+    /** Bounds that merge to the stricter value. */
+    private const BOUNDS = [
+        'minimum' => 'max', 'exclusiveMinimum' => 'max', 'minLength' => 'max', 'minItems' => 'max', 'minProperties' => 'max',
+        'maximum' => 'min', 'exclusiveMaximum' => 'min', 'maxLength' => 'min', 'maxItems' => 'min', 'maxProperties' => 'min',
+    ];
+
     public function __construct(private readonly Registry $registry)
     {
     }
@@ -73,25 +90,27 @@ final class Exporter
         if (!$schema instanceof \stdClass) {
             return $schema;
         }
-        $out = new \stdClass();
-        if (isset($schema->{'$ref'})) {
-            $ref = $schema->{'$ref'};
-            $out = $this->resolve(str_starts_with($ref, '#') ? $base . $ref : $ref, $seen);
-            $out = $out instanceof \stdClass ? clone $out : $out;
-        }
+        $use = new \stdClass();
         foreach (get_object_vars($schema) as $key => $value) {
             if (in_array($key, ['$ref', '$schema', '$id'], true) || str_starts_with($key, 'portable-') || str_starts_with($key, 'x-portable-')) {
                 continue;
             }
-            $value = match ($key) {
+            $use->{$key} = match ($key) {
                 'properties', 'patternProperties', '$defs', 'dependentSchemas' => $this->map($value, $base, $seen),
-                'items', 'additionalProperties', 'unevaluatedProperties', 'not', 'if', 'then', 'else', 'contains', 'propertyNames' => $this->schema($value, $base, $seen),
+                'items', 'additionalProperties', 'unevaluatedProperties', 'unevaluatedItems', 'not', 'if', 'then', 'else', 'contains', 'propertyNames' => $this->schema($value, $base, $seen),
                 'allOf', 'anyOf', 'oneOf', 'prefixItems' => array_map(fn ($s) => $this->schema($s, $base, $seen), $value),
                 default => $value,
             };
-            $out = $this->merge($out, $key, $value);
         }
-        return $out;
+        if (!isset($schema->{'$ref'})) {
+            return $use;
+        }
+        $ref = $schema->{'$ref'};
+        $target = $this->resolve(str_starts_with($ref, '#') ? $base . $ref : $ref, $seen);
+        if (self::mergeable($target, $use)) {
+            return self::merge($target, $use);
+        }
+        return (object) (['allOf' => [$target, ...($use->allOf ?? [])]] + get_object_vars($use));
     }
 
     private function map(\stdClass $schemas, string $base, array $seen): \stdClass
@@ -104,36 +123,71 @@ final class Exporter
     }
 
     /**
-     * Adds a keyword of the using schema to the referenced one: properties merge, `required` lists join, other
-     * keywords of the using schema win.
+     * Whether a referenced schema and the keywords next to the `$ref` can be one schema with the same meaning:
+     * no keyword in both, except `required`, bounds, annotations and `properties` (recursively), and no keyword
+     * that depends on the properties or items the other declares. Otherwise the export uses `allOf`.
      */
-    private function merge(mixed $target, string $key, mixed $value): mixed
+    private static function mergeable(mixed $target, \stdClass $use): bool
     {
-        if (!$target instanceof \stdClass) {
-            return $target;
+        if ($target === true) {
+            return true;
         }
-        if (!isset($target->{$key})) {
-            $target->{$key} = $value;
-        } elseif ($key === 'required') {
-            $target->{$key} = array_values(array_unique([...$target->{$key}, ...$value]));
-        } elseif ($key === 'properties') {
-            $merged = clone $target->{$key};
+        if (!$target instanceof \stdClass) {
+            return false;
+        }
+        foreach (get_object_vars($use) as $key => $value) {
+            if (!property_exists($target, $key) || $key === 'required' || isset(self::BOUNDS[$key]) || in_array($key, self::ANNOTATIONS, true) || Json::toArray($target->{$key}) === Json::toArray($value)) {
+                continue;
+            }
+            if ($key !== 'properties') {
+                return false;
+            }
             foreach (get_object_vars($value) as $name => $schema) {
-                if (isset($merged->{$name}) && $merged->{$name} instanceof \stdClass && $schema instanceof \stdClass) {
-                    $property = clone $merged->{$name};
-                    foreach (get_object_vars($schema) as $k => $v) {
-                        $property = $this->merge($property, $k, $v);
-                    }
-                    $merged->{$name} = $property;
-                } else {
-                    $merged->{$name} = $schema;
+                if (property_exists($target->properties, $name) && !($schema instanceof \stdClass && self::mergeable($target->properties->{$name}, $schema))) {
+                    return false;
                 }
             }
-            $target->{$key} = $merged;
-        } else {
-            $target->{$key} = $value;
         }
-        return $target;
+        // The using schema's unevaluated* keywords see the referenced schema's results anyway.
+        $checks = [[$target, self::DEPENDENT, $use], [$use, array_diff_key(self::DEPENDENT, ['unevaluatedProperties' => 0, 'unevaluatedItems' => 0]), $target]];
+        foreach ($checks as [$schema, $dependent, $other]) {
+            foreach ($dependent as $keyword => $keywords) {
+                if (property_exists($schema, $keyword) && array_intersect($keywords, array_keys(get_object_vars($other))) !== []) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * The keywords next to the `$ref` added to the referenced schema: `required` lists join, the stricter bound
+     * wins, properties merge, annotations of the using schema win.
+     */
+    private static function merge(mixed $target, \stdClass $use): mixed
+    {
+        if ($target === true) {
+            return $use;
+        }
+        $out = clone $target;
+        foreach (get_object_vars($use) as $key => $value) {
+            if (!property_exists($out, $key)) {
+                $out->{$key} = $value;
+            } elseif ($key === 'required') {
+                $out->required = array_values(array_unique([...$out->required, ...$value]));
+            } elseif (isset(self::BOUNDS[$key])) {
+                $out->{$key} = self::BOUNDS[$key]($out->{$key}, $value);
+            } elseif ($key !== 'properties') {
+                $out->{$key} = $value;
+            } else {
+                $properties = clone $out->properties;
+                foreach (get_object_vars($value) as $name => $schema) {
+                    $properties->{$name} = property_exists($properties, $name) ? self::merge($properties->{$name}, $schema) : $schema;
+                }
+                $out->properties = $properties;
+            }
+        }
+        return $out;
     }
 
     private function toDraft04(mixed $schema): mixed

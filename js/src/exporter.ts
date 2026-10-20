@@ -48,26 +48,25 @@ export class Exporter {
 
   private schema(schema: Value, base: string, seen: string[]): Value {
     if (!isObject(schema)) return schema;
-    let out: Value = {};
-    if (typeof schema["$ref"] === "string") {
-      const ref = schema["$ref"];
-      out = this.resolve(ref.startsWith("#") ? base + ref : ref, seen);
-    }
+    const use: JsonObject = {};
     for (const [key, value] of Object.entries(schema)) {
       if (["$ref", "$schema", "$id"].includes(key) || key.startsWith("portable-") || key.startsWith("x-portable-")) continue;
-      let converted: Value;
       if (["properties", "patternProperties", "$defs", "dependentSchemas"].includes(key)) {
-        converted = this.map(value as JsonObject, base, seen);
-      } else if (["items", "additionalProperties", "unevaluatedProperties", "not", "if", "then", "else", "contains", "propertyNames"].includes(key)) {
-        converted = this.schema(value, base, seen);
+        use[key] = this.map(value as JsonObject, base, seen);
+      } else if (["items", "additionalProperties", "unevaluatedProperties", "unevaluatedItems", "not", "if", "then", "else", "contains", "propertyNames"].includes(key)) {
+        use[key] = this.schema(value, base, seen) as JsonObject;
       } else if (["allOf", "anyOf", "oneOf", "prefixItems"].includes(key)) {
-        converted = (value as Value[]).map((s) => this.schema(s, base, seen));
+        use[key] = (value as Value[]).map((s) => this.schema(s, base, seen)) as JsonObject[];
       } else {
-        converted = value;
+        use[key] = value as JsonObject;
       }
-      out = merge(out, key, converted);
     }
-    return out;
+    if (typeof schema["$ref"] !== "string") return use;
+    const ref = schema["$ref"];
+    const target = this.resolve(ref.startsWith("#") ? base + ref : ref, seen);
+    if (mergeable(target, use)) return merge(target, use);
+    const { allOf = [], ...rest } = use;
+    return { allOf: [target, ...(allOf as Value[])], ...rest } as JsonObject;
   }
 
   private map(schemas: JsonObject, base: string, seen: string[]): JsonObject {
@@ -75,32 +74,69 @@ export class Exporter {
   }
 }
 
+/** Keywords whose result depends on the keywords listed, in the same schema. */
+const DEPENDENT: Record<string, string[]> = {
+  additionalProperties: ["properties", "patternProperties", "additionalProperties", "unevaluatedProperties", "allOf", "anyOf", "oneOf", "if", "then", "else", "dependentSchemas"],
+  unevaluatedProperties: ["properties", "patternProperties", "additionalProperties", "unevaluatedProperties", "allOf", "anyOf", "oneOf", "if", "then", "else", "dependentSchemas"],
+  items: ["prefixItems", "items", "unevaluatedItems", "contains", "allOf", "anyOf", "oneOf", "if", "then", "else"],
+  unevaluatedItems: ["prefixItems", "items", "unevaluatedItems", "contains", "allOf", "anyOf", "oneOf", "if", "then", "else"],
+};
+
+/** Keywords that only annotate: the using schema's value wins. */
+const ANNOTATIONS = ["title", "description", "$comment", "examples", "default", "deprecated", "readOnly", "writeOnly"];
+
+/** Bounds that merge to the stricter value. */
+const BOUNDS: Record<string, (a: number, b: number) => number> = {
+  minimum: Math.max, exclusiveMinimum: Math.max, minLength: Math.max, minItems: Math.max, minProperties: Math.max,
+  maximum: Math.min, exclusiveMaximum: Math.min, maxLength: Math.min, maxItems: Math.min, maxProperties: Math.min,
+};
+
 /**
- * Adds a keyword of the using schema to the referenced one: properties merge, `required` lists join, other
- * keywords of the using schema win.
+ * Whether a referenced schema and the keywords next to the `$ref` can be one schema with the same meaning:
+ * no keyword in both, except `required`, bounds, annotations and `properties` (recursively), and no keyword
+ * that depends on the properties or items the other declares. Otherwise the export uses `allOf`.
  */
-const merge = (target: Value, key: string, value: Value): Value => {
-  if (!isObject(target)) return target;
-  const out: Record<string, Value> = { ...target };
-  if (!(key in out)) {
-    out[key] = value;
-  } else if (key === "required") {
-    out[key] = [...new Set([...(out[key] as string[]), ...(value as string[])])];
-  } else if (key === "properties") {
-    const merged: Record<string, Value> = { ...(out[key] as JsonObject) };
+const mergeable = (target: Value, use: JsonObject): boolean => {
+  if (target === true) return true;
+  if (!isObject(target)) return false;
+  for (const [key, value] of Object.entries(use)) {
+    if (!(key in target) || key === "required" || key in BOUNDS || ANNOTATIONS.includes(key) || JSON.stringify(target[key]) === JSON.stringify(value)) continue;
+    if (key !== "properties") return false;
+    const properties = target["properties"] as JsonObject;
     for (const [name, schema] of Object.entries(value as JsonObject)) {
-      const existing = merged[name];
-      if (isObject(existing) && isObject(schema)) {
-        let property: Value = existing;
-        for (const [k, v] of Object.entries(schema)) property = merge(property, k, v);
-        merged[name] = property;
-      } else {
-        merged[name] = schema;
-      }
+      if (name in properties && !(isObject(schema) && mergeable(properties[name], schema))) return false;
     }
-    out[key] = merged;
-  } else {
-    out[key] = value;
+  }
+  // The using schema's unevaluated* keywords see the referenced schema's results anyway.
+  const { unevaluatedProperties: _p, unevaluatedItems: _i, ...useDependent } = DEPENDENT;
+  const checks: [JsonObject, Record<string, string[]>, JsonObject][] = [[target, DEPENDENT, use], [use, useDependent, target]];
+  return checks.every(([schema, dependent, other]) =>
+    Object.entries(dependent).every(([keyword, keywords]) => !(keyword in schema) || !keywords.some((k) => k in other)));
+};
+
+/**
+ * The keywords next to the `$ref` added to the referenced schema: `required` lists join, the stricter bound
+ * wins, properties merge, annotations of the using schema win.
+ */
+const merge = (target: Value, use: JsonObject): Value => {
+  if (target === true) return use;
+  const out: Record<string, Value> = { ...(target as JsonObject) };
+  for (const [key, value] of Object.entries(use)) {
+    if (!(key in out)) {
+      out[key] = value;
+    } else if (key === "required") {
+      out[key] = [...new Set([...(out[key] as string[]), ...(value as string[])])];
+    } else if (key in BOUNDS) {
+      out[key] = BOUNDS[key]!(out[key] as number, value as number);
+    } else if (key !== "properties") {
+      out[key] = value;
+    } else {
+      const properties: Record<string, Value> = { ...(out[key] as JsonObject) };
+      for (const [name, schema] of Object.entries(value as JsonObject)) {
+        properties[name] = name in properties ? merge(properties[name], schema as JsonObject) : schema;
+      }
+      out[key] = properties;
+    }
   }
   return out;
 };

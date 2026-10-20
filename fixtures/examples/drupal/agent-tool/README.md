@@ -24,7 +24,7 @@ npx tsx repair-loop.mts
 | `#[ToolProperty(description: …, media_type: 'text/plain')]` on the image's alt text getter | `alt` references the image field item's `alt` (`drupal:field_item.image#/properties/alt`); the use site adds the description and `maxLength` |
 | `media_type`: plain text, HTML, URI | `portable:label`, `portable:html`, `portable:uri` |
 | Image IDs that must exist | `portable-check: {"drupal:ValidReference": {"target_type": "file"}}` |
-| Generated JSON Schema for MCP | `Exporter::inline()` / `Exporter.inline()`: references merged, named checks and `portable:` descriptions dropped |
+| Generated JSON Schema for MCP | `Exporter::inline()` / `Exporter.inline()`: references merged where that keeps the meaning, else `allOf`; named checks and `portable:` descriptions dropped |
 
 ## What it shows
 
