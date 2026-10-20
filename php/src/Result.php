@@ -11,19 +11,19 @@ final class Result implements \JsonSerializable
     /**
      * @param list<ValidationError> $errors
      * @param list<Unchecked> $unchecked
-     * @param array<string, Annotations> $annotations by instance location
+     * @param array<string, Annotations> $annotationsByLocation
      */
     public function __construct(
         public readonly array $errors,
         public readonly array $unchecked,
-        public readonly array $annotations,
+        public readonly array $annotationsByLocation,
     ) {
         $this->valid = $errors === [];
     }
 
     public function annotations(string $location): Annotations
     {
-        return $this->annotations[$location] ?? new Annotations();
+        return $this->annotationsByLocation[$location] ?? new Annotations();
     }
 
     /**
