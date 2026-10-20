@@ -1,0 +1,176 @@
+[
+  {
+    "description": "the stricter of minimum and exclusiveMinimum",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d1",
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMinimum": 5,
+      "maximum": 10,
+      "exclusiveMaximum": 20
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "number",
+      "minimum": 5,
+      "exclusiveMinimum": true,
+      "maximum": 10
+    },
+    "tests": [
+      {
+        "data": 6,
+        "valid": true
+      },
+      {
+        "data": 5,
+        "valid": false
+      },
+      {
+        "data": 10,
+        "valid": true
+      },
+      {
+        "data": 11,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "prefixItems and items become items and additionalItems",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d2",
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "string"
+        },
+        true
+      ],
+      "items": false
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        },
+        {}
+      ],
+      "additionalItems": false
+    },
+    "tests": [
+      {
+        "data": [
+          "a",
+          1
+        ],
+        "valid": true
+      },
+      {
+        "data": [
+          1
+        ],
+        "valid": false
+      },
+      {
+        "data": [
+          "a",
+          1,
+          2
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "boolean subschemas become schemas, keywords draft-04 doesn't have are dropped",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d3",
+      "type": "object",
+      "properties": {
+        "a": false,
+        "b": {
+          "type": "string",
+          "contentMediaType": "text/html",
+          "writeOnly": true,
+          "examples": [
+            "x"
+          ]
+        }
+      }
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "properties": {
+        "a": {
+          "not": {}
+        },
+        "b": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": {
+          "b": "x"
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "a": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedProperties next to allOf is refused",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:closed4",
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "string"
+          }
+        },
+        "unevaluatedProperties": false
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d4",
+      "$ref": "test:closed4",
+      "properties": {
+        "b": {
+          "type": "integer"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": {
+          "a": "x"
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "a": "x",
+          "b": 1
+        },
+        "valid": false
+      }
+    ]
+  }
+]

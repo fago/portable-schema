@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PortableSchema\Tests;
 
+use JsonSchema\Constraints\Constraint;
 use JsonSchema\Validator as Draft04Validator;
 use PHPUnit\Framework\TestCase;
 use PortableSchema\Exporter;
@@ -46,5 +47,23 @@ final class SdcHeroTest extends TestCase
             $validator->validate($data, $schema);
             $this->assertSame($case->valid, $validator->isValid(), $case->description . ': ' . json_encode($validator->getErrors()));
         }
+    }
+
+    /**
+     * Core's ComponentValidator: type casting, and props the schema doesn't declare are dropped before validation.
+     */
+    public function testDraft04ExportInCoresMode(): void
+    {
+        $schema = $this->exporter()->draft04(self::ID);
+        $differ = [];
+        foreach (Json::decodeFile(self::DIRECTORY . '/hero.test.json') as $case) {
+            $props = (object) array_intersect_key(get_object_vars($case->data), get_object_vars($schema->properties));
+            $validator = new Draft04Validator();
+            $validator->validate($props, $schema, Constraint::CHECK_MODE_TYPE_CAST);
+            if ($validator->isValid() !== $case->valid) {
+                $differ[] = $case->description;
+            }
+        }
+        $this->assertSame(["a prop the component doesn't have"], $differ);
     }
 }

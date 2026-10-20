@@ -12,7 +12,6 @@
         },
         "text": {
             "type": "string",
-            "contentMediaType": "text/html",
             "title": "Text"
         },
         "image": {

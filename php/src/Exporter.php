@@ -39,6 +39,12 @@ final class Exporter
         'maximum' => 'min', 'exclusiveMaximum' => 'min', 'maxLength' => 'min', 'maxItems' => 'min', 'maxProperties' => 'min',
     ];
 
+    /** Draft-04 keywords kept as they are; everything else not converted is dropped. */
+    private const DRAFT_04_KEYWORDS = ['title', 'description', 'default', 'type', 'enum', 'multipleOf', 'maxLength', 'minLength', 'pattern', 'maxItems', 'minItems', 'uniqueItems', 'maxProperties', 'minProperties', 'required'];
+
+    /** Keywords that evaluate properties in place, which draft-04's additionalProperties doesn't see. */
+    private const IN_PLACE = ['allOf', 'anyOf', 'oneOf', 'if', 'then', 'else', 'dependentSchemas', '$ref'];
+
     public function __construct(private readonly Registry $registry)
     {
     }
@@ -190,10 +196,19 @@ final class Exporter
         return $out;
     }
 
-    private function toDraft04(mixed $schema): mixed
+    /**
+     * @param bool $booleanAllowed whether draft-04 allows a boolean here (additionalProperties, additionalItems)
+     */
+    private function toDraft04(mixed $schema, bool $booleanAllowed = false): mixed
     {
+        if (is_bool($schema)) {
+            return $booleanAllowed ? $schema : ($schema ? new \stdClass() : (object) ['not' => new \stdClass()]);
+        }
         if (!$schema instanceof \stdClass) {
             return $schema;
+        }
+        if (isset($schema->unevaluatedProperties) && array_intersect(self::IN_PLACE, array_keys(get_object_vars($schema))) !== []) {
+            throw new \RuntimeException('Draft-04 has no unevaluatedProperties: additionalProperties would not see the properties of ' . implode(', ', array_intersect(self::IN_PLACE, array_keys(get_object_vars($schema)))));
         }
         $out = new \stdClass();
         foreach (get_object_vars($schema) as $key => $value) {
@@ -201,17 +216,26 @@ final class Exporter
                 case 'const':
                     $out->enum = [$value];
                     break;
+                case 'minimum':
+                case 'maximum':
                 case 'exclusiveMinimum':
                 case 'exclusiveMaximum':
-                    $out->{$key === 'exclusiveMinimum' ? 'minimum' : 'maximum'} = $value;
-                    $out->{$key} = true;
+                    $this->bound($out, $schema, str_ends_with($key, 'inimum') ? 'minimum' : 'maximum');
                     break;
                 case 'unevaluatedProperties':
-                    $out->additionalProperties = $this->toDraft04($value);
+                case 'additionalProperties':
+                    $out->additionalProperties = $this->toDraft04($value, true);
                     break;
                 case 'dependentRequired':
                 case 'dependentSchemas':
-                    $out->dependencies = (object) array_merge(get_object_vars($out->dependencies ?? new \stdClass()), get_object_vars($this->mapDraft04($value)));
+                    $dependencies = $key === 'dependentRequired' ? $value : $this->mapDraft04($value);
+                    foreach (get_object_vars($dependencies) as $name => $dependency) {
+                        if (isset($out->dependencies->{$name})) {
+                            throw new \RuntimeException("Draft-04 dependencies can't hold both dependentRequired and dependentSchemas for $name");
+                        }
+                        $out->dependencies ??= new \stdClass();
+                        $out->dependencies->{$name} = $dependency;
+                    }
                     break;
                 case 'format':
                     if (in_array($value, self::DRAFT_04_FORMATS, true)) {
@@ -222,29 +246,52 @@ final class Exporter
                 case 'patternProperties':
                     $out->{$key} = $this->mapDraft04($value);
                     break;
+                case 'prefixItems':
+                    $out->items = array_map(fn ($s) => $this->toDraft04($s), $value);
+                    if (property_exists($schema, 'items')) {
+                        $out->additionalItems = $this->toDraft04($schema->items, true);
+                    }
+                    break;
                 case 'items':
-                case 'additionalProperties':
+                    if (!property_exists($schema, 'prefixItems')) {
+                        $out->items = $this->toDraft04($value);
+                    }
+                    break;
                 case 'not':
-                    $out->{$key} = $this->toDraft04($value);
+                    $out->not = $this->toDraft04($value);
                     break;
                 case 'allOf':
                 case 'anyOf':
                 case 'oneOf':
-                    $out->{$key} = array_map($this->toDraft04(...), $value);
-                    break;
-                case 'prefixItems':
-                case 'contains':
-                case 'propertyNames':
-                case 'if':
-                case 'then':
-                case 'else':
-                case '$defs':
+                    $out->{$key} = array_map(fn ($s) => $this->toDraft04($s), $value);
                     break;
                 default:
-                    $out->{$key} = $value;
+                    if (in_array($key, self::DRAFT_04_KEYWORDS, true)) {
+                        $out->{$key} = $value;
+                    }
             }
         }
         return $out;
+    }
+
+    /**
+     * The stricter of `minimum` and `exclusiveMinimum` (or the maximums), as draft-04's boolean exclusive form.
+     */
+    private function bound(\stdClass $out, \stdClass $schema, string $keyword): void
+    {
+        if (isset($out->{$keyword})) {
+            return;
+        }
+        $exclusive = 'exclusive' . ucfirst($keyword);
+        $inclusive = $schema->{$keyword} ?? null;
+        $strict = $schema->{$exclusive} ?? null;
+        $lower = $keyword === 'minimum';
+        if ($strict !== null && ($inclusive === null || ($lower ? $strict >= $inclusive : $strict <= $inclusive))) {
+            $out->{$keyword} = $strict;
+            $out->{$exclusive} = true;
+        } else {
+            $out->{$keyword} = $inclusive;
+        }
     }
 
     private function mapDraft04(\stdClass $schemas): \stdClass

@@ -141,26 +141,46 @@ const merge = (target: Value, use: JsonObject): Value => {
   return out;
 };
 
-const toDraft04 = (schema: Value): Value => {
+/** Draft-04 keywords kept as they are; everything else not converted is dropped. */
+const DRAFT_04_KEYWORDS = ["title", "description", "default", "type", "enum", "multipleOf", "maxLength", "minLength", "pattern", "maxItems", "minItems", "uniqueItems", "maxProperties", "minProperties", "required"];
+
+/** Keywords that evaluate properties in place, which draft-04's additionalProperties doesn't see. */
+const IN_PLACE = ["allOf", "anyOf", "oneOf", "if", "then", "else", "dependentSchemas", "$ref"];
+
+/** @param booleanAllowed whether draft-04 allows a boolean here (additionalProperties, additionalItems) */
+const toDraft04 = (schema: Value, booleanAllowed = false): Value => {
+  if (typeof schema === "boolean") return booleanAllowed ? schema : schema ? {} : { not: {} };
   if (!isObject(schema)) return schema;
+  const inPlace = IN_PLACE.filter((k) => k in schema);
+  if ("unevaluatedProperties" in schema && inPlace.length > 0) {
+    throw new Error("Draft-04 has no unevaluatedProperties: additionalProperties would not see the properties of " + inPlace.join(", "));
+  }
   const out: Record<string, Value> = {};
   for (const [key, value] of Object.entries(schema)) {
     switch (key) {
       case "const":
         out["enum"] = [value];
         break;
+      case "minimum":
+      case "maximum":
       case "exclusiveMinimum":
       case "exclusiveMaximum":
-        out[key === "exclusiveMinimum" ? "minimum" : "maximum"] = value;
-        out[key] = true;
+        bound(out, schema, key.endsWith("inimum") ? "minimum" : "maximum");
         break;
       case "unevaluatedProperties":
-        out["additionalProperties"] = toDraft04(value);
+      case "additionalProperties":
+        out["additionalProperties"] = toDraft04(value, true);
         break;
       case "dependentRequired":
-      case "dependentSchemas":
-        out["dependencies"] = { ...(out["dependencies"] as JsonObject | undefined), ...mapDraft04(value as JsonObject) };
+      case "dependentSchemas": {
+        const dependencies = key === "dependentRequired" ? value as JsonObject : mapDraft04(value as JsonObject);
+        for (const [name, dependency] of Object.entries(dependencies)) {
+          const existing = (out["dependencies"] ??= {}) as Record<string, Value>;
+          if (name in existing) throw new Error(`Draft-04 dependencies can't hold both dependentRequired and dependentSchemas for ${name}`);
+          existing[name] = dependency;
+        }
         break;
+      }
       case "format":
         if (DRAFT_04_FORMATS.includes(value as string)) out["format"] = value;
         break;
@@ -168,29 +188,40 @@ const toDraft04 = (schema: Value): Value => {
       case "patternProperties":
         out[key] = mapDraft04(value as JsonObject);
         break;
+      case "prefixItems":
+        out["items"] = (value as Value[]).map((s) => toDraft04(s));
+        if ("items" in schema) out["additionalItems"] = toDraft04(schema["items"], true);
+        break;
       case "items":
-      case "additionalProperties":
+        if (!("prefixItems" in schema)) out["items"] = toDraft04(value);
+        break;
       case "not":
-        out[key] = toDraft04(value);
+        out["not"] = toDraft04(value);
         break;
       case "allOf":
       case "anyOf":
       case "oneOf":
-        out[key] = (value as Value[]).map(toDraft04);
-        break;
-      case "prefixItems":
-      case "contains":
-      case "propertyNames":
-      case "if":
-      case "then":
-      case "else":
-      case "$defs":
+        out[key] = (value as Value[]).map((s) => toDraft04(s));
         break;
       default:
-        out[key] = value;
+        if (DRAFT_04_KEYWORDS.includes(key)) out[key] = value;
     }
   }
   return out;
+};
+
+/** The stricter of `minimum` and `exclusiveMinimum` (or the maximums), as draft-04's boolean exclusive form. */
+const bound = (out: Record<string, Value>, schema: JsonObject, keyword: "minimum" | "maximum"): void => {
+  if (keyword in out) return;
+  const exclusive = keyword === "minimum" ? "exclusiveMinimum" : "exclusiveMaximum";
+  const inclusive = schema[keyword] as number | undefined;
+  const strict = schema[exclusive] as number | undefined;
+  if (strict !== undefined && (inclusive === undefined || (keyword === "minimum" ? strict >= inclusive : strict <= inclusive))) {
+    out[keyword] = strict;
+    out[exclusive] = true;
+  } else {
+    out[keyword] = inclusive;
+  }
 };
 
 const mapDraft04 = (schemas: JsonObject): JsonObject =>
