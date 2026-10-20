@@ -31,7 +31,7 @@ npx tsx repair-loop.mts
 - **One description inside and outside Drupal:** the image's alt text rules come from the field type, not from the tool.
 - **Standard-only export:** `inputSchema` and `outputSchema` are plain JSON Schema 2020-12 that MCP clients and LLM providers accept. Named checks are not in it; they run in the tool implementation.
 - **Repair loop:** an invalid call returns an MCP tool error with one message per problem as text and the structured errors (location, code, params, message), so the agent can fix exactly the wrong arguments. A check on a value with the wrong type is not reported, so the agent sees the type error alone.
-- **Cases:** valid and invalid inputs (empty query, limit too high, an unknown argument, a missing query, empty alt text, a string ID, a missing image) and outputs.
+- **Cases:** valid and invalid inputs (empty query, limit too high, an unknown argument, a missing query, empty alt text, a string ID, a missing image), and outputs of both tools (missing alt text, an unknown key, a string ID).
 
 ## Gaps
 

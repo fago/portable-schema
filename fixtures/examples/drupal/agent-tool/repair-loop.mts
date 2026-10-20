@@ -13,7 +13,7 @@ const TOOLS: Record<string, { calls: string[]; result: string }> = {
       '{"query": "skiing photos", "limit": 100, "sort": "date"}',
       '{"query": "ski", "limit": 5}',
     ],
-    result: '{"images": [{"id": 7, "title": "Ski tour", "url": "https://dri.es/photos/ski-tour.jpg", "alt": "Two skiers on a ridge above the clouds"}]}',
+    result: '{"images": [{"id": 7, "title": "Ski tour", "url": "https://example.com/photos/ski-tour.jpg", "alt": "Two skiers on a ridge above the clouds"}]}',
   },
   update_image_alt: {
     calls: [
@@ -21,7 +21,7 @@ const TOOLS: Record<string, { calls: string[]; result: string }> = {
       '{"image_id": 70, "alt": "Two skiers on a ridge above the clouds"}',
       '{"image_id": 7, "alt": "Two skiers on a ridge above the clouds"}',
     ],
-    result: '{"id": 7, "url": "https://dri.es/photos/ski-tour.jpg", "alt": "Two skiers on a ridge above the clouds"}',
+    result: '{"id": 7, "url": "https://example.com/photos/ski-tour.jpg", "alt": "Two skiers on a ridge above the clouds"}',
   },
 };
 

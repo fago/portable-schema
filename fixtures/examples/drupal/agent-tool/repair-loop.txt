@@ -233,7 +233,7 @@
             {
                 "id": 7,
                 "title": "Ski tour",
-                "url": "https://dri.es/photos/ski-tour.jpg",
+                "url": "https://example.com/photos/ski-tour.jpg",
                 "alt": "Two skiers on a ridge above the clouds"
             }
         ]
@@ -304,7 +304,7 @@
 ← valid output: {
     "structuredContent": {
         "id": 7,
-        "url": "https://dri.es/photos/ski-tour.jpg",
+        "url": "https://example.com/photos/ski-tour.jpg",
         "alt": "Two skiers on a ridge above the clouds"
     }
 }
