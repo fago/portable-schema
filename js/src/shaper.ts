@@ -56,8 +56,7 @@ export class Shaper {
     const mistyped = new Set(shaped.errors.filter((e) => e.code === "type").map((e) => e.instanceLocation));
     const checked = (code: string, location: string): boolean => !code.startsWith("check.") || !mistyped.has(location);
 
-    let errors = withoutKnownProperties(
-      evaluated(root),
+    let errors = withoutReportedProperties(
       shaped.errors.filter((e) => this.reported(e.instanceLocation) && checked(e.code, e.instanceLocation)),
     );
     errors.sort((a, b) => Pointer.compare(a.instanceLocation, b.instanceLocation) || Pointer.compare(a.keywordLocation, b.keywordLocation));
@@ -151,10 +150,14 @@ export class Shaper {
 
     const shaped = new Shaped();
     const names = isObject(instance) ? Object.keys(instance) : [];
+    let known: Set<string> | null = null;
     node.children.forEach((child, i) => {
       if (child.boolean && !child.valid && PROPERTIES.includes(node.keyword)) {
-        const segments = Pointer.segments(child.instanceLocation);
-        shaped.errors.push(error("unknownProperty", { property: segments[segments.length - 1] }));
+        known ??= node.keyword === "unevaluatedProperties" ? evaluated(parent) : new Set();
+        if (!known.has(child.instanceLocation)) {
+          const segments = Pointer.segments(child.instanceLocation);
+          shaped.errors.push(error("unknownProperty", { property: segments[segments.length - 1] }));
+        }
       } else if (node.keyword === "propertyNames" && !child.valid) {
         shaped.errors.push(error("propertyNames", { property: names[i] ?? null }));
       } else {
@@ -336,20 +339,18 @@ export class Shaper {
   }
 }
 
-/**
- * Drops `unknownProperty` errors for properties that are evaluated or have another error at or below them:
- * one error per problem, also where the base libraries differ in what a failed subschema evaluated.
- */
-const withoutKnownProperties = (evaluated: Set<string>, errors: ValidationError[]): ValidationError[] =>
+/** Drops `unknownProperty` errors for properties with another error at or below them: one error per problem. */
+const withoutReportedProperties = (errors: ValidationError[]): ValidationError[] =>
   errors.filter((e) => {
     if (e.code !== "unknownProperty") return true;
     const property = Pointer.append(e.instanceLocation, String(e.params["property"]));
-    return !evaluated.has(property) && !errors.some((other) => Pointer.isWithin(other.instanceLocation, property));
+    return !errors.some((other) => Pointer.isWithin(other.instanceLocation, property));
   });
 
 /**
  * Instance locations evaluated by a schema other than `false`, without the subschemas that drop their
- * annotations and whose errors are not reported: failed `anyOf`/`oneOf` branches and `if` conditions, and `not`.
+ * annotations: failed `anyOf`/`oneOf` branches and `if` conditions, and `not`. For `unevaluatedProperties`,
+ * since the base libraries differ in what a failed subschema evaluated.
  */
 const evaluated = (node: SchemaNode, locations = new Set<string>()): Set<string> => {
   if (!node.boolean) locations.add(node.instanceLocation);
