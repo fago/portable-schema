@@ -43,6 +43,24 @@ Every Portable Schema is valid JSON Schema. Generic validators ignore the added 
 
 Portable Schema itself is not tied to any framework. Integrations, such as one for Drupal, generate their types and catalogs from the system they describe.
 
+## Built on
+
+| Standard | Status | Used for |
+|---|---|---|
+| [JSON Schema 2020-12](https://json-schema.org/specification) (Core, Validation) | Current release | Base dialect |
+| [JSON Schema next release](https://github.com/json-schema-org/json-schema-spec) | In progress, IETF `jsonschema` working group | Alignment of the profile: `x-` annotations, unknown keywords, `format` |
+| [JSON Schema output formats](https://github.com/json-schema-org/json-schema-spec/tree/main/specs/output) | Separate spec of the next release | Result format |
+| [JSON Schema vocabularies](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/proposals/vocabularies.md) | Proposal, extracted from core | Declaring the added keywords |
+| [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) | Registry of the next release | Allowed `format` values |
+| [JSON Pointer, RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) | Standard | Error and instance locations |
+| [Relative JSON Pointer](https://datatracker.ietf.org/doc/html/draft-hha-relative-json-pointer) | Internet-Draft | `source` in `portable-typeBy` and `portable-refine`, `pointer` in `portable-compare` |
+| [URI Template, RFC 6570](https://www.rfc-editor.org/rfc/rfc6570) | Standard | `href` in `portable-typeBy` |
+| [JSON Hyper-Schema 2019-09](https://json-schema.org/draft/2019-09/json-schema-hypermedia) | Dormant | Shape of `x-portable-links` (Link Description Object) |
+| [JSON, RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) and [I-JSON, RFC 7493](https://www.rfc-editor.org/rfc/rfc7493) | Standards | Data model; number range, no duplicate keys |
+| [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) | Standard | Dates and times |
+| [YAML 1.2](https://yaml.org/spec/1.2.2/) core schema | Standard | YAML input |
+| [JSON-Schema-Test-Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) format and [Bowtie](https://bowtie.report) | De-facto | Fixture format, conformance runs |
+
 ## Layout
 
 | Path | Contents |
