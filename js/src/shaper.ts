@@ -60,7 +60,7 @@ export class Shaper {
     const checked = (code: string, location: string): boolean => !code.startsWith("check.") || !mistyped.has(location);
 
     let errors = withoutReportedProperties(
-      shaped.errors.filter((e) => this.reported(e.instanceLocation) && checked(e.code, e.instanceLocation)),
+      shaped.errors.filter((e) => this.reported(subject(e)) && checked(e.code, e.instanceLocation)),
     );
     errors.sort((a, b) => Pointer.compare(a.instanceLocation, b.instanceLocation) || Pointer.compare(a.keywordLocation, b.keywordLocation));
     errors = unique(errors, (e) => [e.instanceLocation, e.code, e.params]);
@@ -98,7 +98,7 @@ export class Shaper {
       if (typeFailed && keyword.keyword !== "type") continue;
       shaped.add(this.keyword(keyword, node, location));
     }
-    shaped.errors = shaped.errors.filter((e) => !this.missing(e.instanceLocation));
+    shaped.errors = shaped.errors.filter((e) => !this.missing(subject(e)));
     shaped.unchecked = shaped.unchecked.filter((u) => !this.missing(u.instanceLocation));
     return shaped;
   }
@@ -345,9 +345,13 @@ export class Shaper {
 const withoutReportedProperties = (errors: ValidationError[]): ValidationError[] =>
   errors.filter((e) => {
     if (e.code !== "unknownProperty") return true;
-    const property = Pointer.append(e.instanceLocation, String(e.params["property"]));
+    const property = subject(e);
     return !errors.some((other) => Pointer.isWithin(other.instanceLocation, property));
   });
+
+/** The location an error is about: the named property for errors at its parent (`required`, `unknownProperty`, …). */
+const subject = (e: ValidationError): string =>
+  typeof e.params["property"] === "string" ? Pointer.append(e.instanceLocation, e.params["property"]) : e.instanceLocation;
 
 /**
  * Instance locations evaluated by a schema other than `false`, without `skip` and the subschemas that drop their

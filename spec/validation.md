@@ -33,7 +33,7 @@ For saving incomplete data: drafts, PATCH requests, multi-step forms. With `part
 
 With `partial: true` and `emptyAsMissing: true`, a property whose value is `""`, `[]` or `{}` is treated as missing:
 
-- it causes no errors;
+- it causes no errors, not even `unknownProperty`;
 - `minLength`, `minItems` and `minProperties` don't apply to it;
 - it isn't removed from the data.
 
@@ -41,6 +41,6 @@ Without `partial`, the option has no effect.
 
 ### `locations`
 
-For validating part of the data, e.g. one form field on blur or one step of a wizard. Only results whose `instanceLocation` equals one of the given pointers, or lies below one, are reported.
+For validating part of the data, e.g. one form field on blur or one step of a wizard. Only results whose `instanceLocation` equals one of the given pointers, or lies below one, are reported. An error that names a property in `params.property` (`required`, `unknownProperty`, `propertyNames`, `dependentRequired`) counts at that property's location, so `["/a/c"]` reports `c` missing from `/a`.
 
 Locations combine with `partial`, e.g. to validate the fields of one wizard step while later steps are still empty.

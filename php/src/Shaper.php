@@ -54,7 +54,7 @@ final class Shaper
 
         $errors = $this->withoutReportedProperties(array_values(array_filter(
             $shaped->errors,
-            fn (ValidationError $e) => $this->reported($e->instanceLocation) && $checked($e->code, $e->instanceLocation),
+            fn (ValidationError $e) => $this->reported(self::subject($e)) && $checked($e->code, $e->instanceLocation),
         )));
         usort($errors, fn (ValidationError $a, ValidationError $b) => Pointer::compare($a->instanceLocation, $b->instanceLocation) ?: Pointer::compare($a->keywordLocation, $b->keywordLocation));
         $errors = $this->unique($errors, fn (ValidationError $e) => [$e->instanceLocation, $e->code, $e->params]);
@@ -99,7 +99,7 @@ final class Shaper
             }
             $shaped->add($this->keyword($keyword, $node, $location));
         }
-        $shaped->errors = array_values(array_filter($shaped->errors, fn (ValidationError $e) => !$this->missing($e->instanceLocation)));
+        $shaped->errors = array_values(array_filter($shaped->errors, fn (ValidationError $e) => !$this->missing(self::subject($e))));
         $shaped->unchecked = array_values(array_filter($shaped->unchecked, fn (Unchecked $u) => !$this->missing($u->instanceLocation)));
         return $shaped;
     }
@@ -173,7 +173,7 @@ final class Shaper
             if ($e->code !== 'unknownProperty') {
                 return true;
             }
-            $property = Pointer::append($e->instanceLocation, (string) $e->params['property']);
+            $property = self::subject($e);
             foreach ($errors as $other) {
                 if (Pointer::isWithin($other->instanceLocation, $property)) {
                     return false;
@@ -502,6 +502,15 @@ final class Shaper
             $seen[$key] = true;
         }
         return $indexes;
+    }
+
+    /**
+     * The location an error is about: the named property for errors at its parent (`required`, `unknownProperty`, …).
+     */
+    private static function subject(ValidationError $e): string
+    {
+        $property = $e->params['property'] ?? null;
+        return is_string($property) ? Pointer::append($e->instanceLocation, $property) : $e->instanceLocation;
     }
 
     /**
