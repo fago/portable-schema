@@ -1,0 +1,58 @@
+{
+  "type": { "text": "{label} has the wrong type." },
+  "required": { "text": "{label} is required." },
+  "unknownProperty": { "text": "{label}: “{property}” is not allowed here." },
+  "const": { "text": "{label} must be “{expected}”." },
+  "enum": { "text": "{label}: “{value}” is not an allowed value. Allowed: {allowed}." },
+  "minLength": {
+    "plural": "limit",
+    "one": "{label} must be at least {limit} character long.",
+    "other": "{label} must be at least {limit} characters long."
+  },
+  "maxLength": {
+    "plural": "limit",
+    "one": "{label} must be at most {limit} character long.",
+    "other": "{label} must be at most {limit} characters long."
+  },
+  "pattern": { "text": "{label} has an invalid format." },
+  "format": { "text": "{label} is not a valid {format}." },
+  "minimum": { "text": "{label} must be at least {limit}." },
+  "maximum": { "text": "{label} must be at most {limit}." },
+  "exclusiveMinimum": { "text": "{label} must be greater than {limit}." },
+  "exclusiveMaximum": { "text": "{label} must be less than {limit}." },
+  "multipleOf": { "text": "{label} must be a multiple of {divisor}." },
+  "minItems": {
+    "plural": "limit",
+    "one": "{label} must have at least {limit} item.",
+    "other": "{label} must have at least {limit} items."
+  },
+  "maxItems": {
+    "plural": "limit",
+    "one": "{label} must have at most {limit} item.",
+    "other": "{label} must have at most {limit} items."
+  },
+  "uniqueItems": { "text": "{label} must not contain duplicates." },
+  "minProperties": {
+    "plural": "limit",
+    "one": "{label} must have at least {limit} entry.",
+    "other": "{label} must have at least {limit} entries."
+  },
+  "maxProperties": {
+    "plural": "limit",
+    "one": "{label} must have at most {limit} entry.",
+    "other": "{label} must have at most {limit} entries."
+  },
+  "propertyNames": { "text": "{label}: “{property}” is not a valid key." },
+  "dependentRequired": { "text": "{label} is required when {dependencyLabel} is set." },
+  "not": { "text": "{label} has a value that is not allowed." },
+  "oneOf": { "text": "{label} must match exactly one of the allowed variants." },
+  "anyOf": { "text": "{label} must match at least one of the allowed variants." },
+  "typeBy.unresolved": { "text": "{label}: there is no definition for “{value}”." },
+  "compare.lt": { "text": "{label} must be less than {otherLabel}." },
+  "compare.le": { "text": "{label} must not be greater than {otherLabel}." },
+  "compare.eq": { "text": "{label} must be equal to {otherLabel}." },
+  "compare.ne": { "text": "{label} must differ from {otherLabel}." },
+  "compare.ge": { "text": "{label} must not be less than {otherLabel}." },
+  "compare.gt": { "text": "{label} must be greater than {otherLabel}." },
+  "unchecked": { "text": "{label} could not be checked." }
+}
