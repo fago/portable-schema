@@ -20,3 +20,4 @@ What follows from it, good and bad.
 | No. | Decision |
 |---|---|
 | [0001](0001-message-catalog-format.md) | Message catalog: `{name}` placeholders, at most one plural parameter |
+| [0002](0002-relative-json-pointer.md) | Relative JSON Pointer for references within data |
