@@ -8,3 +8,4 @@ export { Validator, type ValidateOptions } from "./validator.js";
 export { Catalog } from "./message/catalog.js";
 export { Formatter } from "./message/formatter.js";
 export { MessageRequest, StandaloneTranslator, type Translator } from "./message/translator.js";
+export { DRAFT_04, DRAFT_2020_12, Exporter } from "./exporter.js";
