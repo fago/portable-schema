@@ -9,5 +9,8 @@
     "type": "git",
     "url": "git+https://github.com/fago/portable-schema.git",
     "directory": "js"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
