@@ -20,7 +20,7 @@ data ──► normalize ──► evaluate keywords ──► shape errors ─�
    - precompute regexes, enum sets and URI templates;
    - record locations.
 
-   It generates no code. The compiled schema is cached. `portable-typeBy` targets are compiled lazily, on first use.
+   It generates no code. The compiled schema is cached. `portable-typeBy` targets must be resolvable from the registry at validation time; implementations may compile them eagerly or lazily, with the same result.
 2. **Normalize** the data.
 3. **Evaluate:** interpret the compiled schema against the data, collecting annotations.
 4. **Shape** errors, then apply the reporting options (`partial`, `emptyAsMissing`, `locations`).
