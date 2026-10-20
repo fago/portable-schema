@@ -30,11 +30,6 @@ export class Tracer {
   private stack: (SchemaNode | KeywordNode)[] = [];
   private rootNode: SchemaNode | null = null;
 
-  reset(): void {
-    this.stack = [];
-    this.rootNode = null;
-  }
-
   root(): SchemaNode | null {
     return this.rootNode;
   }

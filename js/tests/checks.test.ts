@@ -46,4 +46,17 @@ describe("named checks", () => {
     expect(result.valid).toBe(true);
     expect(result.unchecked.map((u) => u.toJSON())).toEqual([{ instanceLocation: "/0", code: "check.test:Unique", reason: "error" }]);
   });
+
+  test("a callback can validate", async () => {
+    let nested = false;
+    const v: Validator = (await validator()).withCheck("test:Unique", (requests) => {
+      if (!nested) {
+        nested = true;
+        v.validate(["x"], "test:schema");
+      }
+      return requests.map(() => new CheckResult([{ code: "check.test:Unique", params: {} }]));
+    });
+    const result = v.validate(["a", 1], "test:schema");
+    expect(result.errors.map((e) => `${e.instanceLocation} ${e.code}`)).toEqual(["/0 check.test:Unique", "/1 type"]);
+  });
 });

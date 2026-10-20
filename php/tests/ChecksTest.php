@@ -61,4 +61,19 @@ final class ChecksTest extends TestCase
         $this->assertTrue($result->valid);
         $this->assertSame([['instanceLocation' => '/0', 'code' => 'check.test:Unique', 'reason' => 'error']], array_map(fn ($u) => $u->toArray(), $result->unchecked));
     }
+
+    public function testCallbackCanValidate(): void
+    {
+        $validator = $this->validator();
+        $nested = false;
+        $validator = $validator->withCheck('test:Unique', function (array $requests) use (&$validator, &$nested) {
+            if (!$nested) {
+                $nested = true;
+                $validator->validate(['x'], 'test:schema');
+            }
+            return array_map(fn ($r) => new CheckResult([['code' => 'check.test:Unique', 'params' => []]]), $requests);
+        });
+        $result = $validator->validate(['a', 1], 'test:schema');
+        $this->assertSame(['/0 check.test:Unique', '/1 type'], array_map(fn ($e) => $e->instanceLocation . ' ' . $e->code, $result->errors));
+    }
 }

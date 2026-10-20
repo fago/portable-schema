@@ -37,10 +37,6 @@ export type CheckCallback = (requests: CheckRequest[]) => CheckResult[];
 export class Checks {
   private requests: CheckRequest[] = [];
 
-  reset(): void {
-    this.requests = [];
-  }
-
   add(request: CheckRequest): void {
     this.requests.push(request);
   }

@@ -74,8 +74,10 @@ final class Validator
         $this->tracer->reset();
         $this->checks->reset();
         $compiled->validate(new ValidationContext($data, $this->loader, null, null, [], null, PHP_INT_MAX, false));
+        // Taken before the checks run: a callback may validate again.
+        $root = $this->tracer->root();
         $this->checks->run($this->callbacks, $this->providers);
 
-        return (new Shaper($this->registry, $data, $partial, $emptyAsMissing, $locations))->shape($this->tracer->root());
+        return (new Shaper($this->registry, $data, $partial, $emptyAsMissing, $locations))->shape($root);
     }
 }
