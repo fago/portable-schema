@@ -13,6 +13,7 @@ Status: early planning. Nothing here is stable yet.
   - translatability;
   - UI hints;
   - data sources.
+- **Human, localized error messages.** Errors are structured (location, code, parameters) and shaped to one error per problem. A shared formatter turns them into messages using the schema's labels; hosts translate them with their own system, e.g. Drupal `t()` or vue-i18n. The same text in PHP and JS.
 - **Schemas that depend on values.** Types selected by a data value from an open set, computed narrowing and cross-field rules. All of them can only narrow what is valid.
 - **System facts as data.** References to things a system provides (plugins, bundles, fields, modules) are checked against catalogs. Catalogs come from the live system or from a schema dump, so validation can also run offline.
 - **Stay standard.** Every Portable Schema is valid JSON Schema 2020-12. Generic validators ignore the added keywords and still check the structure; a standard-only export serves tools that need plain JSON Schema.
@@ -67,6 +68,7 @@ Portable Schema itself is not tied to any framework. Integrations, such as one f
 |---|---|
 | `spec/` | The normative spec: meta-schemas under `spec/v1/` and prose per topic |
 | `types/` | The generic type library |
+| `messages/` | The default message catalog (English source texts) |
 | `fixtures/conformance/` | Conformance cases that both implementations must pass |
 | `fixtures/examples/` | Worked examples used for planning, e.g. schemas an integration would generate |
 | `php/` | PHP implementation (`fago/portable-schema`) |
