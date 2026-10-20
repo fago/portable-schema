@@ -9,6 +9,7 @@ use Opis\JsonSchema\Keyword;
 use Opis\JsonSchema\Parsers\KeywordParser;
 use Opis\JsonSchema\Parsers\SchemaParser;
 use PortableSchema\Trace\Tracer;
+use PortableSchema\UriTemplate;
 
 final class TypeByParser extends KeywordParser
 {
@@ -29,6 +30,8 @@ final class TypeByParser extends KeywordParser
             return null;
         }
         $value = $this->keywordValue($schema);
+        UriTemplate::assertTypeBy($value->href);
+        UriTemplate::assertTypeBy($value->fallback ?? '');
         return new TypeByKeyword(
             $value->href,
             get_object_vars($value->source),

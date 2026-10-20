@@ -1,21 +1,29 @@
 /**
- * RFC 6570 expansion, levels 1 and 2: {var}, {+var}, {#var}.
+ * RFC 6570 expansion of {var} and {+var}.
  */
 const UNRESERVED = /[A-Za-z0-9\-._~]/u;
 const RESERVED = /[:/?#[\]@!$&'()*+,;=]/u;
 
 export const expand = (template: string, variables: Record<string, string>): string =>
-  template.replace(/\{([+#]?)([^}]*)\}/gu, (_match, operator: string, list: string) => {
-    const values = list.split(",")
+  template.replace(/\{(\+?)([^}]*)\}/gu, (_match, operator: string, list: string) =>
+    list.split(",")
       .filter((name) => variables[name] !== undefined)
-      .map((name) => encode(variables[name]!, operator !== ""));
-    if (values.length === 0) return "";
-    return (operator === "#" ? "#" : "") + values.join(",");
-  });
+      .map((name) => encode(variables[name]!, operator !== ""))
+      .join(","));
 
-/** Variable names in the order they appear. */
-export const variables = (template: string): string[] =>
-  [...template.matchAll(/\{[+#]?([^}]*)\}/gu)].flatMap((m) => m[1]!.split(","));
+/** A comma-separated list of variable names. */
+const NAMES = "[A-Za-z0-9_]+(?:\\.[A-Za-z0-9_]+)*(?:,[A-Za-z0-9_]+(?:\\.[A-Za-z0-9_]+)*)*";
+
+/**
+ * Refuses a portable-typeBy template the prototype can't select by: expressions beyond {var} and {+var}, and
+ * fragments, since targets are registry ids.
+ */
+export const assertTypeBy = (template: string): void => {
+  const expressions = template.match(/\{[^}]*\}/gu) ?? [];
+  if (template.includes("#") || !expressions.every((e) => new RegExp(`^\\{\\+?${NAMES}\\}$`, "u").test(e))) {
+    throw new Error(`portable-typeBy href ${template}: only {var} and {+var} without a fragment are supported`);
+  }
+};
 
 const encode = (value: string, allowReserved: boolean): string => {
   let out = "";

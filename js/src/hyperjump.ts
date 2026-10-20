@@ -15,6 +15,7 @@ import * as Pointer from "./pointer.js";
 import type { Registry } from "./registry.js";
 import type { KeywordNode, Tracer } from "./trace.js";
 import { resolve, TypeBy } from "./type-by.js";
+import * as UriTemplate from "./uri-template.js";
 
 export const DIALECT = "https://portable-schema.dev/v1/schema";
 
@@ -48,6 +49,8 @@ const setUp = (): void => {
     id: KEYWORD + "typeBy",
     compile: async (schema, ast, parentSchema) => {
       const value = Browser.value<{ href: string; source: Record<string, string>; fallback?: string }>(schema);
+      UriTemplate.assertTypeBy(value.href);
+      UriTemplate.assertTypeBy(value.fallback ?? "");
       const base = canonicalUri(parentSchema).split("#")[0]!;
       const fallback = value.fallback === undefined ? null : resolve(value.fallback, base);
       const pattern = templatePattern(resolve(value.href, base));
