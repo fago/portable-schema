@@ -1,0 +1,17 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:field_item.boolean",
+    "title": "Boolean",
+    "description": "Items of boolean fields, with the field type's default settings.",
+    "type": "object",
+    "properties": {
+        "value": {
+            "title": "Boolean value",
+            "$ref": "portable:boolean"
+        }
+    },
+    "required": [
+        "value"
+    ],
+    "unevaluatedProperties": false
+}

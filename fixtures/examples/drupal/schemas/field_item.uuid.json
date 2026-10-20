@@ -1,0 +1,18 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:field_item.uuid",
+    "title": "UUID",
+    "description": "Items of uuid fields, with the field type's default settings.",
+    "type": "object",
+    "properties": {
+        "value": {
+            "title": "Text value",
+            "$ref": "portable:string",
+            "maxLength": 128
+        }
+    },
+    "required": [
+        "value"
+    ],
+    "unevaluatedProperties": false
+}

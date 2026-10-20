@@ -1,0 +1,864 @@
+[
+  {
+    "description": "a complete article",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      },
+      "drupal:ReferenceAccess": {
+        "errors": []
+      },
+      "drupal:FileExtension": {
+        "errors": []
+      }
+    },
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "title": [
+        {
+          "value": "One description, inside and outside Drupal"
+        }
+      ],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "restricted_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "description": "without callbacks, reference and file checks are unchecked",
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "title": [
+        {
+          "value": "One description, inside and outside Drupal"
+        }
+      ],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "restricted_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        }
+      ]
+    },
+    "valid": true,
+    "unchecked": [
+      {
+        "instanceLocation": "/field_image/0",
+        "code": "check.drupal:ReferenceAccess",
+        "reason": "noProvider"
+      },
+      {
+        "instanceLocation": "/field_image/0",
+        "code": "check.drupal:FileExtension",
+        "reason": "noProvider"
+      },
+      {
+        "instanceLocation": "/field_image/0/target_id",
+        "code": "check.drupal:ValidReference",
+        "reason": "noProvider"
+      },
+      {
+        "instanceLocation": "/type/0/target_id",
+        "code": "check.drupal:ValidReference",
+        "reason": "noProvider"
+      },
+      {
+        "instanceLocation": "/uid/0/target_id",
+        "code": "check.drupal:ValidReference",
+        "reason": "noProvider"
+      }
+    ]
+  },
+  {
+    "description": "missing title",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      },
+      "drupal:ReferenceAccess": {
+        "errors": []
+      },
+      "drupal:FileExtension": {
+        "errors": []
+      }
+    },
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "restricted_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        }
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "title"
+        }
+      }
+    ],
+    "messages": [
+      "Title is required."
+    ]
+  },
+  {
+    "description": "empty title field",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      },
+      "drupal:ReferenceAccess": {
+        "errors": []
+      },
+      "drupal:FileExtension": {
+        "errors": []
+      }
+    },
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "title": [],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "restricted_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        }
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/title",
+        "code": "minItems",
+        "params": {
+          "limit": 1,
+          "actual": 0
+        }
+      }
+    ],
+    "messages": [
+      "Title must have at least 1 item."
+    ]
+  },
+  {
+    "description": "title too long",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      },
+      "drupal:ReferenceAccess": {
+        "errors": []
+      },
+      "drupal:FileExtension": {
+        "errors": []
+      }
+    },
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "title": [
+        {
+          "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      ],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "restricted_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        }
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/title/0/value",
+        "code": "maxLength",
+        "params": {
+          "limit": 255,
+          "actual": 256
+        }
+      }
+    ],
+    "messages": [
+      "Text value must be at most 255 characters long."
+    ]
+  },
+  {
+    "description": "image without alt text",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      },
+      "drupal:ReferenceAccess": {
+        "errors": []
+      },
+      "drupal:FileExtension": {
+        "errors": []
+      }
+    },
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "title": [
+        {
+          "value": "One description, inside and outside Drupal"
+        }
+      ],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "restricted_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "width": 1200,
+          "height": 630
+        }
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/field_image/0",
+        "code": "required",
+        "params": {
+          "property": "alt"
+        }
+      }
+    ],
+    "messages": [
+      "Alternative text is required."
+    ]
+  },
+  {
+    "description": "unknown text format",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      },
+      "drupal:ReferenceAccess": {
+        "errors": []
+      },
+      "drupal:FileExtension": {
+        "errors": []
+      }
+    },
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "title": [
+        {
+          "value": "One description, inside and outside Drupal"
+        }
+      ],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "full_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        }
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/body/0/format",
+        "code": "enum",
+        "params": {
+          "value": "full_html",
+          "allowed": [
+            "plain_text",
+            "restricted_html"
+          ]
+        }
+      }
+    ],
+    "messages": [
+      "Text format: “full_html” is not an allowed value. Allowed: Plain text, Restricted HTML."
+    ]
+  },
+  {
+    "description": "invalid reference",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": [
+          {
+            "code": "check.drupal:ValidReference",
+            "params": {
+              "id": 42
+            }
+          }
+        ],
+        "locations": [
+          "/uid/0/target_id"
+        ]
+      },
+      "drupal:ReferenceAccess": {
+        "errors": []
+      },
+      "drupal:FileExtension": {
+        "errors": []
+      }
+    },
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "title": [
+        {
+          "value": "One description, inside and outside Drupal"
+        }
+      ],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "restricted_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        }
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/uid/0/target_id",
+        "code": "check.drupal:ValidReference",
+        "params": {
+          "id": 42
+        }
+      }
+    ],
+    "messages": [
+      "User ID is not valid."
+    ]
+  },
+  {
+    "description": "disallowed file extension",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      },
+      "drupal:ReferenceAccess": {
+        "errors": []
+      },
+      "drupal:FileExtension": {
+        "errors": [
+          {
+            "code": "check.drupal:FileExtension",
+            "params": {
+              "extensions": "png gif jpg jpeg webp"
+            },
+            "message": "Only files with the following extensions are allowed: png gif jpg jpeg webp."
+          }
+        ]
+      }
+    },
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "title": [
+        {
+          "value": "One description, inside and outside Drupal"
+        }
+      ],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "restricted_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        }
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/field_image/0",
+        "code": "check.drupal:FileExtension",
+        "params": {
+          "extensions": "png gif jpg jpeg webp"
+        }
+      }
+    ],
+    "messages": [
+      "Only files with the following extensions are allowed: png gif jpg jpeg webp."
+    ]
+  },
+  {
+    "description": "two images in a single-value field",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      },
+      "drupal:ReferenceAccess": {
+        "errors": []
+      },
+      "drupal:FileExtension": {
+        "errors": []
+      }
+    },
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "title": [
+        {
+          "value": "One description, inside and outside Drupal"
+        }
+      ],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "restricted_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        },
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        }
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/field_image",
+        "code": "maxItems",
+        "params": {
+          "limit": 1,
+          "actual": 2
+        }
+      }
+    ],
+    "messages": [
+      "Image must have at most 1 item."
+    ]
+  },
+  {
+    "description": "an unknown field",
+    "checks": {
+      "drupal:ValidReference": {
+        "errors": []
+      },
+      "drupal:ReferenceAccess": {
+        "errors": []
+      },
+      "drupal:FileExtension": {
+        "errors": []
+      }
+    },
+    "data": {
+      "type": [
+        {
+          "target_id": "article"
+        }
+      ],
+      "title": [
+        {
+          "value": "One description, inside and outside Drupal"
+        }
+      ],
+      "langcode": [
+        {
+          "value": "en"
+        }
+      ],
+      "uid": [
+        {
+          "target_id": 1
+        }
+      ],
+      "status": [
+        {
+          "value": true
+        }
+      ],
+      "created": [
+        {
+          "value": 1792531200
+        }
+      ],
+      "body": [
+        {
+          "value": "<p>Portable Schema describes data once.</p>",
+          "format": "restricted_html",
+          "summary": ""
+        }
+      ],
+      "field_image": [
+        {
+          "target_id": 7,
+          "alt": "A diagram of one schema used by PHP and JS",
+          "width": 1200,
+          "height": 630
+        }
+      ],
+      "field_tags": [
+        {
+          "target_id": 3
+        }
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "field_tags"
+        }
+      }
+    ],
+    "messages": [
+      "Article: “field_tags” is not allowed here."
+    ]
+  },
+  {
+    "description": "partial with locations: only the title is validated, as on a form field's blur",
+    "options": {
+      "partial": true,
+      "locations": [
+        "/title"
+      ]
+    },
+    "data": {
+      "title": [
+        {
+          "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/title/0/value",
+        "code": "maxLength",
+        "params": {
+          "limit": 255,
+          "actual": 256
+        }
+      }
+    ],
+    "messages": [
+      "Text value must be at most 255 characters long."
+    ]
+  }
+]
