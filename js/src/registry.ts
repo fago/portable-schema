@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import * as Formats from "./formats.js";
 import { isObject, type Json, type JsonObject } from "./json.js";
 import * as Pointer from "./pointer.js";
 
@@ -14,15 +15,28 @@ export class Registry {
 
   private schemas = new Map<string, Schema>();
 
+  /** Ids by their percent-decoded form. */
+  private decoded = new Map<string, string>();
+
   /** A registry with the type library. */
   static withTypes(): Registry {
     return new Registry().addDirectory(Registry.TYPES_DIRECTORY);
   }
 
-  /** Adds a schema under `id`, or under its own $id. */
+  /**
+   * Adds a schema under `id`, or under its own $id.
+   *
+   * The id must be an absolute URI, and must differ from every other id after percent-decoding: Hyperjump decodes
+   * ids, so `a%2Bb` and `a+b` would be one schema.
+   */
   add(schema: Schema, id?: string): this {
     id ??= isObject(schema) && typeof schema["$id"] === "string" ? schema["$id"] : undefined;
     if (id === undefined) throw new Error("A schema without $id needs an id.");
+    if (!Formats.check("uri", id)) throw new Error(`The schema id ${id} is not an absolute URI.`);
+    const key = decodeURIComponent(id);
+    const other = this.decoded.get(key) ?? id;
+    if (other !== id) throw new Error(`The schema ids ${other} and ${id} are the same after percent-decoding.`);
+    this.decoded.set(key, id);
     this.schemas.set(id, schema);
     return this;
   }

@@ -14,6 +14,9 @@ final class Registry
     /** @var array<string, \stdClass|bool> */
     private array $schemas = [];
 
+    /** @var array<string, string> ids by their percent-decoded form */
+    private array $decoded = [];
+
     /**
      * A registry with the type library.
      */
@@ -24,12 +27,22 @@ final class Registry
 
     /**
      * Adds a schema under $id, or under its own $id.
+     *
+     * The id must be an absolute URI, and must differ from every other id after percent-decoding: Hyperjump decodes
+     * ids, so `a%2Bb` and `a+b` would be one schema in JS.
      */
     public function add(\stdClass|bool $schema, ?string $id = null): self
     {
         $id ??= $schema instanceof \stdClass && isset($schema->{'$id'}) ? $schema->{'$id'} : null;
         if ($id === null) {
             throw new \InvalidArgumentException('A schema without $id needs an id.');
+        }
+        if (!Formats::check('uri', $id)) {
+            throw new \InvalidArgumentException("The schema id $id is not an absolute URI.");
+        }
+        $other = $this->decoded[rawurldecode($id)] ??= $id;
+        if ($other !== $id) {
+            throw new \InvalidArgumentException("The schema ids $other and $id are the same after percent-decoding.");
         }
         $this->schemas[$id] = $schema;
         return $this;
