@@ -12,7 +12,9 @@ Refused in every schema and subschema:
 
 - `$schema` other than `https://portable-schema.dev/v1/schema`;
 - `$vocabulary`: only meta-schemas declare vocabularies;
-- `$dynamicRef`, `$dynamicAnchor` ([decision 0005](../docs/decisions/0005-profile-only-validators.md)).
+- `$dynamicRef` ([decision 0005](../docs/decisions/0005-profile-only-validators.md)), and by the same decision `$dynamicAnchor`.
+
+A schema is one resource: `$id` and `$schema` only at its root. Below the root they are refused, in subschemas and in values like `default` or `const` alike.
 
 ## Formats
 

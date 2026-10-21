@@ -28,9 +28,10 @@ final class Registry
     /**
      * Adds a schema under $id, or under its own $id.
      *
-     * The id must be an absolute URI without a fragment, and must differ from every other id after percent-decoding
-     * and with the scheme and authority in lower case: Hyperjump normalizes ids, so `a%2Bb` and `a+b` would be one
-     * schema in JS.
+     * The id must be an absolute URI without a fragment, dot segments or the `file:` scheme, and must differ from
+     * every other id after percent-decoding and with the scheme and authority in lower case: Hyperjump normalizes ids,
+     * so `a%2Bb` and `a+b` would be one schema in JS. The schema is one resource: its own `$id`, if any, is $id, and
+     * no value below its root has a `$id` or `$schema`.
      */
     public function add(\stdClass|bool $schema, ?string $id = null): self
     {
@@ -38,10 +39,19 @@ final class Registry
         if ($id === null) {
             throw new \InvalidArgumentException('A schema without $id needs an id.');
         }
-        if (!Formats::check('uri', $id) || str_contains($id, '#')) {
-            throw new \InvalidArgumentException("The schema id $id is not an absolute URI without a fragment.");
+        $normalized = self::normalize($id);
+        if (!Formats::check('uri', $id) || str_contains($id, '#') || str_starts_with($normalized, 'file:')
+            || preg_match('#[:/]\.{1,2}(/|$)#', explode('?', $normalized)[0])) {
+            throw new \InvalidArgumentException("The schema id $id is not an absolute URI without a fragment, dot segments or file: scheme.");
         }
-        $other = $this->normalized[self::normalize($id)] ??= $id;
+        if ($schema instanceof \stdClass && isset($schema->{'$id'}) && $schema->{'$id'} !== $id) {
+            throw new \InvalidArgumentException("The schema $id has the \$id {$schema->{'$id'}}.");
+        }
+        $embedded = self::embedded($schema, '');
+        if ($embedded !== null) {
+            throw new \InvalidArgumentException("The schema $id has \$id or \$schema below its root, at $embedded.");
+        }
+        $other = $this->normalized[$normalized] ??= $id;
         if ($other !== $id) {
             throw new \InvalidArgumentException("The schema ids $other and $id are the same after normalization.");
         }
@@ -55,6 +65,27 @@ final class Registry
     private static function normalize(string $id): string
     {
         return rawurldecode(preg_replace_callback('#^[^:]*:(//[^/?]*)?#', fn (array $m) => strtolower($m[0]), $id));
+    }
+
+    /**
+     * The location of the first value below the root with a string `$id` or `$schema`: Hyperjump reads these in
+     * every object, `default` and `const` included.
+     */
+    private static function embedded(mixed $value, string $location): ?string
+    {
+        if ($location !== '' && $value instanceof \stdClass && (is_string($value->{'$id'} ?? null) || is_string($value->{'$schema'} ?? null))) {
+            return $location;
+        }
+        if (!is_array($value) && !$value instanceof \stdClass) {
+            return null;
+        }
+        foreach ($value as $key => $item) {
+            $embedded = self::embedded($item, Pointer::append($location, $key));
+            if ($embedded !== null) {
+                return $embedded;
+            }
+        }
+        return null;
     }
 
     /**

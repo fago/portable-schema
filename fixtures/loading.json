@@ -586,5 +586,173 @@
       }
     },
     "refused": false
+  },
+  {
+    "description": "$id in default",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load48",
+      "default": {
+        "$id": "test:other",
+        "type": "integer"
+      },
+      "properties": {
+        "z": {
+          "$ref": "test:other"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "$id in const",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load49",
+      "const": {
+        "$id": "test:other"
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "$id in examples",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load50",
+      "examples": [
+        {
+          "$id": "test:other"
+        }
+      ]
+    },
+    "refused": true
+  },
+  {
+    "description": "$id in enum",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load51",
+      "enum": [
+        {
+          "$id": "test:other"
+        }
+      ]
+    },
+    "refused": true
+  },
+  {
+    "description": "$id in an unknown keyword",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load52",
+      "x-foo": {
+        "$id": "test:other"
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "embedded $id resource",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load53",
+      "$defs": {
+        "x": {
+          "$id": "test:n",
+          "required": [
+            "a"
+          ]
+        }
+      },
+      "$ref": "test:n"
+    },
+    "refused": true
+  },
+  {
+    "description": "embedded relative $id",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load54",
+      "$defs": {
+        "x": {
+          "$id": "n",
+          "required": [
+            "a"
+          ]
+        }
+      },
+      "$ref": "n"
+    },
+    "refused": true
+  },
+  {
+    "description": "embedded $id with $anchor",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load55",
+      "$defs": {
+        "x": {
+          "$id": "test:n2",
+          "$anchor": "a",
+          "required": [
+            "a"
+          ]
+        }
+      },
+      "$ref": "test:n2#a"
+    },
+    "refused": true
+  },
+  {
+    "description": "$schema in default",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load56",
+      "default": {
+        "$schema": "x"
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "$schema in a subschema",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load57",
+      "properties": {
+        "a": {
+          "$schema": "https://portable-schema.dev/v1/schema"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "a property named $id",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load58",
+      "properties": {
+        "$id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$id"
+      ]
+    },
+    "refused": false
+  },
+  {
+    "description": "$id with a non-string value in default",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load59",
+      "default": {
+        "$id": 1
+      }
+    },
+    "refused": false
   }
 ]

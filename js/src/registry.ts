@@ -26,15 +26,21 @@ export class Registry {
   /**
    * Adds a schema under `id`, or under its own $id.
    *
-   * The id must be an absolute URI without a fragment, and must differ from every other id after percent-decoding
-   * and with the scheme and authority in lower case: Hyperjump normalizes ids, so `a%2Bb` and `a+b` would be one
-   * schema.
+   * The id must be an absolute URI without a fragment, dot segments or the `file:` scheme, and must differ from
+   * every other id after percent-decoding and with the scheme and authority in lower case: Hyperjump normalizes ids,
+   * so `a%2Bb` and `a+b` would be one schema. The schema is one resource: its own `$id`, if any, is `id`, and no value
+   * below its root has a `$id` or `$schema`.
    */
   add(schema: Schema, id?: string): this {
     id ??= isObject(schema) && typeof schema["$id"] === "string" ? schema["$id"] : undefined;
     if (id === undefined) throw new Error("A schema without $id needs an id.");
-    if (!Formats.check("uri", id) || id.includes("#")) throw new Error(`The schema id ${id} is not an absolute URI without a fragment.`);
     const key = normalize(id);
+    if (!Formats.check("uri", id) || id.includes("#") || key.startsWith("file:") || /[:/]\.{1,2}(\/|$)/u.test(key.split("?")[0]!)) {
+      throw new Error(`The schema id ${id} is not an absolute URI without a fragment, dot segments or file: scheme.`);
+    }
+    if (isObject(schema) && schema["$id"] !== undefined && schema["$id"] !== id) throw new Error(`The schema ${id} has the $id ${String(schema["$id"])}.`);
+    const nested = embedded(schema, "");
+    if (nested !== null) throw new Error(`The schema ${id} has $id or $schema below its root, at ${nested}.`);
     const other = this.normalized.get(key) ?? id;
     if (other !== id) throw new Error(`The schema ids ${other} and ${id} are the same after normalization.`);
     this.normalized.set(key, id);
@@ -96,6 +102,20 @@ export class Registry {
 const normalize = (id: string): string =>
   id.replace(/^[^:]*:(\/\/[^/?]*)?/u, (prefix) => prefix.toLowerCase())
     .replace(/%([0-9a-f]{2})/giu, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)));
+
+/**
+ * The location of the first value below the root with a string `$id` or `$schema`: Hyperjump reads these in every
+ * object, `default` and `const` included.
+ */
+const embedded = (value: unknown, location: string): string | null => {
+  if (location !== "" && isObject(value) && (typeof value["$id"] === "string" || typeof value["$schema"] === "string")) return location;
+  if (!isObject(value) && !Array.isArray(value)) return null;
+  for (const [key, item] of Object.entries(value)) {
+    const found = embedded(item, Pointer.append(location, key));
+    if (found !== null) return found;
+  }
+  return null;
+};
 
 const decode = (fragment: string): string => {
   try {

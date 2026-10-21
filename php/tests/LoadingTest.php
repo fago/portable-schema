@@ -30,12 +30,11 @@ final class LoadingTest extends TestCase
     #[DataProvider('cases')]
     public function testLoading(\stdClass $case): void
     {
-        $registry = Registry::withTypes()->add($case->schema);
         if ($case->refused) {
             $this->expectException(\Throwable::class);
-            new Validator($registry);
+            new Validator(Registry::withTypes()->add($case->schema));
         }
-        (new Validator($registry))->validate([], $case->schema->{'$id'});
+        (new Validator(Registry::withTypes()->add($case->schema)))->validate([], $case->schema->{'$id'});
         $this->addToAssertionCount(1);
     }
 }

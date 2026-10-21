@@ -22,6 +22,12 @@ final class RegistryTest extends TestCase
         yield 'pointer fragment' => [['test:a#/b']];
         yield 'host case' => [['http://x/', 'http://X/']];
         yield 'scheme case' => [['HTTP://x/a', 'http://x/a']];
+        yield 'dot-dot segment' => [['http://x/a/../b']];
+        yield 'dot segment' => [['http://x/./b']];
+        yield 'dot segment without authority' => [['test:a/./b']];
+        yield 'encoded dot segment' => [['test:a/%2E/b']];
+        yield 'trailing dot-dot segment' => [['test:a/..']];
+        yield 'file scheme' => [['file:///x']];
     }
 
     #[DataProvider('invalidIds')]
@@ -50,5 +56,17 @@ final class RegistryTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         (new Registry())->add((object) ['$id' => 'test:r3#']);
+    }
+
+    public function testAcceptsDotsInSegments(): void
+    {
+        $registry = (new Registry())->add(true, 'http://x/a.b/..c')->add(true, 'test:a?./b');
+        $this->assertSame(['http://x/a.b/..c', 'test:a?./b'], $registry->ids());
+    }
+
+    public function testRefusesSchemaIdOtherThanItsId(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Registry())->add((object) ['$id' => 'test:o', 'required' => ['a']], 'urn:t');
     }
 }

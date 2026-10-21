@@ -11,7 +11,7 @@ test("loading.json is valid", async () => {
 });
 
 test.each(cases)("$description", async ({ schema, refused }) => {
-  const create = Validator.create(Registry.withTypes().add(schema));
+  const create = (async () => Validator.create(Registry.withTypes().add(schema)))();
   if (refused) {
     await expect(create).rejects.toThrow();
   } else {
