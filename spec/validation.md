@@ -10,6 +10,14 @@ How a validator evaluates data against a schema, and the options that change wha
 2. **Evaluate** every keyword of the schema, resolving references through the registry and running named checks (see [`vocabulary.md`](vocabulary.md)). Annotations are collected along the way.
 3. **Shape** the raw errors to one per problem (see [`errors.md`](errors.md)).
 
+## Registry
+
+Schemas are found by id in a registry.
+
+- **Ids** are absolute URIs without a fragment. Two ids must differ after percent-decoding, with the scheme and authority in lower case.
+- **References** resolve through the registry only. The JSON Schema meta-schemas are not part of it.
+- **Loading** refuses every schema outside the [profile](profile.md), including subschemas no data reaches.
+
 ## Options
 
 Options only filter what is reported. The schema is always evaluated in full, since keywords like `portable-typeBy`, `portable-compare` and `if` depend on other values.

@@ -22,6 +22,7 @@ $result->unchecked;  // Unchecked[]
 Formatter::create()->messages($result); // English messages
 ```
 
+- **`new Validator()` compiles** every schema of the registry and checks it against the dialect meta-schema; it throws for a schema outside the profile. It keeps a copy of the registry, so schemas added later are not seen. Construction takes about 0.3 ms per schema; `validate()` reuses the compiled schemas.
 - **Data** follows the JSON data model: objects are `\stdClass`, as `json_decode()` returns them.
 - **Schemas** are validated by their id in the registry.
 - **Exports:** `Exporter::inline()` (self-contained JSON Schema 2020-12) and `Exporter::draft04()`.
@@ -32,7 +33,7 @@ The same as the JS implementation, with the same names ([validator design](../do
 
 | Class | Role |
 |---|---|
-| `Opis\MetaSchema` | Checks every registry schema against `spec/v1/schema.json`, as Hyperjump does; the 2020-12 meta-schemas it builds on are in `php/resources/`, copied from Hyperjump |
+| `Opis\MetaSchema` | Checks every registry schema against `spec/v1/schema.json`, as Hyperjump does; the 2020-12 meta-schemas it builds on are in `php/resources/`, copied from Hyperjump ([README](resources/json-schema-2020-12/README.md)) |
 | `Opis\Parser`, `Opis\Draft` | opis 2020-12 with the Portable Schema keywords (`portable-typeBy`, `portable-check`, pinned `format`); every keyword and schema is wrapped to record the evaluation |
 | `Trace\Tracer` | The evaluation as a tree of schema and keyword nodes |
 | `Shaper` | Turns the trace into one error per problem and applies the options |

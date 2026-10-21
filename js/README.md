@@ -24,7 +24,7 @@ result.unchecked;  // Unchecked[]
 Formatter.create().messages(result); // English messages
 ```
 
-- **`Validator.create()` compiles** every schema of the registry, including the targets of `portable-typeBy`, since Hyperjump compiles asynchronously. `validate()` is synchronous.
+- **`Validator.create()` compiles** every schema of the registry, including the targets of `portable-typeBy`, since Hyperjump compiles asynchronously. It rejects a schema outside the profile, and keeps a copy of the registry, so schemas added later are not seen. `validate()` is synchronous.
 - **Exports:** `Exporter.inline()` (self-contained JSON Schema 2020-12) and `Exporter.draft04()`.
 
 ## Design

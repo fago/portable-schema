@@ -8,6 +8,12 @@ Schemas outside the profile are refused when they are loaded ([decision 0005](..
 
 The full list of allowed keywords follows. Annotations include `$comment`.
 
+Refused in every schema and subschema:
+
+- `$schema` other than `https://portable-schema.dev/v1/schema`;
+- `$vocabulary`: only meta-schemas declare vocabularies;
+- `$dynamicRef`, `$dynamicAnchor` ([decision 0005](../docs/decisions/0005-profile-only-validators.md)).
+
 ## Formats
 
 Formats come from the [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) ([decision 0003](../docs/decisions/0003-formats-from-the-registry.md)).
