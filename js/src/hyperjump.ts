@@ -21,21 +21,6 @@ export const DIALECT = "https://portable-schema.dev/v1/schema";
 
 const KEYWORD = "https://portable-schema.dev/keyword/";
 
-/**
- * The dialect meta-schema plus the profile's limits, in every subschema:
- * - `$schema` names the dialect;
- * - no `$vocabulary`, `$dynamicRef`, `$dynamicAnchor`.
- * Same as `LOAD` in `php/src/Opis/MetaSchema.php`.
- */
-const LOAD = {
-  $schema: "https://json-schema.org/draft/2020-12/schema",
-  $id: "https://portable-schema.dev/v1/load",
-  $dynamicAnchor: "meta",
-  $ref: DIALECT,
-  properties: { $schema: { const: DIALECT } },
-  propertyNames: { not: { enum: ["$vocabulary", "$dynamicRef", "$dynamicAnchor"] } },
-};
-
 /** The validation that is running: keywords report to its tracer and checks. */
 let active: { tracer: Tracer; checks: Checks } | null = null;
 
@@ -111,7 +96,8 @@ const setUp = (): void => {
   const spec = (file: string) => JSON.parse(readFileSync(fileURLToPath(new URL(`../../spec/v1/${file}`, import.meta.url)), "utf8"));
   registerSchema(spec("vocab.json"));
   registerSchema(spec("schema.json"));
-  registerSchema(LOAD);
+  // The dialect meta-schema plus the profile's limits.
+  registerSchema(spec("load.json"));
 };
 
 /** Matches the URIs a URI template can expand to. */
@@ -145,7 +131,7 @@ const compileNow = async (registry: Registry): Promise<Compiled> => {
   const ast = { metaData: {}, plugins: new Set<EvaluationPlugin>() } as unknown as Compiled["ast"];
   const urls = new Map<string, string>();
   const ids = new Map<string, string>();
-  const load = await validate(LOAD.$id);
+  const load = await validate("https://portable-schema.dev/v1/load");
   for (const id of registered) {
     if (!load(registry.get(id)).valid) throw new Error(`Invalid schema ${id}`);
   }
