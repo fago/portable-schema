@@ -103,5 +103,332 @@
       "enum": []
     },
     "refused": false
+  },
+  {
+    "description": "required names that are equal only as numbers",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load10",
+      "required": [
+        "1",
+        "01",
+        "10",
+        "1e1"
+      ]
+    },
+    "refused": false
+  },
+  {
+    "description": "a limit beyond PHP's integers",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load11",
+      "maxLength": 1e+20
+    },
+    "refused": false
+  },
+  {
+    "description": "minContains without contains",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load12",
+      "minContains": -1
+    },
+    "refused": true
+  },
+  {
+    "description": "prefixItems without schemas",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load13",
+      "prefixItems": []
+    },
+    "refused": true
+  },
+  {
+    "description": "an annotation of the wrong type",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load14",
+      "title": 1
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: type without types",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load15",
+      "title": "t",
+      "properties": {
+        "x": {
+          "type": []
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: an unknown type",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load16",
+      "title": "t",
+      "properties": {
+        "x": {
+          "type": "foo"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a fractional maxLength",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load17",
+      "title": "t",
+      "properties": {
+        "x": {
+          "maxLength": 1.5
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a negative maxLength",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load18",
+      "title": "t",
+      "properties": {
+        "x": {
+          "maxLength": -1
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: multipleOf 0",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load19",
+      "title": "t",
+      "properties": {
+        "x": {
+          "multipleOf": 0
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: an invalid pattern",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load20",
+      "title": "t",
+      "properties": {
+        "x": {
+          "pattern": "("
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: allOf without schemas",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load21",
+      "title": "t",
+      "properties": {
+        "x": {
+          "allOf": []
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a string uniqueItems",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load22",
+      "title": "t",
+      "properties": {
+        "x": {
+          "uniqueItems": "yes"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a number in required",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load23",
+      "title": "t",
+      "properties": {
+        "x": {
+          "required": [
+            1
+          ]
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a boolean exclusiveMaximum",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load24",
+      "title": "t",
+      "properties": {
+        "x": {
+          "exclusiveMaximum": true
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a property schema that is a number",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load25",
+      "title": "t",
+      "properties": {
+        "x": {
+          "properties": {
+            "a": 5
+          }
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: an unknown format",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load26",
+      "title": "t",
+      "properties": {
+        "x": {
+          "format": "foo"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: an annotation of the wrong type",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load27",
+      "title": "t",
+      "properties": {
+        "x": {
+          "title": 1
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a dangling $ref",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load28",
+      "title": "t",
+      "properties": {
+        "x": {
+          "$ref": "test:nowhere"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a $ref to a string",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load29",
+      "title": "t",
+      "properties": {
+        "x": {
+          "$ref": "#/title"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a portable-typeBy without a source map",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load30",
+      "title": "t",
+      "properties": {
+        "x": {
+          "portable-typeBy": {
+            "source": "1/k",
+            "href": "test:k.{k}"
+          }
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a portable-typeBy template with a fragment",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load31",
+      "title": "t",
+      "properties": {
+        "x": {
+          "portable-typeBy": {
+            "source": {
+              "k": "1/k"
+            },
+            "href": "test:{#k}"
+          }
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested, not reached by the data: a portable-check that is not a map",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load32",
+      "title": "t",
+      "properties": {
+        "x": {
+          "portable-check": "x"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "nested in unused $defs: an invalid pattern",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load33",
+      "$defs": {
+        "q": {
+          "pattern": "("
+        }
+      }
+    },
+    "refused": true
   }
 ]

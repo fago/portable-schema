@@ -32,6 +32,7 @@ The same as the JS implementation, with the same names ([validator design](../do
 
 | Class | Role |
 |---|---|
+| `Opis\MetaSchema` | Checks every registry schema against `spec/v1/schema.json`, as Hyperjump does; the 2020-12 meta-schemas it builds on are in `php/resources/`, copied from Hyperjump |
 | `Opis\Parser`, `Opis\Draft` | opis 2020-12 with the Portable Schema keywords (`portable-typeBy`, `portable-check`, pinned `format`); every keyword and schema is wrapped to record the evaluation |
 | `Trace\Tracer` | The evaluation as a tree of schema and keyword nodes |
 | `Shaper` | Turns the trace into one error per problem and applies the options |

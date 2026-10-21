@@ -61,6 +61,24 @@ final class BooleanSchemas extends KeywordParser
         return $copy;
     }
 
+    /**
+     * The object subschemas of $schema.
+     *
+     * @return list<\stdClass>
+     */
+    public static function subschemas(\stdClass $schema): array
+    {
+        $subschemas = [];
+        foreach (self::SINGLE as $keyword) {
+            $subschemas[] = $schema->{$keyword} ?? null;
+        }
+        foreach ([...self::MAP, ...self::LIST] as $keyword) {
+            $value = $schema->{$keyword} ?? null;
+            array_push($subschemas, ...array_values(is_object($value) ? get_object_vars($value) : (is_array($value) ? $value : [])));
+        }
+        return array_values(array_filter($subschemas, fn ($subschema) => $subschema instanceof \stdClass));
+    }
+
     public static function is(SchemaInfo $info): bool
     {
         return $info->isBoolean() || property_exists($info->data(), self::KEYWORD);

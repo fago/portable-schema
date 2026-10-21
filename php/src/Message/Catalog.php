@@ -42,7 +42,8 @@ final class Catalog
         if (!isset($entry->plural)) {
             return [$entry->text, null];
         }
-        $count = (int) ($params[$entry->plural] ?? 0);
+        $value = $params[$entry->plural] ?? 0;
+        $count = $value >= PHP_INT_MAX ? PHP_INT_MAX : (int) $value;
         return [$count === 1 ? $entry->one : $entry->other, $count];
     }
 }

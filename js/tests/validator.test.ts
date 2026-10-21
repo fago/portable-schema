@@ -18,3 +18,11 @@ test("a validator doesn't see the schemas of an earlier registry", async () => {
   const later = Registry.withTypes().add({ $schema: DIALECT, $id: "test:y", $ref: "test:x" } as JsonObject);
   await expect(Validator.create(later)).rejects.toThrow();
 });
+
+test("a validator doesn't see schemas added to its registry later", async () => {
+  const reg = registry("late");
+  const validator = await Validator.create(reg);
+  reg.add({ $schema: DIALECT, $id: "test:late.b", type: "string" } as JsonObject);
+  expect(() => validator.validate("x", "test:late.b")).toThrow();
+  expect(validator.validate({ k: "b" }, "test:late").errors.map((e) => e.code)).toEqual(["typeBy.unresolved"]);
+});

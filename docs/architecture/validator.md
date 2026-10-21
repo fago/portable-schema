@@ -21,6 +21,8 @@ data ──► normalize ──► evaluate keywords ──► shape errors ─�
    - record locations.
 
    It generates no code. The compiled schema is cached. `portable-typeBy` targets must be resolvable from the registry at validation time; implementations may compile them eagerly or lazily, with the same result.
+
+   Both validators compile every schema of the registry when they are created (PHP: the constructor, JS: `Validator.create()`) and refuse a schema outside the profile there, even where no data reaches it.
 2. **Normalize** the data.
 3. **Evaluate:** interpret the compiled schema against the data, collecting annotations.
 4. **Shape** errors, then apply the reporting options (`partial`, `emptyAsMissing`, `locations`).
