@@ -412,5 +412,100 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "keywords without effect are dropped: minContains/maxContains without contains, then/else without if",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d30",
+      "type": "array",
+      "minContains": 2,
+      "maxContains": 0,
+      "then": false,
+      "else": false
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "array"
+    },
+    "tests": [
+      {
+        "data": [],
+        "valid": true
+      },
+      {
+        "data": [
+          1
+        ],
+        "valid": true
+      },
+      {
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "an if without then and else is dropped",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d31",
+      "type": "string",
+      "if": {
+        "const": "a"
+      }
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "string"
+    },
+    "tests": [
+      {
+        "data": "a",
+        "valid": true
+      },
+      {
+        "data": "b",
+        "valid": true
+      },
+      {
+        "data": 1,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "then next to a ref with if has no if of its own",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:if32",
+        "if": {
+          "const": 1
+        }
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d32",
+      "$ref": "test:if32",
+      "then": false
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "allOf": [
+        {}
+      ]
+    },
+    "tests": [
+      {
+        "data": 1,
+        "valid": true
+      },
+      {
+        "data": 2,
+        "valid": true
+      }
+    ]
   }
 ]

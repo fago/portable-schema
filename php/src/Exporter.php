@@ -12,7 +12,8 @@ namespace PortableSchema;
  * pinned formats: generic validators treat `format` as an annotation and know neither `decimal` nor `int32`.
  *
  * Draft-04 exports refuse schemas whose meaning draft-04 can't express: `unevaluatedProperties` next to
- * `additionalProperties` or an in-place applicator, and the keywords in DRAFT_04_REFUSED.
+ * `additionalProperties` or an in-place applicator, and `contains`, `minContains`, `maxContains`, `if`, `then`,
+ * `else`, `propertyNames` and `unevaluatedItems` where they have an effect.
  */
 final class Exporter
 {
@@ -72,6 +73,8 @@ final class Exporter
 
     /**
      * A self-contained JSON Schema draft-04, as Drupal core's SDC metadata uses.
+     *
+     * @throws \RuntimeException for a schema draft-04 can't express
      */
     public function draft04(string $id): \stdClass
     {
@@ -208,6 +211,21 @@ final class Exporter
     }
 
     /**
+     * Keywords of $schema without effect: `minContains`/`maxContains` without `contains`, `then`/`else` without `if`,
+     * `if` without both.
+     *
+     * @return list<string>
+     */
+    private static function inert(\stdClass $schema): array
+    {
+        $inert = property_exists($schema, 'contains') ? [] : ['minContains', 'maxContains'];
+        if (!property_exists($schema, 'if')) {
+            return [...$inert, 'then', 'else'];
+        }
+        return property_exists($schema, 'then') || property_exists($schema, 'else') ? $inert : [...$inert, 'if'];
+    }
+
+    /**
      * @param bool $booleanAllowed whether draft-04 allows a boolean here (additionalProperties, additionalItems)
      */
     private function toDraft04(mixed $schema, bool $booleanAllowed = false): mixed
@@ -222,7 +240,7 @@ final class Exporter
         if (isset($schema->unevaluatedProperties) && ($inPlace = array_intersect([...self::IN_PLACE, 'additionalProperties'], $keys)) !== []) {
             throw new \RuntimeException('Draft-04 has no unevaluatedProperties, and additionalProperties can\'t replace it next to ' . implode(', ', $inPlace));
         }
-        if (($refused = array_intersect(self::DRAFT_04_REFUSED, $keys)) !== []) {
+        if (($refused = array_diff(array_intersect(self::DRAFT_04_REFUSED, $keys), self::inert($schema))) !== []) {
             throw new \RuntimeException('Draft-04 has no ' . implode(', ', $refused));
         }
         if (self::allowed($schema) === []) {

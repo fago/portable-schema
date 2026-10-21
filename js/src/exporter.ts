@@ -21,7 +21,8 @@ type Value = unknown;
  * pinned formats: generic validators treat `format` as an annotation and know neither `decimal` nor `int32`.
  *
  * Draft-04 exports refuse schemas whose meaning draft-04 can't express: `unevaluatedProperties` next to
- * `additionalProperties` or an in-place applicator, and the keywords in DRAFT_04_REFUSED.
+ * `additionalProperties` or an in-place applicator, and `contains`, `minContains`, `maxContains`, `if`, `then`,
+ * `else`, `propertyNames` and `unevaluatedItems` where they have an effect.
  */
 export class Exporter {
   constructor(private readonly registry: Registry) {}
@@ -31,7 +32,7 @@ export class Exporter {
     return { $schema: DRAFT_2020_12, ...(this.resolve(id, []) as JsonObject) };
   }
 
-  /** A self-contained JSON Schema draft-04, as Drupal core's SDC metadata uses. */
+  /** A self-contained JSON Schema draft-04, as Drupal core's SDC metadata uses. Throws for a schema draft-04 can't express. */
   draft04(id: string): JsonObject {
     return { $schema: DRAFT_04, ...(toDraft04(this.resolve(id, [])) as JsonObject) };
   }
@@ -160,6 +161,13 @@ const IN_PLACE = ["allOf", "anyOf", "oneOf", "if", "then", "else", "dependentSch
 /** Validation keywords draft-04 has no equivalent for. */
 const DRAFT_04_REFUSED = ["contains", "minContains", "maxContains", "if", "then", "else", "propertyNames", "unevaluatedItems"];
 
+/** Keywords without effect: `minContains`/`maxContains` without `contains`, `then`/`else` without `if`, `if` without both. */
+const inert = (schema: JsonObject): string[] => {
+  const inert = "contains" in schema ? [] : ["minContains", "maxContains"];
+  if (!("if" in schema)) return [...inert, "then", "else"];
+  return "then" in schema || "else" in schema ? inert : [...inert, "if"];
+};
+
 /** @param booleanAllowed whether draft-04 allows a boolean here (additionalProperties, additionalItems) */
 const toDraft04 = (schema: Value, booleanAllowed = false): Value => {
   if (typeof schema === "boolean") return booleanAllowed ? schema : schema ? {} : { not: {} };
@@ -168,7 +176,7 @@ const toDraft04 = (schema: Value, booleanAllowed = false): Value => {
   if ("unevaluatedProperties" in schema && inPlace.length > 0) {
     throw new Error("Draft-04 has no unevaluatedProperties, and additionalProperties can't replace it next to " + inPlace.join(", "));
   }
-  const refused = DRAFT_04_REFUSED.filter((k) => k in schema);
+  const refused = DRAFT_04_REFUSED.filter((k) => k in schema && !inert(schema).includes(k));
   if (refused.length > 0) throw new Error("Draft-04 has no " + refused.join(", "));
   // Draft-04 requires a non-empty enum.
   if (allowed(schema)?.length === 0) return { not: {} };
