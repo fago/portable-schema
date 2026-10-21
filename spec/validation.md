@@ -18,7 +18,7 @@ Options only filter what is reported. The schema is always evaluated in full, si
 |---|---|---|
 | `partial` | `false` | Missing values are not errors. Values that are present are validated fully |
 | `emptyAsMissing` | `false` | With `partial`, empty strings, empty arrays and empty objects count as missing |
-| `locations` | all | Only errors and unchecked entries at or below these JSON Pointers are reported |
+| `locations` | all | Only errors and unchecked entries at or below these JSON Pointers are reported; an error naming a property counts at that property |
 
 ### `partial`
 

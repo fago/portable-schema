@@ -23,6 +23,9 @@ final class Shaper
     /** Keywords that report a `false` subschema as an unknown property. */
     private const PROPERTIES = ['properties', 'patternProperties', 'additionalProperties', 'unevaluatedProperties'];
 
+    /** Error codes reported at an object that name the property in `params.property`. */
+    private const PROPERTY_CODES = ['required', 'unknownProperty', 'propertyNames', 'dependentRequired'];
+
     /** Keywords that apply only where no other subschema evaluated. */
     private const UNEVALUATED = ['unevaluatedProperties', 'unevaluatedItems'];
 
@@ -175,7 +178,7 @@ final class Shaper
             }
             $property = self::subject($e);
             foreach ($errors as $other) {
-                if (Pointer::isWithin($other->instanceLocation, $property)) {
+                if ($other->code !== 'unknownProperty' && Pointer::isWithin(self::subject($other), $property)) {
                     return false;
                 }
             }
@@ -509,8 +512,7 @@ final class Shaper
      */
     private static function subject(ValidationError $e): string
     {
-        $property = $e->params['property'] ?? null;
-        return is_string($property) ? Pointer::append($e->instanceLocation, $property) : $e->instanceLocation;
+        return in_array($e->code, self::PROPERTY_CODES, true) ? Pointer::append($e->instanceLocation, $e->params['property']) : $e->instanceLocation;
     }
 
     /**

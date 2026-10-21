@@ -15,6 +15,9 @@ const OWN_ERROR = ["not", "contains"];
 /** Keywords that report a `false` subschema as an unknown property. */
 const PROPERTIES = ["properties", "patternProperties", "additionalProperties", "unevaluatedProperties"];
 
+/** Error codes reported at an object that name the property in `params.property`. */
+const PROPERTY_CODES = ["required", "unknownProperty", "propertyNames", "dependentRequired"];
+
 /** Keywords that apply only where no other subschema evaluated. */
 const UNEVALUATED = ["unevaluatedProperties", "unevaluatedItems"];
 
@@ -346,12 +349,12 @@ const withoutReportedProperties = (errors: ValidationError[]): ValidationError[]
   errors.filter((e) => {
     if (e.code !== "unknownProperty") return true;
     const property = subject(e);
-    return !errors.some((other) => Pointer.isWithin(other.instanceLocation, property));
+    return !errors.some((other) => other.code !== "unknownProperty" && Pointer.isWithin(subject(other), property));
   });
 
 /** The location an error is about: the named property for errors at its parent (`required`, `unknownProperty`, …). */
 const subject = (e: ValidationError): string =>
-  typeof e.params["property"] === "string" ? Pointer.append(e.instanceLocation, e.params["property"]) : e.instanceLocation;
+  PROPERTY_CODES.includes(e.code) ? Pointer.append(e.instanceLocation, e.params["property"] as string) : e.instanceLocation;
 
 /**
  * Instance locations evaluated by a schema other than `false`, without `skip` and the subschemas that drop their

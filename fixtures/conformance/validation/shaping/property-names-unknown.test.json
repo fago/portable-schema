@@ -1,0 +1,34 @@
+[
+  {
+    "description": "invalid and unknown",
+    "data": {
+      "ab": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "propertyNames",
+        "params": {
+          "property": "ab"
+        }
+      }
+    ]
+  },
+  {
+    "description": "unknown only",
+    "data": {
+      "b": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "b"
+        }
+      }
+    ]
+  }
+]
