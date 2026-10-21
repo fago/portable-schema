@@ -142,7 +142,7 @@ final class Shaper
 
         $shaped = new Shaped();
         $evaluated = in_array($node->keyword, self::UNEVALUATED, true) ? $this->evaluated($parent, $node) : [];
-        $names = $instance instanceof \stdClass ? array_keys(get_object_vars($instance)) : [];
+        $names = $instance instanceof \stdClass ? array_map(strval(...), array_keys(get_object_vars($instance))) : [];
         foreach ($node->children as $i => $child) {
             if (isset($evaluated[$child->instanceLocation])) {
                 continue;

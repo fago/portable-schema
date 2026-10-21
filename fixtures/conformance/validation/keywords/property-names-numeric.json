@@ -1,0 +1,24 @@
+{
+  "description": "propertyNames sees numeric keys as strings",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "a": {
+        "type": "object",
+        "propertyNames": {
+          "maxLength": 2
+        }
+      },
+      "b": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "not": {
+            "const": 1
+          }
+        }
+      }
+    },
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

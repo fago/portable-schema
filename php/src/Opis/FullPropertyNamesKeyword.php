@@ -29,7 +29,7 @@ final class FullPropertyNamesKeyword extends PropertyNamesKeyword
         }
         $errors = [];
         foreach ($context->getObjectProperties() ?? [] as $property) {
-            if ($error = $this->value->validate($context->newInstance($property, $schema))) {
+            if ($error = $this->value->validate($context->newInstance((string) $property, $schema))) {
                 $errors[] = $error;
             }
         }
