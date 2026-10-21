@@ -112,7 +112,7 @@ final class Pointer
     }
 
     /**
-     * Compares pointers segment by segment: array indexes numerically, other segments by code point.
+     * Compares pointers segment by segment: array-index segments first, numerically, then the others by code point.
      */
     public static function compare(string $a, string $b): int
     {
@@ -124,11 +124,21 @@ final class Pointer
             if ($x === $y) {
                 continue;
             }
-            if (ctype_digit($x) && ctype_digit($y)) {
-                return (int) $x <=> (int) $y;
+            $ix = self::isIndex($x);
+            $iy = self::isIndex($y);
+            if ($ix || $iy) {
+                return $ix && $iy ? (int) $x <=> (int) $y : $iy <=> $ix;
             }
             return strcmp($x, $y) <=> 0;
         }
         return count($sa) <=> count($sb);
+    }
+
+    /**
+     * Whether $segment is an array-index name as JS defines it: 0 to 2^32 - 2, without leading zeros.
+     */
+    private static function isIndex(string $segment): bool
+    {
+        return preg_match('/^(0|[1-9][0-9]{0,9})$/D', $segment) === 1 && (int) $segment < 4294967295;
     }
 }

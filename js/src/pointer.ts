@@ -58,7 +58,10 @@ export const resolveRelative = (relative: string, location: string, root: unknow
   return get(root, fromSegments(parts) + m[2]);
 };
 
-/** Compares pointers segment by segment: array indexes numerically, other segments by code point. */
+/** Whether `segment` is an array-index name as JS defines it: 0 to 2^32 - 2, without leading zeros. */
+const isIndex = (segment: string): boolean => /^(0|[1-9][0-9]{0,9})$/u.test(segment) && Number(segment) < 4294967295;
+
+/** Compares pointers segment by segment: array-index segments first, numerically, then the others by code point. */
 export const compare = (a: string, b: string): number => {
   const sa = segments(a);
   const sb = segments(b);
@@ -66,7 +69,9 @@ export const compare = (a: string, b: string): number => {
     const x = sa[i]!;
     const y = sb[i]!;
     if (x === y) continue;
-    if (/^[0-9]+$/.test(x) && /^[0-9]+$/.test(y)) return Math.sign(Number(x) - Number(y));
+    const ix = isIndex(x);
+    const iy = isIndex(y);
+    if (ix || iy) return ix && iy ? Math.sign(Number(x) - Number(y)) : Number(iy) - Number(ix);
     return compareStrings(x, y);
   }
   return Math.sign(sa.length - sb.length);
