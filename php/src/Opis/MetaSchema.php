@@ -39,7 +39,9 @@ final class MetaSchema
 
     private static ?Validator $validator = null;
 
-    /** @var array<string, true> schemas found valid, by their JSON */
+    private const CACHE_SIZE = 1000;
+
+    /** @var array<string, true> schemas found valid, by the hash of their JSON */
     private static array $valid = [];
 
     /**
@@ -47,13 +49,16 @@ final class MetaSchema
      */
     public static function assertValid(\stdClass|bool $schema, string $id): void
     {
-        $json = json_encode($schema, JSON_THROW_ON_ERROR);
-        if (isset(self::$valid[$json])) {
+        $hash = hash('xxh128', json_encode($schema, JSON_THROW_ON_ERROR));
+        if (isset(self::$valid[$hash])) {
             return;
         }
         $error = self::validator()->validate($schema, 'https://portable-schema.dev/v1/load')->error();
         if ($error === null) {
-            self::$valid[$json] = true;
+            if (count(self::$valid) >= self::CACHE_SIZE) {
+                self::$valid = [];
+            }
+            self::$valid[$hash] = true;
             return;
         }
         while ($error->subErrors() !== []) {
