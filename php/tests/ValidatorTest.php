@@ -33,4 +33,12 @@ final class ValidatorTest extends TestCase
         $registry->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:c", "title": "Name", "type": "string"}'));
         $this->assertEquals($before, $validator->validate('x', 'test:c'));
     }
+
+    public function testDoesNotSeeSchemasChangedLater(): void
+    {
+        $registry = Registry::withTypes()->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:c", "required": ["a"]}'));
+        $validator = new Validator($registry);
+        $registry->get('test:c')->required = [];
+        $this->assertFalse($validator->validate(new \stdClass(), 'test:c')->valid);
+    }
 }

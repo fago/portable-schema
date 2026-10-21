@@ -36,9 +36,6 @@ const LOAD = {
   propertyNames: { not: { enum: ["$vocabulary", "$dynamicRef", "$dynamicAnchor"] } },
 };
 
-/** Schemas Hyperjump holds that are not in the registry: the meta-schemas. */
-const META = /^https:\/\/(json-schema\.org|portable-schema\.dev)\//u;
-
 /** The validation that is running: keywords report to its tracer and checks. */
 let active: { tracer: Tracer; checks: Checks } | null = null;
 
@@ -163,8 +160,9 @@ const compileNow = async (registry: Registry): Promise<Compiled> => {
   } finally {
     compiling = null;
   }
-  const meta = Object.keys(ast).find((url) => META.test(url));
-  if (meta !== undefined) throw new Error(`Unknown schema ${meta}`);
+  // Hyperjump also holds the meta-schemas, which are not in the registry.
+  const unknown = Object.keys(ast).find((url) => url.includes(":") && !ids.has(url.split("#")[0]!));
+  if (unknown !== undefined) throw new Error(`Unknown schema ${unknown}`);
   return { ast, urls, ids };
 };
 

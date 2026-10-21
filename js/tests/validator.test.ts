@@ -34,3 +34,15 @@ test("a validator doesn't see schemas replaced in its registry later", async () 
   reg.add({ $schema: DIALECT, $id: "test:c", title: "Name", type: "string" } as JsonObject);
   expect(validator.validate("x", "test:c")).toEqual(before);
 });
+
+test("a validator doesn't see schemas changed in its registry later", async () => {
+  const reg = Registry.withTypes().add({ $schema: DIALECT, $id: "test:c", required: ["a"] } as JsonObject);
+  const validator = await Validator.create(reg);
+  (reg.get("test:c") as JsonObject)["required"] = [];
+  expect(validator.validate({}, "test:c").valid).toBe(false);
+});
+
+test("accepts registry ids under the meta-schema hosts", async () => {
+  const reg = Registry.withTypes().add({ $schema: DIALECT, $id: "https://json-schema.org/x/mine", type: "string" } as JsonObject);
+  expect((await Validator.create(reg)).validate(1, "https://json-schema.org/x/mine").valid).toBe(false);
+});

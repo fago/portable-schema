@@ -88,6 +88,11 @@ final class Registry
         return null;
     }
 
+    public function __clone()
+    {
+        $this->schemas = unserialize(serialize($this->schemas));
+    }
+
     /**
      * Adds every *.json file in $directory, recursively, by its $id.
      */
