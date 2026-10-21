@@ -59,6 +59,14 @@ export class Registry {
     return this;
   }
 
+  /** A deep copy: changes to either registry don't reach the other. */
+  copy(): Registry {
+    const copy = new Registry();
+    copy.schemas = new Map([...this.schemas].map(([id, schema]) => [id, structuredClone(schema)]));
+    copy.normalized = new Map(this.normalized);
+    return copy;
+  }
+
   has(id: string): boolean {
     return this.schemas.has(id);
   }

@@ -24,4 +24,13 @@ final class ValidatorTest extends TestCase
         $this->expectException(\OutOfBoundsException::class);
         $validator->validate('x', 'test:late.b');
     }
+
+    public function testDoesNotSeeSchemasReplacedLater(): void
+    {
+        $registry = Registry::withTypes()->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:c", "title": "Count", "type": "integer"}'));
+        $validator = new Validator($registry);
+        $before = $validator->validate('x', 'test:c');
+        $registry->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:c", "title": "Name", "type": "string"}'));
+        $this->assertEquals($before, $validator->validate('x', 'test:c'));
+    }
 }

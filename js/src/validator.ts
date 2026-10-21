@@ -20,9 +20,10 @@ export class Validator {
 
   private constructor(private readonly registry: Registry, private readonly compiled: Compiled) {}
 
-  /** Compiles the registry's schemas, so that validation is synchronous. */
+  /** Compiles every schema of `registry`, so that validation is synchronous. Later changes to `registry` are not seen. */
   static async create(registry: Registry): Promise<Validator> {
-    return new Validator(registry, await compile(registry));
+    const copy = registry.copy();
+    return new Validator(copy, await compile(copy));
   }
 
   /** A validator that runs `callback` for the named check, overriding any provider. */
