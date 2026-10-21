@@ -22,6 +22,11 @@ final class LoadingTest extends TestCase
         }
     }
 
+    public function testFileIsValid(): void
+    {
+        $this->assertSame([], Fixtures::problems(Json::decodeFile(Fixtures::DIRECTORY . '/loading.json'), 'loading.schema.json'));
+    }
+
     #[DataProvider('cases')]
     public function testLoading(\stdClass $case): void
     {

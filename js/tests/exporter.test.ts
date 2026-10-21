@@ -4,7 +4,7 @@ import * as Draft04 from "@hyperjump/json-schema/draft-04";
 import { registerSchema, validate } from "@hyperjump/json-schema/draft-2020-12";
 import { expect, test } from "vitest";
 import { Exporter, Registry, Validator, type JsonObject } from "../src/index.js";
-import { DIRECTORY } from "./fixtures.js";
+import { DIRECTORY, problems } from "./fixtures.js";
 
 type ExportCase = {
   description: string;
@@ -16,6 +16,12 @@ type ExportCase = {
 };
 
 const EXPORTS = join(DIRECTORY, "exports");
+
+test("export fixture files are valid", async () => {
+  for (const file of readdirSync(EXPORTS).filter((name) => name.endsWith(".json"))) {
+    expect(await problems(JSON.parse(readFileSync(join(EXPORTS, file), "utf8")), "exports.schema.json")).toEqual([]);
+  }
+});
 
 for (const file of readdirSync(EXPORTS).filter((name) => name.endsWith(".json")).sort()) {
   const cases = JSON.parse(readFileSync(join(EXPORTS, file), "utf8")) as ExportCase[];

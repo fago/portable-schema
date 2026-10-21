@@ -44,16 +44,16 @@ export const load = (testFile: string): [SchemaFile, Case[]] =>
   [read(testFile.slice(0, -".test.json".length) + ".json") as SchemaFile, read(testFile) as Case[]];
 
 /** Validates the fixture files against fixtures/schema.schema.json and fixtures/tests.schema.json. */
-export const check = async (schemaFile: SchemaFile, tests: Case[]): Promise<string[]> => {
-  const problems: string[] = [];
-  for (const [meta, data] of [["schema.schema.json", schemaFile], ["tests.schema.json", tests]] as const) {
-    const schema = read(meta) as { $id: string };
-    unregisterSchema(schema.$id);
-    registerSchema(schema);
-    const result = await validate(schema.$id, data as never, BASIC);
-    if (!result.valid) problems.push(`${meta}: ${JSON.stringify(result.errors)}`);
-  }
-  return problems;
+export const check = async (schemaFile: SchemaFile, tests: Case[]): Promise<string[]> =>
+  [...(await problems(schemaFile, "schema.schema.json")), ...(await problems(tests, "tests.schema.json"))];
+
+/** Validates `data` against the fixture file schema `meta`. */
+export const problems = async (data: unknown, meta: string): Promise<string[]> => {
+  const schema = read(meta) as { $id: string };
+  unregisterSchema(schema.$id);
+  registerSchema(schema);
+  const result = await validate(schema.$id, data as never, BASIC);
+  return result.valid ? [] : [`${meta}: ${JSON.stringify(result.errors)}`];
 };
 
 /** For examples: the `schemas/` and `catalogs/` directories next to the fixture and above it, below fixtures/examples/. */

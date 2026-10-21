@@ -27,6 +27,13 @@ final class ExporterTest extends TestCase
         }
     }
 
+    public function testFilesAreValid(): void
+    {
+        foreach (glob(Fixtures::DIRECTORY . '/exports/*.json') as $file) {
+            $this->assertSame([], Fixtures::problems(Json::decodeFile($file), 'exports.schema.json'), basename($file));
+        }
+    }
+
     #[DataProvider('cases')]
     public function testExport(\stdClass $case): void
     {

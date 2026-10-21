@@ -53,16 +53,20 @@ final class Fixtures
      */
     public static function check(\stdClass $schemaFile, array $tests): array
     {
+        return [...self::problems($schemaFile, 'schema.schema.json'), ...self::problems($tests, 'tests.schema.json')];
+    }
+
+    /**
+     * Validates $data against the fixture file schema $meta.
+     *
+     * @return list<string> problems found
+     */
+    public static function problems(mixed $data, string $meta): array
+    {
         $validator = new OpisValidator();
         $validator->setMaxErrors(10);
-        $problems = [];
-        foreach (['schema.schema.json' => $schemaFile, 'tests.schema.json' => $tests] as $meta => $data) {
-            $result = $validator->validate($data, Json::decodeFile(self::DIRECTORY . '/' . $meta));
-            if (!$result->isValid()) {
-                $problems[] = $meta . ': ' . json_encode((new \Opis\JsonSchema\Errors\ErrorFormatter())->format($result->error()));
-            }
-        }
-        return $problems;
+        $result = $validator->validate($data, Json::decodeFile(self::DIRECTORY . '/' . $meta));
+        return $result->isValid() ? [] : [$meta . ': ' . json_encode((new \Opis\JsonSchema\Errors\ErrorFormatter())->format($result->error()))];
     }
 
     public const SCHEMA_ID = 'urn:portable-schema:fixture';
