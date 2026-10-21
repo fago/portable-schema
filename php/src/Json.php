@@ -38,6 +38,35 @@ final class Json
     }
 
     /**
+     * A copy of $value with object properties in JS order: array-index names ascending, then the others in their
+     * order. JS objects can't keep any other order, so both languages iterate, report and print in this one.
+     */
+    public static function jsOrder(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            return array_map(self::jsOrder(...), $value);
+        }
+        if (!$value instanceof \stdClass) {
+            return $value;
+        }
+        $indexes = [];
+        $names = [];
+        foreach (get_object_vars($value) as $name => $property) {
+            if (is_int($name) && $name >= 0 && $name < 4294967295) {
+                $indexes[$name] = self::jsOrder($property);
+            } else {
+                $names[$name] = self::jsOrder($property);
+            }
+        }
+        ksort($indexes);
+        $copy = new \stdClass();
+        foreach ($indexes + $names as $name => $property) {
+            $copy->{$name} = $property;
+        }
+        return $copy;
+    }
+
+    /**
      * Converts decoded JSON to plain PHP arrays, e.g. for comparing results.
      */
     public static function toArray(mixed $value): mixed

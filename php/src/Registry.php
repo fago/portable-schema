@@ -44,7 +44,7 @@ final class Registry
         if ($other !== $id) {
             throw new \InvalidArgumentException("The schema ids $other and $id are the same after percent-decoding.");
         }
-        $this->schemas[$id] = $schema;
+        $this->schemas[$id] = Json::jsOrder($schema);
         return $this;
     }
 

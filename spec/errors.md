@@ -77,6 +77,6 @@ Raw JSON Schema evaluation reports many errors for one problem. Implementations 
 4. **`if` / `then` / `else`:** report the errors of the applied branch, not of `if`.
 5. **`$ref`:** errors keep the location of the referencing keyword.
 6. **`unknownProperty`:** not reported for a property that has another error at or below it, e.g. a `propertyNames` error for the same name.
-7. **Order:** by `instanceLocation`, then by `keywordLocation`. Ties keep the order of the keyword's value, e.g. the order of the `required` list.
+7. **Order:** by `instanceLocation`, then by `keywordLocation`. Ties keep the order of the keyword's value, e.g. the order of the `required` list. An object's properties are taken in JS order: array-index names (`1`, `12`) ascending, then the others in document order.
 
 Annotations such as `title` are not part of errors. Formatters take them from the annotations collected during validation.

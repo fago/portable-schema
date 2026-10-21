@@ -104,6 +104,7 @@ final class Validator
     public function validate(mixed $data, string $id, bool $partial = false, bool $emptyAsMissing = false, ?array $locations = null): Result
     {
         $compiled = $this->load($id);
+        $data = Json::jsOrder($data);
 
         $this->tracer->reset();
         $this->checks->reset();
