@@ -15,8 +15,8 @@ export class Registry {
 
   private schemas = new Map<string, Schema>();
 
-  /** Ids by their percent-decoded form. */
-  private decoded = new Map<string, string>();
+  /** Ids by their normalized form. */
+  private normalized = new Map<string, string>();
 
   /** A registry with the type library. */
   static withTypes(): Registry {
@@ -26,17 +26,18 @@ export class Registry {
   /**
    * Adds a schema under `id`, or under its own $id.
    *
-   * The id must be an absolute URI, and must differ from every other id after percent-decoding: Hyperjump decodes
-   * ids, so `a%2Bb` and `a+b` would be one schema.
+   * The id must be an absolute URI without a fragment, and must differ from every other id after percent-decoding
+   * and with the scheme and authority in lower case: Hyperjump normalizes ids, so `a%2Bb` and `a+b` would be one
+   * schema.
    */
   add(schema: Schema, id?: string): this {
     id ??= isObject(schema) && typeof schema["$id"] === "string" ? schema["$id"] : undefined;
     if (id === undefined) throw new Error("A schema without $id needs an id.");
-    if (!Formats.check("uri", id)) throw new Error(`The schema id ${id} is not an absolute URI.`);
-    const key = decodeURIComponent(id);
-    const other = this.decoded.get(key) ?? id;
-    if (other !== id) throw new Error(`The schema ids ${other} and ${id} are the same after percent-decoding.`);
-    this.decoded.set(key, id);
+    if (!Formats.check("uri", id) || id.includes("#")) throw new Error(`The schema id ${id} is not an absolute URI without a fragment.`);
+    const key = normalize(id);
+    const other = this.normalized.get(key) ?? id;
+    if (other !== id) throw new Error(`The schema ids ${other} and ${id} are the same after normalization.`);
+    this.normalized.set(key, id);
     this.schemas.set(id, schema);
     return this;
   }
@@ -82,6 +83,11 @@ export class Registry {
     return Pointer.get(schema, decode(fragment));
   }
 }
+
+/** `id` percent-decoded byte by byte, as PHP's rawurldecode() does, with the scheme and authority in lower case. */
+const normalize = (id: string): string =>
+  id.replace(/^[^:]*:(\/\/[^/?]*)?/u, (prefix) => prefix.toLowerCase())
+    .replace(/%([0-9a-f]{2})/giu, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)));
 
 const decode = (fragment: string): string => {
   try {

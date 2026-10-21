@@ -14,8 +14,8 @@ final class Registry
     /** @var array<string, \stdClass|bool> */
     private array $schemas = [];
 
-    /** @var array<string, string> ids by their percent-decoded form */
-    private array $decoded = [];
+    /** @var array<string, string> ids by their normalized form */
+    private array $normalized = [];
 
     /**
      * A registry with the type library.
@@ -28,8 +28,9 @@ final class Registry
     /**
      * Adds a schema under $id, or under its own $id.
      *
-     * The id must be an absolute URI, and must differ from every other id after percent-decoding: Hyperjump decodes
-     * ids, so `a%2Bb` and `a+b` would be one schema in JS.
+     * The id must be an absolute URI without a fragment, and must differ from every other id after percent-decoding
+     * and with the scheme and authority in lower case: Hyperjump normalizes ids, so `a%2Bb` and `a+b` would be one
+     * schema in JS.
      */
     public function add(\stdClass|bool $schema, ?string $id = null): self
     {
@@ -37,15 +38,23 @@ final class Registry
         if ($id === null) {
             throw new \InvalidArgumentException('A schema without $id needs an id.');
         }
-        if (!Formats::check('uri', $id)) {
-            throw new \InvalidArgumentException("The schema id $id is not an absolute URI.");
+        if (!Formats::check('uri', $id) || str_contains($id, '#')) {
+            throw new \InvalidArgumentException("The schema id $id is not an absolute URI without a fragment.");
         }
-        $other = $this->decoded[rawurldecode($id)] ??= $id;
+        $other = $this->normalized[self::normalize($id)] ??= $id;
         if ($other !== $id) {
-            throw new \InvalidArgumentException("The schema ids $other and $id are the same after percent-decoding.");
+            throw new \InvalidArgumentException("The schema ids $other and $id are the same after normalization.");
         }
         $this->schemas[$id] = Json::jsOrder($schema);
         return $this;
+    }
+
+    /**
+     * $id percent-decoded, with the scheme and authority in lower case.
+     */
+    private static function normalize(string $id): string
+    {
+        return rawurldecode(preg_replace_callback('#^[^:]*:(//[^/?]*)?#', fn (array $m) => strtolower($m[0]), $id));
     }
 
     /**
