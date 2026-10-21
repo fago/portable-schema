@@ -264,13 +264,14 @@ export class Shaper {
 
   private typeBy(node: KeywordNode, location: string, error: MakeError): Shaped {
     const selection = node.details as TypeBy;
+    const values = Object.values(selection.values);
+    if (this.partial && this.emptyAsMissing && values.some(isEmpty)) return new Shaped();
     if (selection.target !== null) {
       const shaped = new Shaped();
       for (const child of node.children) shaped.add(this.schema(child, location));
       return shaped;
     }
-    const values = Object.values(selection.values);
-    if (selection.missing.length > 0 || (this.partial && this.emptyAsMissing && values.some(isEmpty))) {
+    if (selection.missing.length > 0) {
       if (this.partial) return new Shaped();
       return new Shaped([error("typeBy.unresolved", { value: null, resolved: null })]);
     }

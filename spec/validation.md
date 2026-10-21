@@ -34,6 +34,7 @@ For saving incomplete data: drafts, PATCH requests, multi-step forms. With `part
 With `partial: true` and `emptyAsMissing: true`, a property whose value is `""`, `[]` or `{}` is treated as missing:
 
 - it causes no errors, not even `unknownProperty`;
+- as a `portable-typeBy` source, it selects no schema;
 - `minLength`, `minItems` and `minProperties` don't apply to it;
 - it isn't removed from the data.
 

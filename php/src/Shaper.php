@@ -395,6 +395,9 @@ final class Shaper
     {
         /** @var TypeBy $selection */
         $selection = $node->details;
+        if ($this->partial && $this->emptyAsMissing && array_filter($selection->values, Json::isEmpty(...)) !== []) {
+            return new Shaped();
+        }
         if ($selection->target !== null) {
             $shaped = new Shaped();
             foreach ($node->children as $child) {
@@ -402,7 +405,7 @@ final class Shaper
             }
             return $shaped;
         }
-        if ($selection->missing !== [] || ($this->partial && $this->emptyAsMissing && array_filter($selection->values, Json::isEmpty(...)) !== [])) {
+        if ($selection->missing !== []) {
             if ($this->partial) {
                 return new Shaped();
             }
