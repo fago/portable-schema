@@ -141,7 +141,7 @@ From `core/lib/Drupal/Core/TypedData/Plugin/DataType/`:
 | `Email`, `Uuid` | `portable:email`, `portable:uuid` |
 | `ValidKeys` | `properties` + `unevaluatedProperties: false` |
 | `ValidSequenceKeys` | `propertyNames` |
-| `PluginExists`, `EntityBundleExists`, `ConfigExists`, `ExtensionExists` | `$ref` to a catalog: checkable live or offline from a site schema dump |
+| `PluginExists`, `EntityBundleExists`, `ConfigExists`, `ExtensionExists` | `$ref` to a catalog: checkable live or statically against a site schema dump |
 | `ValidReference`, `UniqueField`, `UniquePathAlias`, `ReferenceAccess` and other checks that need content or the current user | `portable-check`: run by a provider on the server; reported as unchecked where no provider is available |
 | `Callback` | Case by case. Example: `block.block`'s region check becomes a catalog of the theme's regions, selected with `portable-typeBy` |
 

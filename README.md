@@ -17,7 +17,7 @@ Status: early planning. Nothing here is stable yet.
 
 - **Generated forms,** on the PHP side (e.g. Drupal Form API) or the JS side (e.g. Vue or React), validating exactly like the server.
 - **Generative UIs:** interfaces built from the schema at runtime.
-- **Agents that fully understand, write and validate data,** locally and offline.
+- **Agents that fully understand, write and validate data,** locally, also statically against a schema dump.
 - **Typed APIs and components:** API contracts, component props and TypeScript types from the same schema.
 
 ## Principles

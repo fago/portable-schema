@@ -128,7 +128,7 @@
           "enum": [
             "noProvider",
             "pending",
-            "offline",
+            "static",
             "error"
           ]
         }

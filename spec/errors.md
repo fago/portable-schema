@@ -30,7 +30,7 @@ Validation returns data, not text. Messages are produced from this data by a for
 - **`unchecked`** lists checks that could not run, with a `reason`:
   - `noProvider`: no provider and no local callback is registered for the check;
   - `pending`: synchronous validation in a runtime where the check only runs asynchronously; it runs with asynchronous validation;
-  - `offline`: static validation against a site schema dump, and the check needs the live system;
+  - `static`: static validation against a site schema dump, and the check needs the live system;
   - `error`: the provider failed. Never reported as valid.
 - The shape follows the "list" output format of the next JSON Schema release, extended with `code`, `params` and `unchecked`.
 
