@@ -14,9 +14,10 @@ use Opis\JsonSchema\Schema;
 use Opis\JsonSchema\ValidationContext;
 
 /**
- * Boolean subschemas as objects with the internal keyword `portable-boolean`.
+ * Boolean subschemas, and `{}` as `true`, as objects with the internal keyword `portable-boolean`.
  *
- * opis evaluates most boolean subschemas inline, without a schema to trace, and refuses `false` in `allOf`.
+ * opis evaluates most boolean and empty subschemas inline, without a schema to trace, refuses `false` in `allOf`, and
+ * marks one item too many evaluated for a `prefixItems` of only `{}`.
  */
 final class BooleanSchemas extends KeywordParser
 {
@@ -67,6 +68,9 @@ final class BooleanSchemas extends KeywordParser
 
     private static function subschema(mixed $schema): mixed
     {
+        if ($schema instanceof \stdClass && get_object_vars($schema) === []) {
+            $schema = true;
+        }
         return is_bool($schema) ? (object) [self::KEYWORD => $schema] : self::replace($schema);
     }
 
