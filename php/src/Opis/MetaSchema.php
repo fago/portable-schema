@@ -9,7 +9,7 @@ use Opis\JsonSchema\Validator;
 use PortableSchema\Pointer;
 
 /**
- * Checks schemas against the dialect meta-schema `spec/v1/schema.json`, as Hyperjump does when it compiles.
+ * Checks schemas against the dialect meta-schema `spec/v1/schema.json`, extended by LOAD.
  *
  * - The meta-schemas assert no formats: their own `$schema` is plain 2020-12.
  * - Defaults off: opis would write the meta-schema's `default`s into the checked schema.
@@ -19,6 +19,23 @@ final class MetaSchema
     private const DIRECTORY = __DIR__ . '/../../resources/json-schema-2020-12';
 
     private const SPEC = __DIR__ . '/../../../spec/v1';
+
+    /**
+     * The dialect meta-schema plus the profile's limits, in every subschema:
+     * - `$schema` names the dialect;
+     * - no `$vocabulary`, `$dynamicRef`, `$dynamicAnchor`.
+     * Same as `LOAD` in `js/src/hyperjump.ts`.
+     */
+    private const LOAD = <<<'JSON'
+        {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "$id": "https://portable-schema.dev/v1/load",
+          "$dynamicAnchor": "meta",
+          "$ref": "https://portable-schema.dev/v1/schema",
+          "properties": {"$schema": {"const": "https://portable-schema.dev/v1/schema"}},
+          "propertyNames": {"not": {"enum": ["$vocabulary", "$dynamicRef", "$dynamicAnchor"]}}
+        }
+        JSON;
 
     private static ?Validator $validator = null;
 
@@ -34,7 +51,7 @@ final class MetaSchema
         if (isset(self::$valid[$json])) {
             return;
         }
-        $error = self::validator()->validate($schema, Parser::DIALECT)->error();
+        $error = self::validator()->validate($schema, 'https://portable-schema.dev/v1/load')->error();
         if ($error === null) {
             self::$valid[$json] = true;
             return;
@@ -57,6 +74,7 @@ final class MetaSchema
             }
             $resolver->registerFile(Parser::DIALECT, self::SPEC . '/schema.json');
             $resolver->registerFile('https://portable-schema.dev/v1/vocab', self::SPEC . '/vocab.json');
+            $resolver->registerRaw(self::LOAD);
         }
         return self::$validator;
     }

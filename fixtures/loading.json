@@ -430,5 +430,161 @@
       }
     },
     "refused": true
+  },
+  {
+    "description": "unknown dialect",
+    "schema": {
+      "$schema": "https://example.com/nope",
+      "$id": "test:load34"
+    },
+    "refused": true
+  },
+  {
+    "description": "unknown dialect in a subschema",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load35",
+      "properties": {
+        "a": {
+          "$schema": "https://example.com/nope"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "plain 2020-12 dialect",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "test:load36"
+    },
+    "refused": true
+  },
+  {
+    "description": "plain 2020-12 dialect in a subschema",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load37",
+      "properties": {
+        "a": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "$vocabulary",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load38",
+      "$vocabulary": {
+        "https://json-schema.org/draft/2020-12/vocab/core": true
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "$dynamicRef",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load39",
+      "$dynamicAnchor": "n",
+      "properties": {
+        "a": {
+          "$dynamicRef": "#n"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "dangling $dynamicRef",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load40",
+      "properties": {
+        "a": {
+          "$dynamicRef": "#nope"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "$dynamicAnchor",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load41",
+      "$defs": {
+        "a": {
+          "$dynamicAnchor": "a"
+        }
+      }
+    },
+    "refused": true
+  },
+  {
+    "description": "$anchor with a space",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load42",
+      "$anchor": "a b"
+    },
+    "refused": true
+  },
+  {
+    "description": "$anchor starting with a digit",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load43",
+      "$anchor": "1a"
+    },
+    "refused": true
+  },
+  {
+    "description": "$anchor",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load44",
+      "$defs": {
+        "a": {
+          "$anchor": "a"
+        }
+      },
+      "$ref": "#a"
+    },
+    "refused": false
+  },
+  {
+    "description": "$ref to a 2020-12 meta-schema",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load45",
+      "$ref": "https://json-schema.org/draft/2020-12/meta/core"
+    },
+    "refused": true
+  },
+  {
+    "description": "$ref to the dialect meta-schema",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load46",
+      "$ref": "https://portable-schema.dev/v1/schema"
+    },
+    "refused": true
+  },
+  {
+    "description": "an object named $vocabulary in properties",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:load47",
+      "properties": {
+        "$vocabulary": {
+          "type": "string"
+        }
+      }
+    },
+    "refused": false
   }
 ]

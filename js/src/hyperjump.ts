@@ -1,5 +1,5 @@
 import * as Browser from "@hyperjump/browser";
-import { registerSchema, unregisterSchema } from "@hyperjump/json-schema/draft-2020-12";
+import { registerSchema, unregisterSchema, validate } from "@hyperjump/json-schema/draft-2020-12";
 import {
   addKeyword, canonicalUri, defineVocabulary, getSchema, Validation,
   type EvaluationPlugin, type SchemaDocument,
@@ -20,6 +20,24 @@ import * as UriTemplate from "./uri-template.js";
 export const DIALECT = "https://portable-schema.dev/v1/schema";
 
 const KEYWORD = "https://portable-schema.dev/keyword/";
+
+/**
+ * The dialect meta-schema plus the profile's limits, in every subschema:
+ * - `$schema` names the dialect;
+ * - no `$vocabulary`, `$dynamicRef`, `$dynamicAnchor`.
+ * Same as `LOAD` in `php/src/Opis/MetaSchema.php`.
+ */
+const LOAD = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  $id: "https://portable-schema.dev/v1/load",
+  $dynamicAnchor: "meta",
+  $ref: DIALECT,
+  properties: { $schema: { const: DIALECT } },
+  propertyNames: { not: { enum: ["$vocabulary", "$dynamicRef", "$dynamicAnchor"] } },
+};
+
+/** Schemas Hyperjump holds that are not in the registry: the meta-schemas. */
+const META = /^https:\/\/(json-schema\.org|portable-schema\.dev)\//u;
 
 /** The validation that is running: keywords report to its tracer and checks. */
 let active: { tracer: Tracer; checks: Checks } | null = null;
@@ -96,6 +114,7 @@ const setUp = (): void => {
   const spec = (file: string) => JSON.parse(readFileSync(fileURLToPath(new URL(`../../spec/v1/${file}`, import.meta.url)), "utf8"));
   registerSchema(spec("vocab.json"));
   registerSchema(spec("schema.json"));
+  registerSchema(LOAD);
 };
 
 /** Matches the URIs a URI template can expand to. */
@@ -129,6 +148,10 @@ const compileNow = async (registry: Registry): Promise<Compiled> => {
   const ast = { metaData: {}, plugins: new Set<EvaluationPlugin>() } as unknown as Compiled["ast"];
   const urls = new Map<string, string>();
   const ids = new Map<string, string>();
+  const load = await validate(LOAD.$id);
+  for (const id of registered) {
+    if (!load(registry.get(id)).valid) throw new Error(`Invalid schema ${id}`);
+  }
   compiling = registry;
   try {
     for (const id of registry.ids()) {
@@ -140,6 +163,8 @@ const compileNow = async (registry: Registry): Promise<Compiled> => {
   } finally {
     compiling = null;
   }
+  const meta = Object.keys(ast).find((url) => META.test(url));
+  if (meta !== undefined) throw new Error(`Unknown schema ${meta}`);
   return { ast, urls, ids };
 };
 
