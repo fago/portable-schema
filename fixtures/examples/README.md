@@ -4,6 +4,8 @@ Showcases of real systems, run by both runners. Each showcase is self-contained:
 
 ## Layout
 
+Paths are relative to `fixtures/examples/`.
+
 ```
 drupal/config/
   schemas/                                     mounted as drupal: one file per schema ID
@@ -17,6 +19,7 @@ drupal/config/
 - **`schemas/`** holds the showcase's schemas and catalogs. The runner mounts it as `drupal` ([`spec/registry.md`](../../spec/registry.md)) next to the type library, and mounts nothing else. Schemas are not shared between showcases.
 - **One data file per validated instance,** directly in the showcase directory, in its native format: Drupal config as YAML named like the config object, entities, component props and tool arguments as JSON. Variants of an instance get a `--<case>` suffix, e.g. `node.article--missing-title.json`.
 - **`<name>.test.json`** next to each data file holds only the expectations, defined by [`../expectation.schema.json`](../expectation.schema.json).
+- **Every other file is listed** in the runners' `NON_DATA_FILES` (scripts, exports, a component definition), besides `README.md`. A data file without a `.test.json`, or an unlisted file, fails the tests.
 
 ## Expectation file: `<name>.test.json`
 
@@ -39,4 +42,4 @@ drupal/config/
 }
 ```
 
-The runners read YAML into the JSON data model: symfony/yaml in PHP, `yaml` in JS.
+The runners read YAML into the JSON data model: symfony/yaml in PHP, `yaml` in JS. The two read some scalars differently (unquoted dates, `0644`, `!!binary`), so such values are quoted. `scripts/compare-results.sh` compares the loaded data of every case across PHP and JS.

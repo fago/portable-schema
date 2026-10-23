@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Prints the full result of every fixture case as JSON lines, for comparing with js/tests/results.ts.
+ * Prints the full result and the loaded data of every fixture case as JSON lines, for comparing with js/tests/results.ts.
  */
 
 declare(strict_types=1);
@@ -16,6 +16,6 @@ foreach (Fixtures::files() as $file) {
     foreach ($tests as $case) {
         $result = Fixtures::run($file, $schemaFile, $case);
         $messages = Formatter::create()->messages($result);
-        echo json_encode([$file, $case->description, $result, $messages], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
+        echo json_encode([$file, $case->description, $result, $messages, $case->data], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
     }
 }

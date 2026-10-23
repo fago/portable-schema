@@ -1,5 +1,5 @@
 #!/bin/sh
-# Compares PHP and JS: the full results of every fixture case, and the agent tool showcase's output.
+# Compares PHP and JS: the full results and loaded data (YAML included) of every fixture case, and the agent tool showcase's output.
 set -e
 cd "$(dirname "$0")/.."
 out="${TMPDIR:-/tmp}"
