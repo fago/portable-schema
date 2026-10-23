@@ -37,6 +37,12 @@ final class FixturesTest extends TestCase
         $this->assertSame([], Fixtures::unused());
     }
 
+    public function testAgentToolFieldItemImageIsTheNodeArticles(): void
+    {
+        $path = Fixtures::DIRECTORY . '/examples/drupal/%s/schemas/field_item.image.json';
+        $this->assertFileEquals(sprintf($path, 'node-article'), sprintf($path, 'agent-tool'));
+    }
+
     #[DataProvider('files')]
     public function testFixtureFilesAreValid(string $file): void
     {
