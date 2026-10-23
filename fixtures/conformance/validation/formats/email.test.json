@@ -35,6 +35,21 @@
     "valid": true
   },
   {
+    "description": "empty quoted local part",
+    "data": "\"\"@example.com",
+    "valid": true
+  },
+  {
+    "description": "IPv6 tag in lower case",
+    "data": "joe@[ipv6:::1]",
+    "valid": true
+  },
+  {
+    "description": "254 characters",
+    "data": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": true
+  },
+  {
     "description": "missing @",
     "data": "joe.example.com",
     "valid": false,
@@ -133,6 +148,30 @@
   {
     "description": "empty string",
     "data": "",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "255 characters",
+    "data": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "trailing line feed",
+    "data": "joe@example.com\n",
     "valid": false,
     "errors": [
       {
