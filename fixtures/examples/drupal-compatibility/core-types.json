@@ -1,0 +1,377 @@
+{
+  "description": "Config schema types uuid, color_hex, machine_name, langcode, label, text and weight vs. their portable:* mappings in docs/drupal.md.",
+  "environment": {
+    "drupal": "Drupal 11.4-dev (11.x at ad3428034a5b), PHP 8.3.6, PCRE2 10.42, egulias/email-validator 4.0.4, symfony/validator v7.4.10",
+    "js": "Node.js 24.22.0, V8 13.6.233.17-node.57, Unicode 17.0"
+  },
+  "columns": {
+    "drupal": "The config schema type with its constraints, through TypedConfigManager",
+    "portable": "uuid: format uuid; color_hex: portable:color; machine_name: portable:identifier + maxLength 166; langcode: portable:langcode + the language catalog (getAllValidLangcodes() of this site); label: portable:label; text: portable:text; weight: portable:weight",
+    "portablePatternOnly": "langcode: the portable:langcode pattern alone",
+    "standard": "uuid: RFC 9562 as the format registry tests it; langcode: RFC 5646 well-formed tag; n/a for the others"
+  },
+  "cases": [
+    {
+      "type": "uuid",
+      "value": "6e4a8f3c-1a2b-4c3d-8e9f-0a1b2c3d4e5f",
+      "note": "version 4",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "uuid",
+      "value": "6E4A8F3C-1A2B-4C3D-8E9F-0A1B2C3D4E5F",
+      "note": "upper case",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "uuid",
+      "value": "01890a5d-ac96-774b-bcce-b302099a8057",
+      "note": "version 7",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "uuid",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "note": "nil UUID",
+      "drupal": false,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "uuid",
+      "value": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+      "note": "max UUID",
+      "drupal": false,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "uuid",
+      "value": "99c17cbb-656f-f64a-940f-1a4568f03487",
+      "note": "version nibble f",
+      "drupal": false,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "uuid",
+      "value": "2eb8aa08-aa98-11ea-f4aa-73b441d16380",
+      "note": "variant nibble f",
+      "drupal": false,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "uuid",
+      "value": "6e4a8f3c1a2b4c3d8e9f0a1b2c3d4e5f",
+      "note": "no hyphens",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "uuid",
+      "value": "{6e4a8f3c-1a2b-4c3d-8e9f-0a1b2c3d4e5f}",
+      "note": "braces",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "uuid",
+      "value": "6e4a8f3c-1a2b-4c3d-8e9f-0a1b2c3d4e5f\n",
+      "note": "trailing line feed",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "uuid",
+      "value": "",
+      "note": "empty string",
+      "drupal": true,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "color_hex",
+      "value": "#ff0000",
+      "drupal": true,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "color_hex",
+      "value": "ff0000",
+      "note": "without #",
+      "drupal": true,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "color_hex",
+      "value": "#F00",
+      "note": "short, upper case",
+      "drupal": true,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "color_hex",
+      "value": "#ff000080",
+      "note": "with alpha",
+      "drupal": false,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "color_hex",
+      "value": "#ff0000\n",
+      "note": "trailing line feed",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "color_hex",
+      "value": "",
+      "note": "empty string",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "machine_name",
+      "value": "basic_html",
+      "drupal": true,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "machine_name",
+      "value": "Basic_HTML",
+      "note": "upper case",
+      "drupal": false,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "machine_name",
+      "value": "basic-html",
+      "note": "hyphen",
+      "drupal": false,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "machine_name",
+      "value": "basic_html\n",
+      "note": "trailing line feed",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "machine_name",
+      "value": "",
+      "note": "empty string",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "machine_name",
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "note": "167 characters",
+      "drupal": false,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "langcode",
+      "value": "en",
+      "drupal": true,
+      "portable": true,
+      "portablePatternOnly": true,
+      "standard": true
+    },
+    {
+      "type": "langcode",
+      "value": "pt-br",
+      "drupal": true,
+      "portable": true,
+      "portablePatternOnly": true,
+      "standard": true
+    },
+    {
+      "type": "langcode",
+      "value": "zh-hans",
+      "drupal": true,
+      "portable": true,
+      "portablePatternOnly": true,
+      "standard": true
+    },
+    {
+      "type": "langcode",
+      "value": "gsw-berne",
+      "drupal": true,
+      "portable": true,
+      "portablePatternOnly": true,
+      "standard": true
+    },
+    {
+      "type": "langcode",
+      "value": "en-x-simple",
+      "drupal": true,
+      "portable": true,
+      "portablePatternOnly": true,
+      "standard": true
+    },
+    {
+      "type": "langcode",
+      "value": "und",
+      "note": "LANGCODE_NOT_SPECIFIED",
+      "drupal": true,
+      "portable": true,
+      "portablePatternOnly": true,
+      "standard": true
+    },
+    {
+      "type": "langcode",
+      "value": "zxx",
+      "note": "LANGCODE_NOT_APPLICABLE",
+      "drupal": true,
+      "portable": true,
+      "portablePatternOnly": true,
+      "standard": true
+    },
+    {
+      "type": "langcode",
+      "value": "x-default",
+      "note": "LANGCODE_DEFAULT",
+      "drupal": true,
+      "portable": false,
+      "portablePatternOnly": false,
+      "standard": true
+    },
+    {
+      "type": "langcode",
+      "value": "site_default",
+      "note": "LANGCODE_SITE_DEFAULT",
+      "drupal": true,
+      "portable": false,
+      "portablePatternOnly": false,
+      "standard": false
+    },
+    {
+      "type": "langcode",
+      "value": "EN",
+      "note": "upper case",
+      "drupal": false,
+      "portable": false,
+      "portablePatternOnly": true,
+      "standard": true
+    },
+    {
+      "type": "langcode",
+      "value": "pt_BR",
+      "note": "underscore",
+      "drupal": false,
+      "portable": false,
+      "portablePatternOnly": false,
+      "standard": false
+    },
+    {
+      "type": "langcode",
+      "value": "tlh",
+      "note": "well-formed BCP 47, not in Drupal's list",
+      "drupal": false,
+      "portable": false,
+      "portablePatternOnly": true,
+      "standard": true
+    },
+    {
+      "type": "langcode",
+      "value": "",
+      "note": "empty string",
+      "drupal": false,
+      "portable": false,
+      "portablePatternOnly": false,
+      "standard": false
+    },
+    {
+      "type": "label",
+      "value": "Main navigation",
+      "drupal": true,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "label",
+      "value": "Tab\there",
+      "note": "tab",
+      "drupal": false,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "label",
+      "value": "Line\nbreak",
+      "note": "line feed",
+      "drupal": false,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "label",
+      "value": "Family 👨‍👩‍👧",
+      "note": "emoji ZWJ sequence",
+      "drupal": false,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "label",
+      "value": "Tired 🫩",
+      "note": "U+1FAE9, Unicode 16.0",
+      "drupal": false,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "text",
+      "value": "Line 1\nLine 2",
+      "drupal": true,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "text",
+      "value": "Bell \u0007",
+      "note": "BEL",
+      "drupal": false,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "weight",
+      "value": 2147483647,
+      "drupal": true,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "weight",
+      "value": 2147483648,
+      "drupal": false,
+      "portable": false,
+      "standard": null
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "description": "Core Regex constraints: PCRE via Symfony's Regex constraint vs. the same pattern body as ECMA-262 with the u flag, and vs. the converted pattern proposed in docs/drupal-compatibility.md.",
+  "environment": {
+    "drupal": "Drupal 11.4-dev (11.x at ad3428034a5b), PHP 8.3.6, PCRE2 10.42, egulias/email-validator 4.0.4, symfony/validator v7.4.10",
+    "js": "Node.js 24.22.0, V8 13.6.233.17-node.57, Unicode 17.0"
+  },
+  "columns": {
+    "drupal": "Regex constraint (Symfony RegexValidator, preg_match) with the pattern and match option as in core, run on a plain Symfony validator",
+    "ecma": "The pattern body as an ECMA-262 RegExp with the u flag (i kept), as a JS validator runs pattern",
+    "converted": "convertedPattern as an ECMA-262 RegExp with the u flag: a final $ without D becomes \\n?$; [^\\PC...] with match: false becomes the stable categories Cc, Cf, Co plus the allowed characters"
+  },
+  "cases": [
+    {
+      "source": "machine_name",
+      "pattern": "/^[a-z0-9_]+$/",
+      "value": "basic_html",
+      "drupal": true,
+      "ecma": true,
+      "convertedPattern": "^[a-z0-9_]+\\n?$",
+      "converted": true
+    },
+    {
+      "source": "machine_name",
+      "pattern": "/^[a-z0-9_]+$/",
+      "value": "basic_html\n",
+      "note": "trailing line feed",
+      "drupal": true,
+      "ecma": false,
+      "convertedPattern": "^[a-z0-9_]+\\n?$",
+      "converted": true
+    },
+    {
+      "source": "machine_name",
+      "pattern": "/^[a-z0-9_]+$/",
+      "value": "basic_html\n\n",
+      "note": "two trailing line feeds",
+      "drupal": false,
+      "ecma": false,
+      "convertedPattern": "^[a-z0-9_]+\\n?$",
+      "converted": false
+    },
+    {
+      "source": "machine_name",
+      "pattern": "/^[a-z0-9_]+$/",
+      "value": "",
+      "note": "empty string",
+      "drupal": true,
+      "ecma": false,
+      "convertedPattern": "^[a-z0-9_]+\\n?$",
+      "converted": false
+    },
+    {
+      "source": "color_hex",
+      "pattern": "/^[#]?([0-9a-fA-F]{3}){1,2}$/",
+      "value": "#ff0000",
+      "drupal": true,
+      "ecma": true,
+      "convertedPattern": "^[#]?([0-9a-fA-F]{3}){1,2}\\n?$",
+      "converted": true
+    },
+    {
+      "source": "color_hex",
+      "pattern": "/^[#]?([0-9a-fA-F]{3}){1,2}$/",
+      "value": "#ff0000\n",
+      "note": "trailing line feed",
+      "drupal": true,
+      "ecma": false,
+      "convertedPattern": "^[#]?([0-9a-fA-F]{3}){1,2}\\n?$",
+      "converted": true
+    },
+    {
+      "source": "block.block.*:id",
+      "pattern": "/^(?!\\.)[a-z0-9_.]+$/",
+      "value": "olivero.page_title",
+      "drupal": true,
+      "ecma": true,
+      "convertedPattern": "^(?!\\.)[a-z0-9_.]+\\n?$",
+      "converted": true
+    },
+    {
+      "source": "block.block.*:id",
+      "pattern": "/^(?!\\.)[a-z0-9_.]+$/",
+      "value": ".hidden",
+      "note": "leading dot, rejected by the lookahead",
+      "drupal": false,
+      "ecma": false,
+      "convertedPattern": "^(?!\\.)[a-z0-9_.]+\\n?$",
+      "converted": false
+    },
+    {
+      "source": "block.block.*:id",
+      "pattern": "/^(?!\\.)[a-z0-9_.]+$/",
+      "value": "olivero.page_title\n",
+      "note": "trailing line feed",
+      "drupal": true,
+      "ecma": false,
+      "convertedPattern": "^(?!\\.)[a-z0-9_.]+\\n?$",
+      "converted": true
+    },
+    {
+      "source": "path_alias:alias",
+      "pattern": "/^\\//i",
+      "value": "/about",
+      "drupal": true,
+      "ecma": true,
+      "convertedPattern": "^\\/",
+      "converted": true
+    },
+    {
+      "source": "path_alias:alias",
+      "pattern": "/^\\//i",
+      "value": "about",
+      "drupal": false,
+      "ecma": false,
+      "convertedPattern": "^\\/",
+      "converted": false
+    },
+    {
+      "source": "configurable_language:id",
+      "pattern": "/[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*/",
+      "value": "de",
+      "drupal": true,
+      "ecma": true,
+      "convertedPattern": "[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*",
+      "converted": true
+    },
+    {
+      "source": "configurable_language:id",
+      "pattern": "/[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*/",
+      "value": "123 not a langcode!",
+      "note": "pattern is not anchored",
+      "drupal": true,
+      "ecma": true,
+      "convertedPattern": "[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*",
+      "converted": true
+    },
+    {
+      "source": "label",
+      "pattern": "/([^\\PC])/u",
+      "match": false,
+      "value": "Hello world",
+      "drupal": true,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^[^\\p{Cc}\\p{Cf}\\p{Co}]*$",
+      "converted": true
+    },
+    {
+      "source": "label",
+      "pattern": "/([^\\PC])/u",
+      "match": false,
+      "value": "Hello\tworld",
+      "note": "tab (Cc)",
+      "drupal": false,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^[^\\p{Cc}\\p{Cf}\\p{Co}]*$",
+      "converted": false
+    },
+    {
+      "source": "label",
+      "pattern": "/([^\\PC])/u",
+      "match": false,
+      "value": "Hello\nworld",
+      "note": "line feed (Cc)",
+      "drupal": false,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^[^\\p{Cc}\\p{Cf}\\p{Co}]*$",
+      "converted": false
+    },
+    {
+      "source": "label",
+      "pattern": "/([^\\PC])/u",
+      "match": false,
+      "value": "Schifffahrts­gesellschaft",
+      "note": "soft hyphen U+00AD (Cf)",
+      "drupal": false,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^[^\\p{Cc}\\p{Cf}\\p{Co}]*$",
+      "converted": false
+    },
+    {
+      "source": "label",
+      "pattern": "/([^\\PC])/u",
+      "match": false,
+      "value": "zero​width",
+      "note": "zero width space U+200B (Cf)",
+      "drupal": false,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^[^\\p{Cc}\\p{Cf}\\p{Co}]*$",
+      "converted": false
+    },
+    {
+      "source": "label",
+      "pattern": "/([^\\PC])/u",
+      "match": false,
+      "value": "Family 👨‍👩‍👧",
+      "note": "emoji ZWJ sequence, U+200D (Cf)",
+      "drupal": false,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^[^\\p{Cc}\\p{Cf}\\p{Co}]*$",
+      "converted": false
+    },
+    {
+      "source": "label",
+      "pattern": "/([^\\PC])/u",
+      "match": false,
+      "value": "Flag 🇦🇹",
+      "note": "regional indicators (So)",
+      "drupal": true,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^[^\\p{Cc}\\p{Cf}\\p{Co}]*$",
+      "converted": true
+    },
+    {
+      "source": "label",
+      "pattern": "/([^\\PC])/u",
+      "match": false,
+      "value": "Tired 🫩",
+      "note": "U+1FAE9, assigned in Unicode 16.0",
+      "drupal": false,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^[^\\p{Cc}\\p{Cf}\\p{Co}]*$",
+      "converted": true
+    },
+    {
+      "source": "label",
+      "pattern": "/([^\\PC])/u",
+      "match": false,
+      "value": "Private ",
+      "note": "private use U+E000 (Co)",
+      "drupal": false,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^[^\\p{Cc}\\p{Cf}\\p{Co}]*$",
+      "converted": false
+    },
+    {
+      "source": "text",
+      "pattern": "/([^\\PC\\x09\\x0a\\x0d])/u",
+      "match": false,
+      "value": "Line 1\r\nLine 2\twith tab",
+      "drupal": true,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^(?:[\\x09\\x0a\\x0d]|[^\\p{Cc}\\p{Cf}\\p{Co}])*$",
+      "converted": true
+    },
+    {
+      "source": "text",
+      "pattern": "/([^\\PC\\x09\\x0a\\x0d])/u",
+      "match": false,
+      "value": "Bell \u0007",
+      "note": "BEL (Cc)",
+      "drupal": false,
+      "ecma": "SyntaxError",
+      "convertedPattern": "^(?:[\\x09\\x0a\\x0d]|[^\\p{Cc}\\p{Cf}\\p{Co}])*$",
+      "converted": false
+    }
+  ]
+}

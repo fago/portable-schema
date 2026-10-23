@@ -1,0 +1,324 @@
+{
+  "description": "Numbers: Drupal's integer, decimal and float DataTypes vs. portable:integer, portable:decimal and portable:number. Values are JSON text, decoded with json_decode() and JSON.parse().",
+  "environment": {
+    "drupal": "Drupal 11.4-dev (11.x at ad3428034a5b), PHP 8.3.6, PCRE2 10.42, egulias/email-validator 4.0.4, symfony/validator v7.4.10",
+    "js": "Node.js 24.22.0, V8 13.6.233.17-node.57, Unicode 17.0"
+  },
+  "columns": {
+    "drupal": "PrimitiveType constraint on the DataType: filter_var() FILTER_VALIDATE_INT / FILTER_VALIDATE_FLOAT, or the decimal regex",
+    "portable": "portable:integer (I-JSON range), portable:decimal (format decimal, strings only), portable:number",
+    "standard": "JSON Schema type integer / number; n/a for decimal, which the registry defines without a grammar"
+  },
+  "cases": [
+    {
+      "type": "integer",
+      "json": "1",
+      "php": "int 1",
+      "js": "1",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "integer",
+      "json": "-1",
+      "php": "int -1",
+      "js": "-1",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "integer",
+      "json": "1.0",
+      "note": "integral number with a fraction part",
+      "php": "float 1.0",
+      "js": "1",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "integer",
+      "json": "1.5",
+      "php": "float 1.5",
+      "js": "1.5",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "integer",
+      "json": "1e3",
+      "note": "exponent notation",
+      "php": "float 1000.0",
+      "js": "1000",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "integer",
+      "json": "\"42\"",
+      "note": "numeric string",
+      "php": "string '42'",
+      "js": "\"42\"",
+      "drupal": true,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "integer",
+      "json": "\" 42 \"",
+      "note": "numeric string with spaces",
+      "php": "string ' 42 '",
+      "js": "\" 42 \"",
+      "drupal": true,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "integer",
+      "json": "\"+42\"",
+      "php": "string '+42'",
+      "js": "\"+42\"",
+      "drupal": true,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "integer",
+      "json": "9007199254740991",
+      "note": "2^53 - 1",
+      "php": "int 9007199254740991",
+      "js": "9007199254740991",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "integer",
+      "json": "9007199254740992",
+      "note": "2^53",
+      "php": "int 9007199254740992",
+      "js": "9007199254740992",
+      "drupal": true,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "type": "integer",
+      "json": "9007199254740993",
+      "note": "2^53 + 1, not representable as a double",
+      "php": "int 9007199254740993",
+      "js": "9007199254740992",
+      "drupal": true,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "type": "integer",
+      "json": "9223372036854775807",
+      "note": "PHP_INT_MAX",
+      "php": "int 9223372036854775807",
+      "js": "9223372036854776000",
+      "drupal": true,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "type": "integer",
+      "json": "9223372036854775808",
+      "note": "PHP_INT_MAX + 1",
+      "php": "float 9.223372036854776E+18",
+      "js": "9223372036854776000",
+      "drupal": false,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "type": "integer",
+      "json": "-9223372036854775808",
+      "note": "PHP_INT_MIN",
+      "php": "int -9223372036854775807-1",
+      "js": "-9223372036854776000",
+      "drupal": true,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "type": "integer",
+      "json": "true",
+      "php": "bool true",
+      "js": "true",
+      "drupal": true,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "decimal",
+      "json": "\"123.45\"",
+      "php": "string '123.45'",
+      "js": "\"123.45\"",
+      "drupal": true,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "\"-0.5\"",
+      "php": "string '-0.5'",
+      "js": "\"-0.5\"",
+      "drupal": true,
+      "portable": true,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "\"+1.5\"",
+      "note": "leading plus",
+      "php": "string '+1.5'",
+      "js": "\"+1.5\"",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "\"1.\"",
+      "note": "no digits after the point",
+      "php": "string '1.'",
+      "js": "\"1.\"",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "\".5\"",
+      "note": "no digits before the point",
+      "php": "string '.5'",
+      "js": "\".5\"",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "\"007\"",
+      "note": "leading zeros",
+      "php": "string '007'",
+      "js": "\"007\"",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "\"1e5\"",
+      "note": "exponent",
+      "php": "string '1e5'",
+      "js": "\"1e5\"",
+      "drupal": false,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "\"1.5\\n\"",
+      "note": "trailing line feed",
+      "php": "string '1.5\n'",
+      "js": "\"1.5\\n\"",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "\"\"",
+      "note": "empty string",
+      "php": "string ''",
+      "js": "\"\"",
+      "drupal": false,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "123.45",
+      "note": "JSON number",
+      "php": "float 123.45",
+      "js": "123.45",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "10",
+      "note": "JSON integer",
+      "php": "int 10",
+      "js": "10",
+      "drupal": true,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "decimal",
+      "json": "1e-7",
+      "note": "JSON number in exponent notation",
+      "php": "float 1.0E-7",
+      "js": "1e-7",
+      "drupal": false,
+      "portable": false,
+      "standard": null
+    },
+    {
+      "type": "float",
+      "json": "1.5",
+      "php": "float 1.5",
+      "js": "1.5",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "float",
+      "json": "1e300",
+      "php": "float 1.0E+300",
+      "js": "1e+300",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "type": "float",
+      "json": "\"1.5\"",
+      "note": "numeric string",
+      "php": "string '1.5'",
+      "js": "\"1.5\"",
+      "drupal": true,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "float",
+      "json": "\"1e3\"",
+      "note": "numeric string with exponent",
+      "php": "string '1e3'",
+      "js": "\"1e3\"",
+      "drupal": true,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "type": "float",
+      "json": "\"abc\"",
+      "php": "string 'abc'",
+      "js": "\"abc\"",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    }
+  ]
+}

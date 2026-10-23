@@ -1,0 +1,147 @@
+{
+  "description": "String length: Drupal's Length constraint vs. maxLength.",
+  "environment": {
+    "drupal": "Drupal 11.4-dev (11.x at ad3428034a5b), PHP 8.3.6, PCRE2 10.42, egulias/email-validator 4.0.4, symfony/validator v7.4.10",
+    "js": "Node.js 24.22.0, V8 13.6.233.17-node.57, Unicode 17.0"
+  },
+  "columns": {
+    "drupal": "Length constraint with max (Symfony LengthValidator, default countUnit codepoints), run on a plain Symfony validator",
+    "portable": "maxLength, counting code points",
+    "graphemesPhp": "grapheme_strlen() (ICU 74.2), what countUnit graphemes would count",
+    "graphemesJs": "Intl.Segmenter graphemes",
+    "utf16": "UTF-16 code units: String.length in JS and the HTML maxlength attribute"
+  },
+  "cases": [
+    {
+      "value": "abc",
+      "max": 3,
+      "codePoints": 3,
+      "graphemesPhp": 3,
+      "graphemesJs": 3,
+      "utf16": 3,
+      "bytes": 3,
+      "drupal": true,
+      "portable": true
+    },
+    {
+      "value": "ä",
+      "note": "precomposed U+00E4",
+      "max": 1,
+      "codePoints": 1,
+      "graphemesPhp": 1,
+      "graphemesJs": 1,
+      "utf16": 1,
+      "bytes": 2,
+      "drupal": true,
+      "portable": true
+    },
+    {
+      "value": "ä",
+      "note": "a + combining diaeresis U+0308",
+      "max": 1,
+      "codePoints": 2,
+      "graphemesPhp": 1,
+      "graphemesJs": 1,
+      "utf16": 2,
+      "bytes": 3,
+      "drupal": false,
+      "portable": false
+    },
+    {
+      "value": "é́",
+      "note": "e + two combining acute accents",
+      "max": 1,
+      "codePoints": 3,
+      "graphemesPhp": 1,
+      "graphemesJs": 1,
+      "utf16": 3,
+      "bytes": 5,
+      "drupal": false,
+      "portable": false
+    },
+    {
+      "value": "😀",
+      "note": "one astral code point U+1F600",
+      "max": 1,
+      "codePoints": 1,
+      "graphemesPhp": 1,
+      "graphemesJs": 1,
+      "utf16": 2,
+      "bytes": 4,
+      "drupal": true,
+      "portable": true
+    },
+    {
+      "value": "👍🏽",
+      "note": "emoji + skin tone modifier",
+      "max": 1,
+      "codePoints": 2,
+      "graphemesPhp": 1,
+      "graphemesJs": 1,
+      "utf16": 4,
+      "bytes": 8,
+      "drupal": false,
+      "portable": false
+    },
+    {
+      "value": "👨‍👩‍👧",
+      "note": "ZWJ family sequence",
+      "max": 1,
+      "codePoints": 5,
+      "graphemesPhp": 1,
+      "graphemesJs": 1,
+      "utf16": 8,
+      "bytes": 18,
+      "drupal": false,
+      "portable": false
+    },
+    {
+      "value": "🇦🇹",
+      "note": "flag: two regional indicators",
+      "max": 1,
+      "codePoints": 2,
+      "graphemesPhp": 1,
+      "graphemesJs": 1,
+      "utf16": 4,
+      "bytes": 8,
+      "drupal": false,
+      "portable": false
+    },
+    {
+      "value": "한",
+      "note": "conjoining Hangul jamo",
+      "max": 1,
+      "codePoints": 3,
+      "graphemesPhp": 1,
+      "graphemesJs": 1,
+      "utf16": 3,
+      "bytes": 9,
+      "drupal": false,
+      "portable": false
+    },
+    {
+      "value": "नमस्ते",
+      "note": "Devanagari with virama",
+      "max": 3,
+      "codePoints": 6,
+      "graphemesPhp": 3,
+      "graphemesJs": 3,
+      "utf16": 6,
+      "bytes": 18,
+      "drupal": false,
+      "portable": false
+    },
+    {
+      "value": "\r\n",
+      "note": "CR LF",
+      "max": 1,
+      "codePoints": 2,
+      "graphemesPhp": 1,
+      "graphemesJs": 1,
+      "utf16": 2,
+      "bytes": 2,
+      "drupal": false,
+      "portable": false
+    }
+  ]
+}

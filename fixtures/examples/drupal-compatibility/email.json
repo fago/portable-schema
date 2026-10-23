@@ -1,0 +1,266 @@
+{
+  "description": "Email addresses: Drupal's Email constraint vs. the pinned format email vs. RFC 5321 Mailbox.",
+  "environment": {
+    "drupal": "Drupal 11.4-dev (11.x at ad3428034a5b), PHP 8.3.6, PCRE2 10.42, egulias/email-validator 4.0.4, symfony/validator v7.4.10",
+    "js": "Node.js 24.22.0, V8 13.6.233.17-node.57, Unicode 17.0"
+  },
+  "columns": {
+    "drupal": "Email constraint on the email DataType and config schema type email, and the email.validator service that the Form API email element calls after trim() (identical results, except that the constraint skips the empty string): egulias NoRFCWarningsValidation",
+    "portable": "format email as pinned in spec/profile.md: WHATWG valid email address",
+    "standard": "RFC 5321 Mailbox, as named by the format registry, with the size limits of RFC 5321 section 4.5.3.1; checked against the JSON-Schema-Test-Suite"
+  },
+  "cases": [
+    {
+      "value": "joe@example.com",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "joe.bloggs+tag@example.com",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "o'reilly@example.com",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "te~st@example.com",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "joe@localhost",
+      "note": "single-label domain",
+      "drupal": false,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "joe@io",
+      "drupal": false,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "joe@123.com",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "joe@c--n.com",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "joe@255.255.255.255",
+      "note": "IPv4-looking domain without brackets",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "\"joe bloggs\"@example.com",
+      "note": "quoted local part with space",
+      "drupal": false,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "value": "\"joe..bloggs\"@example.com",
+      "note": "quoted local part with double dot",
+      "drupal": false,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "value": "\"joe@bloggs\"@example.com",
+      "note": "quoted local part with @",
+      "drupal": false,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "value": "\"\"@example.com",
+      "note": "empty quoted local part",
+      "drupal": false,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "value": "\"test\"@example.com",
+      "note": "quoted local part, no special characters",
+      "drupal": false,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "value": "joe@[127.0.0.1]",
+      "note": "IPv4 address literal",
+      "drupal": false,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "value": "joe@[IPv6:::1]",
+      "note": "IPv6 address literal",
+      "drupal": false,
+      "portable": false,
+      "standard": true
+    },
+    {
+      "value": "joe@[127.0.0.300]",
+      "note": "invalid IPv4 address literal",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "jöe@example.com",
+      "note": "non-ASCII local part (RFC 6531 only)",
+      "drupal": true,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "joe@exämple.com",
+      "note": "IDN domain, Unicode form (RFC 6531 only)",
+      "drupal": true,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "joe@xn--exmple-cua.com",
+      "note": "IDN domain, A-label form",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "joe@example.com.",
+      "note": "trailing dot in domain",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "joe.@example.com",
+      "note": "dot at end of local part",
+      "drupal": false,
+      "portable": true,
+      "standard": false
+    },
+    {
+      "value": ".joe@example.com",
+      "note": "dot at start of local part",
+      "drupal": false,
+      "portable": true,
+      "standard": false
+    },
+    {
+      "value": "jo..e@example.com",
+      "note": "two dots in local part",
+      "drupal": false,
+      "portable": true,
+      "standard": false
+    },
+    {
+      "value": "joe@ex_ample.com",
+      "note": "underscore in domain",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "joe@-example.com",
+      "note": "label starts with a hyphen",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "joe@example..com",
+      "note": "empty domain label",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "joe(comment)@example.com",
+      "note": "comment (CFWS)",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "joe@example.com\n",
+      "note": "trailing line feed",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": " joe@example.com",
+      "note": "leading space",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "joe bloggs@example.com",
+      "note": "unquoted space",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "a@b@example.com",
+      "note": "two @",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "joe",
+      "note": "no @",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "",
+      "note": "empty string",
+      "drupal": true,
+      "portable": false,
+      "standard": false
+    },
+    {
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com",
+      "note": "local part of 64 characters",
+      "drupal": true,
+      "portable": true,
+      "standard": true
+    },
+    {
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com",
+      "note": "local part of 65 characters",
+      "drupal": false,
+      "portable": true,
+      "standard": false
+    },
+    {
+      "value": "joe@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com",
+      "note": "domain label of 64 characters",
+      "drupal": false,
+      "portable": false,
+      "standard": false
+    }
+  ]
+}
