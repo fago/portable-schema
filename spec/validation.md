@@ -14,7 +14,7 @@ How a validator evaluates data against a schema, and the options that change wha
 
 Schemas are found by id in a registry.
 
-- **Ids** are absolute URIs without a fragment, dot segments (`.`, `..`) or the `file:` scheme. Two ids must differ after percent-decoding, with the scheme and authority in lower case.
+- **Ids** are absolute URIs without a fragment, dot segments (`.`, `..`) or the `file:` scheme, and are not the id of a JSON Schema or Portable Schema meta-schema. Two ids must differ after percent-decoding, with the scheme and authority in lower case.
 - **A schema's own `$id`**, if it has one, equals its id in the registry.
 - **References** resolve through the registry only. The JSON Schema meta-schemas are not part of it.
 - **Loading** refuses every schema outside the [profile](profile.md), including subschemas no data reaches.

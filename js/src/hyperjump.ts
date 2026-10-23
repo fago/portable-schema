@@ -146,7 +146,8 @@ const compileNow = async (registry: Registry): Promise<Compiled> => {
   } finally {
     compiling = null;
   }
-  // Hyperjump also holds the meta-schemas, which are not in the registry.
+  // - Hyperjump also holds the meta-schemas, which are not in the registry.
+  // - AST keys without a scheme (`metaData`, `plugins`) are not schemas.
   const unknown = Object.keys(ast).find((url) => url.includes(":") && !ids.has(url.split("#")[0]!));
   if (unknown !== undefined) throw new Error(`Unknown schema ${unknown}`);
   return { ast, urls, ids };

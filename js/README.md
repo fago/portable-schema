@@ -8,6 +8,8 @@ Written in TypeScript, published as plain ES modules with type declarations:
 - **Package:** `"type": "module"`, `exports` pointing to `dist/`, Node 22+.
 - **Tests:** Vitest, running the shared fixtures.
 
+The validator reads `spec/`, `types/` and `messages/` from the repository, so it runs from a checkout of the whole repository; the package's `files` (`dist` only) don't include them.
+
 ## Usage
 
 ```ts

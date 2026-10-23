@@ -4,6 +4,8 @@ PHP implementation of [Portable Schema](../README.md), on [opis/json-schema](htt
 
 The Composer package is defined by the repository root's `composer.json`: Packagist reads it only from there.
 
+The validator reads `spec/`, `types/` and `messages/` from the repository, so it runs from a checkout of the whole repository.
+
 ## Usage
 
 ```php
@@ -33,7 +35,7 @@ The same as the JS implementation, with the same names ([validator design](../do
 
 | Class | Role |
 |---|---|
-| `Opis\MetaSchema` | Checks every registry schema against `spec/v1/schema.json`, as Hyperjump does; the 2020-12 meta-schemas it builds on are in `php/resources/`, copied from Hyperjump ([README](resources/json-schema-2020-12/README.md)) |
+| `Opis\MetaSchema` | Checks every registry schema against `spec/v1/schema.json` and `spec/v1/load.json`, as the JS validator does; the 2020-12 meta-schemas it builds on are in `php/resources/`, copied from Hyperjump ([README](resources/json-schema-2020-12/README.md)) |
 | `Opis\Parser`, `Opis\Draft` | opis 2020-12 with the Portable Schema keywords (`portable-typeBy`, `portable-check`, pinned `format`); every keyword and schema is wrapped to record the evaluation |
 | `Trace\Tracer` | The evaluation as a tree of schema and keyword nodes |
 | `Shaper` | Turns the trace into one error per problem and applies the options |
