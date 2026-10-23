@@ -1,6 +1,6 @@
 # Drupal compatibility of formats and constraints
 
-Status: for [issue #2](https://github.com/fago/portable-schema/issues/2). The proposed resolutions are adopted in `spec/`, `types/`, [`docs/drupal.md`](drupal.md#compatibility) and [decision 0007](decisions/0007-pinned-checks-follow-the-standard.md). The alternatives were not taken; the `iri` option stays [open](drupal.md#open-questions).
+Status: for [issue #2](https://github.com/fago/portable-schema/issues/2). The proposed resolutions are adopted in `spec/`, `types/`, [`docs/drupal.md`](drupal.md#compatibility) and [decision 0007](decisions/0007-pinned-checks-follow-the-standard.md). The alternatives were not taken; the `iri` option stays [open](drupal.md#open-questions), and so does the `i` modifier, since `pattern` has no flags. The "Portable Schema" columns show the pins before the adoption.
 
 **Principle:** Portable Schema must not be stricter than Drupal's validators, but it stays with the standard JSON Schema formats.
 
