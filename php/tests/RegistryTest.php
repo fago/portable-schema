@@ -28,6 +28,11 @@ final class RegistryTest extends TestCase
         yield 'encoded dot segment' => [['test:a/%2E/b']];
         yield 'trailing dot-dot segment' => [['test:a/..']];
         yield 'file scheme' => [['file:///x']];
+        yield 'encoded ? before a dot-dot segment' => [['test:a%3F/../b']];
+        yield 'encoded ? before an encoded dot-dot segment' => [['test:a%3F/%2E%2E/b']];
+        yield 'meta-schema id' => [['https://portable-schema.dev/v1/load']];
+        yield '2020-12 meta-schema id' => [['https://json-schema.org/draft/2020-12/schema']];
+        yield 'meta-schema id in other case' => [['HTTPS://JSON-SCHEMA.ORG/draft/2020-12/meta/core']];
     }
 
     #[DataProvider('invalidIds')]
@@ -68,5 +73,21 @@ final class RegistryTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         (new Registry())->add((object) ['$id' => 'test:o', 'required' => ['a']], 'urn:t');
+    }
+
+    public static function nonStringIds(): iterable
+    {
+        yield 'array' => [[1], null];
+        yield 'object' => [new \stdClass(), null];
+        yield 'array, with an id' => [[1], 'test:n'];
+        yield 'object, with an id' => [new \stdClass(), 'test:n'];
+        yield 'null, with an id' => [null, 'test:n'];
+    }
+
+    #[DataProvider('nonStringIds')]
+    public function testRefusesNonStringSchemaId(mixed $value, ?string $id): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Registry())->add((object) ['$id' => $value], $id);
     }
 }

@@ -11,6 +11,32 @@ final class Registry
 {
     public const TYPES_DIRECTORY = __DIR__ . '/../../types/v1';
 
+    /**
+     * The meta-schemas the validators load: Hyperjump keeps them in one global store, so a registry id must not be one.
+     */
+    public const META_SCHEMA_IDS = [
+        'https://json-schema.org/draft/2020-12/schema',
+        'https://json-schema.org/draft/2020-12/meta/core',
+        'https://json-schema.org/draft/2020-12/meta/applicator',
+        'https://json-schema.org/draft/2020-12/meta/validation',
+        'https://json-schema.org/draft/2020-12/meta/meta-data',
+        'https://json-schema.org/draft/2020-12/meta/format-annotation',
+        'https://json-schema.org/draft/2020-12/meta/format-assertion',
+        'https://json-schema.org/draft/2020-12/meta/content',
+        'https://json-schema.org/draft/2020-12/meta/unevaluated',
+        'https://json-schema.org/v1',
+        'https://json-schema.org/v1/meta/core',
+        'https://json-schema.org/v1/meta/applicator',
+        'https://json-schema.org/v1/meta/validation',
+        'https://json-schema.org/v1/meta/meta-data',
+        'https://json-schema.org/v1/meta/format',
+        'https://json-schema.org/v1/meta/content',
+        'https://json-schema.org/v1/meta/unevaluated',
+        'https://portable-schema.dev/v1/schema',
+        'https://portable-schema.dev/v1/vocab',
+        'https://portable-schema.dev/v1/load',
+    ];
+
     /** @var array<string, \stdClass|bool> */
     private array $schemas = [];
 
@@ -28,24 +54,27 @@ final class Registry
     /**
      * Adds a schema under $id, or under its own $id.
      *
-     * The id must be an absolute URI without a fragment, dot segments or the `file:` scheme, and must differ from
-     * every other id after percent-decoding and with the scheme and authority in lower case: Hyperjump normalizes ids,
+     * The id must be an absolute URI without a fragment, dot segments or the `file:` scheme, must not be a meta-schema
+     * id, and must differ from every other id after percent-decoding and with the scheme and authority in lower case: Hyperjump normalizes ids,
      * so `a%2Bb` and `a+b` would be one schema in JS. The schema is one resource: its own `$id`, if any, is $id, and
      * no value below its root has a `$id` or `$schema`.
      */
     public function add(\stdClass|bool $schema, ?string $id = null): self
     {
-        $id ??= $schema instanceof \stdClass && isset($schema->{'$id'}) ? $schema->{'$id'} : null;
+        $id ??= $schema instanceof \stdClass && is_string($schema->{'$id'} ?? null) ? $schema->{'$id'} : null;
         if ($id === null) {
             throw new \InvalidArgumentException('A schema without $id needs an id.');
         }
         $normalized = self::normalize($id);
         if (!Formats::check('uri', $id) || str_contains($id, '#') || str_starts_with($normalized, 'file:')
-            || preg_match('#[:/]\.{1,2}(/|$)#', explode('?', $normalized)[0])) {
+            || preg_match('#[:/]\.{1,2}(/|$)#', self::normalize(explode('?', $id)[0]))) {
             throw new \InvalidArgumentException("The schema id $id is not an absolute URI without a fragment, dot segments or file: scheme.");
         }
-        if ($schema instanceof \stdClass && isset($schema->{'$id'}) && $schema->{'$id'} !== $id) {
-            throw new \InvalidArgumentException("The schema $id has the \$id {$schema->{'$id'}}.");
+        if (in_array($normalized, array_map(self::normalize(...), self::META_SCHEMA_IDS), true)) {
+            throw new \InvalidArgumentException("The schema id $id is a meta-schema id.");
+        }
+        if ($schema instanceof \stdClass && property_exists($schema, '$id') && $schema->{'$id'} !== $id) {
+            throw new \InvalidArgumentException("The schema $id has the \$id " . json_encode($schema->{'$id'}, JSON_UNESCAPED_SLASHES) . '.');
         }
         $embedded = self::embedded($schema, '');
         if ($embedded !== null) {

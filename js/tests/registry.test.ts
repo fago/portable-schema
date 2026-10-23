@@ -18,6 +18,11 @@ test.each([
   ["encoded dot segment", ["test:a/%2E/b"]],
   ["trailing dot-dot segment", ["test:a/.."]],
   ["file scheme", ["file:///x"]],
+  ["encoded ? before a dot-dot segment", ["test:a%3F/../b"]],
+  ["encoded ? before an encoded dot-dot segment", ["test:a%3F/%2E%2E/b"]],
+  ["meta-schema id", ["https://portable-schema.dev/v1/load"]],
+  ["2020-12 meta-schema id", ["https://json-schema.org/draft/2020-12/schema"]],
+  ["meta-schema id in other case", ["HTTPS://JSON-SCHEMA.ORG/draft/2020-12/meta/core"]],
 ])("refuses an id: %s", (_name, ids) => {
   const registry = new Registry();
   expect(() => ids.forEach((id) => registry.add(true, id))).toThrow();
@@ -44,4 +49,14 @@ test("accepts dots in segments", () => {
 
 test("refuses a schema $id other than its id", () => {
   expect(() => new Registry().add({ $id: "test:o", required: ["a"] }, "urn:t")).toThrow();
+});
+
+test.each([
+  ["array", [1], undefined],
+  ["object", {}, undefined],
+  ["array, with an id", [1], "test:n"],
+  ["object, with an id", {}, "test:n"],
+  ["null, with an id", null, "test:n"],
+])("refuses a non-string schema $id: %s", (_name, value, id) => {
+  expect(() => new Registry().add({ $id: value }, id)).toThrow();
 });
