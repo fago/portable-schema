@@ -29,8 +29,6 @@ final class Shaper
     /** Keywords that apply only where no other subschema evaluated. */
     private const UNEVALUATED = ['unevaluatedProperties', 'unevaluatedItems'];
 
-    private const ANNOTATIONS_ONLY = ['title', 'description', '$comment', 'examples', 'default', 'deprecated', 'readOnly', 'writeOnly'];
-
     /**
      * @param list<string>|null $locations
      */
@@ -302,7 +300,7 @@ final class Shaper
 
     private function branches(KeywordNode $node, SchemaNode $parent, string $parentLocation, string $location, mixed $value, mixed $instance, \Closure $error): Shaped
     {
-        $consts = $this->consts($value);
+        $consts = CatalogSet::consts($value);
         if ($consts !== null) {
             if ($node->valid) {
                 return new Shaped();
@@ -364,31 +362,6 @@ final class Shaper
             }
         }
         return $best;
-    }
-
-    /**
-     * The values of a oneOf whose branches are all consts, else null.
-     *
-     * @return list<mixed>|null
-     */
-    private function consts(mixed $branches): ?array
-    {
-        if (!is_array($branches) || $branches === []) {
-            return null;
-        }
-        $consts = [];
-        foreach ($branches as $branch) {
-            if (!$branch instanceof \stdClass || !property_exists($branch, 'const')) {
-                return null;
-            }
-            foreach (array_keys(get_object_vars($branch)) as $key) {
-                if ($key !== 'const' && !in_array($key, self::ANNOTATIONS_ONLY, true) && !str_starts_with($key, 'x-')) {
-                    return null;
-                }
-            }
-            $consts[] = $branch->const;
-        }
-        return $consts;
     }
 
     private function typeBy(KeywordNode $node, SchemaNode $parent, string $parentLocation, string $location, \Closure $error): Shaped

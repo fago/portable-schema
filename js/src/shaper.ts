@@ -1,3 +1,4 @@
+import { consts } from "./catalog-set.js";
 import type { CheckRequest } from "./checks.js";
 import { equals, isEmpty, isObject, key, length, typeOf, type JsonObject } from "./json.js";
 import * as Pointer from "./pointer.js";
@@ -20,8 +21,6 @@ const PROPERTY_CODES = ["required", "unknownProperty", "propertyNames", "depende
 
 /** Keywords that apply only where no other subschema evaluated. */
 const UNEVALUATED = ["unevaluatedProperties", "unevaluatedItems"];
-
-const ANNOTATIONS_ONLY = ["title", "description", "$comment", "examples", "default", "deprecated", "readOnly", "writeOnly"];
 
 type Annotation = [location: string, name: "title" | "messages" | "allowedTitles", value: unknown];
 
@@ -224,12 +223,12 @@ export class Shaper {
   }
 
   private branches(node: KeywordNode, parent: SchemaNode, parentLocation: string, location: string, value: unknown, instance: unknown, error: MakeError): Shaped {
-    const consts = this.consts(value);
-    if (consts !== null) {
+    const allowed = consts(value);
+    if (allowed !== null) {
       if (node.valid) return new Shaped();
       const titles = (value as JsonObject[]).map((branch) => typeof branch["title"] === "string" ? branch["title"] : null);
       const annotations: Annotation[] = titles.includes(null) ? [] : [[node.instanceLocation, "allowedTitles", titles]];
-      return new Shaped([error("enum", { value: instance, allowed: consts })], [], annotations);
+      return new Shaped([error("enum", { value: instance, allowed })], [], annotations);
     }
 
     const results = node.children.map((child) => this.schema(child, this.childLocation(node, child, parent, parentLocation, location)));
@@ -246,20 +245,6 @@ export class Shaper {
       return new Shaped([error(node.keyword, { matched })]);
     }
     return results[bestBranch(value as unknown[], instance, results)]!;
-  }
-
-  /** The values of a oneOf whose branches are all consts, else null. */
-  private consts(branches: unknown): unknown[] | null {
-    if (!Array.isArray(branches) || branches.length === 0) return null;
-    const consts: unknown[] = [];
-    for (const branch of branches) {
-      if (!isObject(branch) || !Object.hasOwn(branch, "const")) return null;
-      for (const key of Object.keys(branch)) {
-        if (key !== "const" && !ANNOTATIONS_ONLY.includes(key) && !key.startsWith("x-")) return null;
-      }
-      consts.push(branch["const"]);
-    }
-    return consts;
   }
 
   private typeBy(node: KeywordNode, location: string, error: MakeError): Shaped {

@@ -15,6 +15,7 @@ use Opis\JsonSchema\Keywords\PropertiesKeyword;
 use Opis\JsonSchema\Keywords\PropertyNamesKeyword;
 use Opis\JsonSchema\Parsers\KeywordParser;
 use Opis\JsonSchema\Parsers\SchemaParser;
+use PortableSchema\CatalogSet;
 
 /**
  * An opis keyword parser whose keywords are replaced by ones that evaluate in full.
@@ -41,8 +42,9 @@ final class FullParser extends KeywordParser
         // opis refuses unsatisfiable const, enum, oneOf and contains values, and drops redundant ones.
         $keyword = match ($this->keyword) {
             'const' => new ConstKeyword($value),
-            'enum' => new EnumKeyword($value),
-            'anyOf', 'oneOf' => new FullOfKeyword($this->keyword, $value),
+            'enum' => ($catalog = CatalogSet::fromEnum($value)) ? new CatalogSetKeyword('enum', $catalog) : new EnumKeyword($value),
+            'oneOf' => ($catalog = CatalogSet::fromOneOf($value)) ? new CatalogSetKeyword('oneOf', $catalog) : new FullOfKeyword('oneOf', $value),
+            'anyOf' => new FullOfKeyword('anyOf', $value),
             'contains' => $this->contains($info, $value),
             default => $this->inner->parse($info, $parser, $shared),
         };

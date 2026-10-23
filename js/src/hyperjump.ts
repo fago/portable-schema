@@ -1,13 +1,14 @@
 import * as Browser from "@hyperjump/browser";
 import { registerSchema, unregisterSchema, validate } from "@hyperjump/json-schema/draft-2020-12";
 import {
-  addKeyword, canonicalUri, defineVocabulary, getSchema, Validation,
+  addKeyword, canonicalUri, defineVocabulary, getKeyword, getSchema, Validation,
   type EvaluationPlugin, type SchemaDocument,
 } from "@hyperjump/json-schema/experimental";
 import type { JsonNode } from "@hyperjump/json-schema/instance/experimental";
 import * as Instance from "@hyperjump/json-schema/instance/experimental";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { CatalogSet } from "./catalog-set.js";
 import { CheckRequest, type Checks } from "./checks.js";
 import * as Formats from "./formats.js";
 import type { JsonObject } from "./json.js";
@@ -86,6 +87,18 @@ const setUp = (): void => {
       return true;
     },
   });
+
+  // Catalogs are checked by one lookup in a set; other values of these keywords as before.
+  for (const [name, toCatalog] of [["enum", CatalogSet.fromEnum], ["oneOf", CatalogSet.fromOneOf]] as const) {
+    const keyword = getKeyword<unknown>(`https://json-schema.org/keyword/${name}`);
+    addKeyword<unknown>({
+      ...keyword,
+      compile: async (schema, ast, parentSchema) =>
+        toCatalog(JSON.parse(JSON.stringify(Browser.value(schema)))) ?? keyword.compile(schema, ast, parentSchema),
+      interpret: (value, instance, context) =>
+        value instanceof CatalogSet ? value.has(Instance.value(instance)) : keyword.interpret(value, instance, context),
+    });
+  }
 
   // Portable Schema pins its own format checks: its dialect is the only one asserting formats here.
   defineVocabulary("https://json-schema.org/draft/2020-12/vocab/format-assertion", { format: KEYWORD + "format" });
