@@ -17,7 +17,8 @@ data ──► normalize ──► evaluate keywords ──► shape errors ─�
    - resolve references;
    - check the schema against the meta-schema;
    - bind keyword handlers;
-   - precompute regexes, enum sets and URI templates;
+   - precompute regexes and URI templates;
+   - compile every scalar `enum`, and every `oneOf` whose branches are all `const`s with distinct values, to a hash set: O(1) lookups by JSON Schema equality, with the branches' annotations kept for labels ([decision 0006](../decisions/0006-catalogs-as-labeled-oneof.md));
    - record locations.
 
    It generates no code. The compiled schema is cached.
