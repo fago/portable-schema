@@ -10,7 +10,14 @@
     },
     "langcode": {
       "title": "Language code",
-      "$ref": "portable:langcode"
+      "anyOf": [
+        {
+          "$ref": "portable:langcode"
+        },
+        {
+          "const": "site_default"
+        }
+      ]
     },
     "status": {
       "title": "Status",
@@ -46,10 +53,5 @@
       },
       "additionalProperties": false
     }
-  },
-  "required": [
-    "langcode",
-    "status",
-    "dependencies"
-  ]
+  }
 }
