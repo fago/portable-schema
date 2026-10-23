@@ -18,9 +18,6 @@ export class Registry {
     "https://json-schema.org/draft/2020-12/schema",
     ...["core", "applicator", "validation", "meta-data", "format-annotation", "format-assertion", "content", "unevaluated"]
       .map((name) => `https://json-schema.org/draft/2020-12/meta/${name}`),
-    "https://json-schema.org/v1",
-    ...["core", "applicator", "validation", "meta-data", "format", "content", "unevaluated"]
-      .map((name) => `https://json-schema.org/v1/meta/${name}`),
     "https://portable-schema.dev/v1/schema",
     "https://portable-schema.dev/v1/vocab",
     "https://portable-schema.dev/v1/load",
@@ -40,8 +37,8 @@ export class Registry {
    * Adds a schema under `id`, or under its own $id.
    *
    * The id must be an absolute URI without a fragment, dot segments or the `file:` scheme, must not be a meta-schema
-   * id, and must differ from every other id after percent-decoding and with the scheme and authority in lower case: Hyperjump normalizes ids,
-   * so `a%2Bb` and `a+b` would be one schema. The schema is one resource: its own `$id`, if any, is `id`, and no value
+   * id, and must differ from every other id after percent-decoding and with the scheme and authority in lower case:
+   * Hyperjump normalizes ids, so `a%2Bb` and `a+b` would be one schema. The schema is one resource: its own `$id`, if any, is `id`, and no value
    * below its root has a `$id` or `$schema`.
    */
   add(schema: Schema, id?: string): this {

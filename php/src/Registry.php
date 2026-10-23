@@ -24,14 +24,6 @@ final class Registry
         'https://json-schema.org/draft/2020-12/meta/format-assertion',
         'https://json-schema.org/draft/2020-12/meta/content',
         'https://json-schema.org/draft/2020-12/meta/unevaluated',
-        'https://json-schema.org/v1',
-        'https://json-schema.org/v1/meta/core',
-        'https://json-schema.org/v1/meta/applicator',
-        'https://json-schema.org/v1/meta/validation',
-        'https://json-schema.org/v1/meta/meta-data',
-        'https://json-schema.org/v1/meta/format',
-        'https://json-schema.org/v1/meta/content',
-        'https://json-schema.org/v1/meta/unevaluated',
         'https://portable-schema.dev/v1/schema',
         'https://portable-schema.dev/v1/vocab',
         'https://portable-schema.dev/v1/load',
@@ -55,9 +47,9 @@ final class Registry
      * Adds a schema under $id, or under its own $id.
      *
      * The id must be an absolute URI without a fragment, dot segments or the `file:` scheme, must not be a meta-schema
-     * id, and must differ from every other id after percent-decoding and with the scheme and authority in lower case: Hyperjump normalizes ids,
-     * so `a%2Bb` and `a+b` would be one schema in JS. The schema is one resource: its own `$id`, if any, is $id, and
-     * no value below its root has a `$id` or `$schema`.
+     * id, and must differ from every other id after percent-decoding and with the scheme and authority in lower case:
+     * Hyperjump normalizes ids, so `a%2Bb` and `a+b` would be one schema in JS. The schema is one resource: its own
+     * `$id`, if any, is $id, and no value below its root has a `$id` or `$schema`.
      */
     public function add(\stdClass|bool $schema, ?string $id = null): self
     {

@@ -1,5 +1,6 @@
+import { getAllRegisteredSchemaUris } from "@hyperjump/json-schema/draft-2020-12";
 import { expect, test } from "vitest";
-import { Registry } from "../src/index.js";
+import { Registry, Validator } from "../src/index.js";
 
 test.each([
   ["not a URI", ["test:ä"]],
@@ -59,4 +60,11 @@ test.each([
   ["null, with an id", null, "test:n"],
 ])("refuses a non-string schema $id: %s", (_name, value, id) => {
   expect(() => new Registry().add({ $id: value }, id)).toThrow();
+});
+
+test("META_SCHEMA_IDS are the schemas Hyperjump holds besides the registry's", async () => {
+  const registry = Registry.withTypes();
+  await Validator.create(registry);
+  const others = getAllRegisteredSchemaUris().filter((uri) => !registry.ids().includes(uri));
+  expect(others.sort()).toEqual([...Registry.META_SCHEMA_IDS].sort());
 });
