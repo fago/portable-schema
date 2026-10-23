@@ -22,7 +22,9 @@ data ──► normalize ──► evaluate keywords ──► shape errors ─�
 
    It generates no code. The compiled schema is cached.
 
-   Both validators compile every schema of the registry when they are created (PHP: the constructor, JS: `Validator.create()`), including the `portable-typeBy` targets, and refuse a schema outside the profile there, even where no data reaches it. They keep a copy of the registry: schemas added or replaced later are not seen.
+   `portable-typeBy` targets are compiled lazily: on first use, or preloaded for just the targets the data selects. The whole registry is never compiled up front, so large and remote registries scale. A schema outside the profile is still refused when it is added, even where no data reaches it.
+
+   The prototype currently violates the lazy rule: both validators compile every schema of the registry when they are created (PHP: the constructor, JS: `Validator.create()`), including the `portable-typeBy` targets ([fago/portable-schema#1](https://github.com/fago/portable-schema/issues/1)). They keep a copy of the registry: schemas added or replaced later are not seen.
 2. **Normalize** the data.
 3. **Evaluate:** interpret the compiled schema against the data, collecting annotations.
 4. **Shape** errors, then apply the reporting options (`partial`, `emptyAsMissing`, `locations`).
