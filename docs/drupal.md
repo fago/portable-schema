@@ -2,6 +2,19 @@
 
 How Portable Schema relates to what Drupal uses today to describe and validate data. Drupal's needs drive the design, but Portable Schema has no Drupal dependency; a Drupal integration generates the Drupal-specific types and catalogs.
 
+## Why Drupal benefits
+
+When Drupal describes and validates its data with Portable Schema:
+
+- **Agents become config-schema-aware.** They know exactly which data a config object needs, including plugin-specific settings, and write and validate Drupal config locally, statically against a site schema dump.
+- **Tools, entities and config share one schema.** Tool API inputs and outputs reference the same types as entity fields and config, so data passes from a tool to an entity or config object without mapping, and is validated the same way.
+- **UIs can be generated from schemas,** for example config forms and component props (SDC, Canvas), with widgets, validation and messages.
+- **Modern UIs get easy.** Drupal forms and client-side forms are based on the same schema, so UIs like Canvas use the same structure, widgets and validation on the server and in the browser.
+- **Entity APIs with full schemas.** JSON:API or a similar API serves complete schemas for entities and their fields, so clients generate UIs from them and agents understand and validate the data.
+- **One validation everywhere.** The server, the browser and agents run the same rules with the same errors.
+
+Limits: static validation holds for an unchanged code base and module set. Checks that need site data, such as references or uniqueness, run on the server or remotely through the site's API. Details for agents: [`architecture/agents.md`](architecture/agents.md).
+
 ## Overview
 
 | Drupal | What it describes | Portable Schema equivalent |
@@ -128,7 +141,7 @@ From `core/lib/Drupal/Core/TypedData/Plugin/DataType/`:
 | `Email`, `Uuid` | `portable:email`, `portable:uuid` |
 | `ValidKeys` | `properties` + `unevaluatedProperties: false` |
 | `ValidSequenceKeys` | `propertyNames` |
-| `PluginExists`, `EntityBundleExists`, `ConfigExists`, `ExtensionExists` | `$ref` to a catalog: checkable live or offline from a site schema dump |
+| `PluginExists`, `EntityBundleExists`, `ConfigExists`, `ExtensionExists` | `$ref` to a catalog: checkable live or statically against a site schema dump |
 | `ValidReference`, `UniqueField`, `UniquePathAlias`, `ReferenceAccess` and other checks that need content or the current user | `portable-check`: run by a provider on the server; reported as unchecked where no provider is available |
 | `Callback` | Case by case. Example: `block.block`'s region check becomes a catalog of the theme's regions, selected with `portable-typeBy` |
 

@@ -90,7 +90,7 @@ const v = validator.withCheck('drupal:UniqueField', async (requests) => {
 **Use cases:**
 - a server-only check implemented manually in a client;
 - tests with fixed answers;
-- agents validating offline against their own data;
+- agents validating against their own data, without the site;
 - a project-specific variant of a check.
 
 **Local callbacks are the caller's responsibility:** they keep the check's name, options and codes, but fixtures don't cover them.

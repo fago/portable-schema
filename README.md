@@ -4,26 +4,32 @@ A portable, typed [JSON Schema](https://json-schema.org) dialect: one schema, th
 
 Status: early planning. Nothing here is stable yet.
 
-## Goals
+## What it provides
 
-- **One schema, the same verdict everywhere.** A schema validates data with the same result and the same errors in PHP and JS. Shared fixtures prove it.
-- **PHP and JS, open to more.** PHP and JS are the supported languages. The spec and fixtures are language-neutral, so implementations in further languages are possible.
-- **Enough metadata to generate the rest.** Schemas carry the information needed to generate forms, UIs, agent tool definitions, TypeScript types and API contracts:
-  - named, reusable types;
-  - translatability;
-  - UI hints;
-  - data sources.
-- **Human, localized error messages.** Errors are structured (location, code, parameters) and shaped to one error per problem. A shared formatter turns them into messages using the schema's labels; hosts translate them with their own system, e.g. Drupal `t()` or vue-i18n. The same text in PHP and JS.
-- **Schemas that depend on values.** Types selected by a data value from an open set, computed narrowing and cross-field rules. All of them can only narrow what is valid.
-- **System facts as data.** References to things a system provides (plugins, bundles, fields, modules) are checked against catalogs. Catalogs come from the live system or from a schema dump, so validation can also run offline.
-- **Stay standard.** Every Portable Schema is valid JSON Schema 2020-12. Generic validators ignore the added keywords and still check the structure; a standard-only export serves tools that need plain JSON Schema.
+- **JSON Schema based:** every Portable Schema is a valid JSON Schema 2020-12 document, for maximum interoperability. Generic tools validate the standard part; the added keywords need a Portable Schema validator.
+- **Serialization-agnostic:** validates the data model: JSON, YAML, or PHP and JS values.
+- **Dynamic types:** a value's schema is selected by another value, e.g. plugin settings by plugin ID.
+- **Catalogs:** values checked against system facts (plugins, bundles, fields, modules), live or from a schema dump.
+- **First-class PHP and JS support, with parity:** identical verdicts and errors in both.
+- **Usable error messages:** one per problem, located, coded and translatable.
+
+## What it enables
+
+- **Generated forms,** on the PHP side (e.g. Drupal Form API) or the JS side (e.g. Vue or React), validating exactly like the server.
+- **Generative UIs:** interfaces built from the schema at runtime.
+- **Agents that fully understand, write and validate data,** locally, also statically against a schema dump.
+- **Typed APIs and components:** API contracts, component props and TypeScript types from the same schema.
+
+## Principles
+
+- **Open to more languages.** PHP and JS are supported; the spec and fixtures are language-neutral, so further implementations are possible.
 - **Aligned with the next JSON Schema release.** The profile already follows its rules, so moving to it needs no schema changes:
   - `x-` keywords are annotations only;
   - unknown keywords are an error;
   - `format` is an assertion;
   - results use the new output formats.
   Where the next release standardizes something we need, such as keyword namespacing or vocabularies, we adopt it instead of keeping our own.
-- **Generic, driven by Drupal's needs.** Drupal's needs drive the design. But Portable Schema is not only for Drupal and has no Drupal dependency: it describes and validates data for any system. Integrations generate their types and catalogs and provide backend checks.
+- **Generic, driven by Drupal's needs.** Drupal's needs drive the design. But Portable Schema is not only for Drupal and has no Drupal dependency: it describes and validates data for any system. Integrations generate their types and catalogs and provide backend checks. See [Portable Schema and Drupal](docs/drupal.md).
 
 ## What it is
 
@@ -82,4 +88,4 @@ MIT, see [LICENSE](LICENSE).
 
 **Dependency note:** the PHP implementation builds on [opis/json-schema](https://github.com/opis/json-schema), which is licensed under Apache-2.0. Apache-2.0 is compatible with GPLv3 but not with GPLv2. Combined with GPL-2.0-or-later software such as Drupal, a distribution that includes it can therefore only be distributed under GPLv3 (see the [Drupal licensing FAQ](https://www.drupal.org/about/licensing)). Using it in a site or a contrib module is fine; adding it to Drupal core would need a GPLv2-compatible PHP base.
 
-**To do:** clarify the licensing with the Drupal Licensing Working Group before any core proposal.
+**To do:** before any core proposal, clarify the licensing with the Drupal Licensing Working Group, or replace opis/json-schema.
