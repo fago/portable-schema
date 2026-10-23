@@ -32,6 +32,8 @@ final class LoadingTest extends TestCase
     {
         if ($case->refused) {
             $this->expectException(\Throwable::class);
+            new Validator(Registry::withTypes()->add($case->schema));
+            return;
         }
         (new Validator(Registry::withTypes()->add($case->schema)))->validate([], $case->schema->{'$id'});
         $this->addToAssertionCount(1);
