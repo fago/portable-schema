@@ -34,7 +34,11 @@ final class Json
 
     public static function decodeFile(string $path): mixed
     {
-        return self::decode(file_get_contents($path) ?: throw new \RuntimeException("Cannot read $path"));
+        try {
+            return self::decode(file_get_contents($path) ?: throw new \RuntimeException("Cannot read $path"));
+        } catch (\JsonException $e) {
+            throw new \JsonException("The file $path is not valid JSON: {$e->getMessage()}", previous: $e);
+        }
     }
 
     /**

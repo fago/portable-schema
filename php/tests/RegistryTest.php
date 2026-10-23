@@ -92,13 +92,30 @@ final class RegistryTest extends TestCase
     }
 
     /**
+     * @var list<string>
+     */
+    private array $directories = [];
+
+    protected function tearDown(): void
+    {
+        foreach ($this->directories as $directory) {
+            $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
+            foreach ($files as $file) {
+                $file->isDir() && !$file->isLink() ? rmdir($file->getPathname()) : unlink($file->getPathname());
+            }
+            rmdir($directory);
+        }
+    }
+
+    /**
      * A temporary directory with $files: relative path => JSON.
      *
      * @param array<string, string> $files
      */
-    private static function directory(array $files): string
+    private function directory(array $files): string
     {
         $directory = sys_get_temp_dir() . '/portable-schema-' . bin2hex(random_bytes(6));
+        $this->directories[] = $directory;
         foreach ($files as $path => $json) {
             @mkdir(dirname("$directory/$path"), 0777, true);
             file_put_contents("$directory/$path", $json);
@@ -108,7 +125,7 @@ final class RegistryTest extends TestCase
 
     public function testMountsADirectory(): void
     {
-        $directory = self::directory([
+        $directory = $this->directory([
             'block.block.json' => '{"type": "object"}',
             'block.settings.%2A.json' => '{"$id": "drupal:block.settings.*"}',
             'catalog/plugins/block.json' => '{"enum": ["a"]}',
@@ -118,10 +135,33 @@ final class RegistryTest extends TestCase
         $this->assertSame(['drupal:block.block', 'drupal:block.settings.*', 'drupal:catalog/plugins/block'], $registry->ids());
     }
 
+    public function testSkipsSymbolicLinksAndDotfiles(): void
+    {
+        $directory = $this->directory(['a.json' => 'true', 'sub/b.json' => 'true', '.c.json' => 'true', '.hidden/d.json' => 'true']);
+        symlink("$directory/sub", "$directory/linked");
+        symlink("$directory/a.json", "$directory/e.json");
+        symlink($directory, "$directory/sub/loop");
+        $this->assertSame(['drupal:a', 'drupal:sub/b'], (new Registry())->addDirectory($directory, 'drupal')->ids());
+    }
+
+    public function testNamesTheFileWithInvalidJson(): void
+    {
+        $directory = $this->directory(['a.json' => '{']);
+        $this->expectExceptionMessage("The file $directory/a.json is not valid JSON");
+        (new Registry())->addDirectory($directory, 'drupal');
+    }
+
+    public function testRefusesAFileNameThatDecodesToNonAsciiCharacters(): void
+    {
+        $directory = $this->directory(['%C3%A4.json' => 'true']);
+        $this->expectExceptionMessage("The file $directory/%C3%A4.json has an id with non-ASCII characters.");
+        (new Registry())->addDirectory($directory, 'drupal');
+    }
+
     public function testRefusesAnIdOtherThanTheFilePath(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        (new Registry())->addDirectory(self::directory(['a.json' => '{"$id": "drupal:b"}']), 'drupal');
+        (new Registry())->addDirectory($this->directory(['a.json' => '{"$id": "drupal:b"}']), 'drupal');
     }
 
     public static function invalidNamespaces(): iterable
@@ -136,7 +176,7 @@ final class RegistryTest extends TestCase
     public function testRefusesNamespace(string $namespace): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        (new Registry())->addDirectory(self::directory(['a.json' => 'true']), $namespace);
+        (new Registry())->addDirectory($this->directory(['a.json' => 'true']), $namespace);
     }
 
     public function testRefusesTheTypesNamespace(): void

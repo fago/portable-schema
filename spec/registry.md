@@ -16,6 +16,7 @@ How schema files on disk get their IDs. The rules for IDs themselves are in [`va
 A directory is registered (mounted) under a namespace: `addDirectory($path, $namespace)` in both languages.
 
 - **A file's ID** is `<namespace>:<relative path without .json>`: `catalog/plugins/block.json` mounted as `drupal` → `drupal:catalog/plugins/block`.
-- **`$id` in a file is optional.** If present, it must equal the derived ID; otherwise the file is refused.
-- **Characters a file name can't hold are percent-encoded,** and decoded in the ID: `drupal:block.settings.*` → `block.settings.%2A.json`.
+- **`$id` in a file is optional.** If present, it must equal the derived ID exactly; otherwise the file is refused. A percent-encoded `$id` (`drupal:block.settings.%2A`) does not equal the decoded ID and is refused.
+- **Characters a file name can't hold are percent-encoded,** and decoded in the ID: `drupal:block.settings.*` → `block.settings.%2A.json`. A name that decodes to non-ASCII characters is refused.
 - **`*.test.json` files are never registered.**
+- **Symbolic links and names starting with `.` are skipped,** files and directories alike.

@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as Formats from "./formats.js";
@@ -71,6 +71,7 @@ export class Registry {
   /**
    * Mounts `directory` under `namespace`: every *.json file below it, except *.test.json, is added by the id
    * `<namespace>:<relative path without .json>`, percent-decoded. A `$id` in the file must equal that id.
+   * Symbolic links and names starting with `.` are skipped.
    */
   addDirectory(directory: string, namespace: string): this {
     if (namespace === Registry.TYPES_NAMESPACE) throw new Error(`The namespace ${namespace} is reserved for the type library.`);
@@ -81,16 +82,24 @@ export class Registry {
     if (!/^[a-z][a-z0-9_]*$/u.test(namespace)) throw new Error(`The namespace ${namespace} is not a lowercase identifier.`);
     const paths: string[] = [];
     const walk = (dir: string): void => {
-      for (const name of readdirSync(dir)) {
-        const path = join(dir, name);
-        if (statSync(path).isDirectory()) walk(path);
-        else if (name.endsWith(".json") && !name.endsWith(".test.json")) paths.push(path);
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const path = join(dir, entry.name);
+        if (entry.name.startsWith(".") || entry.isSymbolicLink()) continue;
+        if (entry.isDirectory()) walk(path);
+        else if (entry.name.endsWith(".json") && !entry.name.endsWith(".test.json")) paths.push(path);
       }
     };
     walk(directory);
     for (const path of paths.sort()) {
-      const id = `${namespace}:${decodeBytes(relative(directory, path).split(sep).join("/").slice(0, -".json".length))}`;
-      const schema = JSON.parse(readFileSync(path, "utf8")) as Schema;
+      const name = decodeBytes(relative(directory, path).split(sep).join("/").slice(0, -".json".length));
+      if (/[^\x00-\x7f]/u.test(name)) throw new Error(`The file ${path} has an id with non-ASCII characters.`);
+      const id = `${namespace}:${name}`;
+      let schema: Schema;
+      try {
+        schema = JSON.parse(readFileSync(path, "utf8")) as Schema;
+      } catch (error) {
+        throw new Error(`The file ${path} is not valid JSON: ${(error as Error).message}`);
+      }
       if (isObject(schema) && schema["$id"] !== undefined && schema["$id"] !== id) {
         throw new Error(`The file ${path} has the $id ${JSON.stringify(schema["$id"])}, not ${id}.`);
       }

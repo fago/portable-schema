@@ -127,6 +127,7 @@ final class Registry
     /**
      * Mounts $directory under $namespace: every *.json file below it, except *.test.json, is added by the id
      * `<namespace>:<relative path without .json>`, percent-decoded. A `$id` in the file must equal that id.
+     * Symbolic links and names starting with `.` are skipped.
      */
     public function addDirectory(string $directory, string $namespace): self
     {
@@ -142,7 +143,10 @@ final class Registry
             throw new \InvalidArgumentException("The namespace $namespace is not a lowercase identifier.");
         }
         $directory = rtrim($directory, '/');
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS));
+        $files = new \RecursiveIteratorIterator(new \RecursiveCallbackFilterIterator(
+            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
+            fn (\SplFileInfo $file) => !str_starts_with($file->getFilename(), '.') && !$file->isLink(),
+        ));
         $paths = [];
         foreach ($files as $file) {
             if ($file->getExtension() === 'json' && !str_ends_with($file->getFilename(), '.test.json')) {
@@ -151,7 +155,11 @@ final class Registry
         }
         sort($paths);
         foreach ($paths as $path) {
-            $id = $namespace . ':' . rawurldecode(substr($path, strlen($directory) + 1, -strlen('.json')));
+            $name = rawurldecode(substr($path, strlen($directory) + 1, -strlen('.json')));
+            if (preg_match('/[^\x00-\x7f]/', $name)) {
+                throw new \InvalidArgumentException("The file $path has an id with non-ASCII characters.");
+            }
+            $id = "$namespace:$name";
             $schema = Json::decodeFile($path);
             if ($schema instanceof \stdClass && property_exists($schema, '$id') && $schema->{'$id'} !== $id) {
                 throw new \InvalidArgumentException("The file $path has the \$id " . json_encode($schema->{'$id'}, JSON_UNESCAPED_SLASHES) . ", not $id.");

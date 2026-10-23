@@ -1,8 +1,8 @@
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { getAllRegisteredSchemaUris } from "@hyperjump/json-schema/draft-2020-12";
-import { expect, test } from "vitest";
+import { afterEach, expect, test } from "vitest";
 import { Registry, Validator } from "../src/index.js";
 
 test.each([
@@ -72,9 +72,16 @@ test("META_SCHEMA_IDS are the schemas Hyperjump holds besides the registry's", a
   expect(others.sort()).toEqual([...Registry.META_SCHEMA_IDS].sort());
 });
 
+const roots: string[] = [];
+
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true });
+});
+
 /** A temporary directory with `files`: relative path → JSON. */
 const directory = (files: Record<string, string>): string => {
   const root = mkdtempSync(join(tmpdir(), "portable-schema-"));
+  roots.push(root);
   for (const [path, json] of Object.entries(files)) {
     mkdirSync(dirname(join(root, path)), { recursive: true });
     writeFileSync(join(root, path), json);
@@ -90,6 +97,24 @@ test("mounts a directory", () => {
     "block.block.test.json": "[]",
   }), "drupal");
   expect(registry.ids()).toEqual(["drupal:block.block", "drupal:block.settings.*", "drupal:catalog/plugins/block"]);
+});
+
+test("skips symbolic links and dotfiles", () => {
+  const root = directory({ "a.json": "true", "sub/b.json": "true", ".c.json": "true", ".hidden/d.json": "true" });
+  symlinkSync(join(root, "sub"), join(root, "linked"));
+  symlinkSync(join(root, "a.json"), join(root, "e.json"));
+  symlinkSync(root, join(root, "sub", "loop"));
+  expect(new Registry().addDirectory(root, "drupal").ids()).toEqual(["drupal:a", "drupal:sub/b"]);
+});
+
+test("names the file with invalid JSON", () => {
+  const root = directory({ "a.json": "{" });
+  expect(() => new Registry().addDirectory(root, "drupal")).toThrow(`The file ${join(root, "a.json")} is not valid JSON`);
+});
+
+test("refuses a file name that decodes to non-ASCII characters", () => {
+  const root = directory({ "%C3%A4.json": "true" });
+  expect(() => new Registry().addDirectory(root, "drupal")).toThrow(`The file ${join(root, "%C3%A4.json")} has an id with non-ASCII characters.`);
 });
 
 test("refuses an $id other than the file path", () => {
