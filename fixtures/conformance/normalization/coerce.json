@@ -1,0 +1,30 @@
+{
+  "description": "coerce: the cast table for form, query string and agent input",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "count": {
+        "$ref": "portable:integer"
+      },
+      "price": {
+        "$ref": "portable:number"
+      },
+      "published": {
+        "$ref": "portable:boolean"
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "$ref": "portable:string"
+        }
+      },
+      "note": {
+        "$ref": "portable:string"
+      }
+    },
+    "required": [
+      "count"
+    ]
+  }
+}

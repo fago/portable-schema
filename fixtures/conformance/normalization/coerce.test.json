@@ -1,0 +1,177 @@
+[
+  {
+    "description": "without coerce, a numeric string is a type error",
+    "data": {
+      "count": "3"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/count",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "string"
+        }
+      }
+    ]
+  },
+  {
+    "description": "coerce: strings become integer, number and boolean",
+    "options": {
+      "coerce": true
+    },
+    "data": {
+      "count": "3",
+      "price": "9.5",
+      "published": "1"
+    },
+    "valid": true,
+    "normalized": {
+      "count": 3,
+      "price": 9.5,
+      "published": true
+    }
+  },
+  {
+    "description": "coerce: a single value is wrapped where a list is expected",
+    "options": {
+      "coerce": true
+    },
+    "data": {
+      "count": 1,
+      "tags": "news"
+    },
+    "valid": true,
+    "normalized": {
+      "count": 1,
+      "tags": [
+        "news"
+      ]
+    }
+  },
+  {
+    "description": "coerce: an empty list is left alone",
+    "options": {
+      "coerce": true
+    },
+    "data": {
+      "count": 1,
+      "tags": []
+    },
+    "valid": true,
+    "normalized": {
+      "count": 1,
+      "tags": []
+    }
+  },
+  {
+    "description": "coerce: null on an optional key means absent",
+    "options": {
+      "coerce": true
+    },
+    "data": {
+      "count": 1,
+      "price": null
+    },
+    "valid": true,
+    "normalized": {
+      "count": 1
+    }
+  },
+  {
+    "description": "coerce: an empty string on a non-string key means absent",
+    "options": {
+      "coerce": true
+    },
+    "data": {
+      "count": 1,
+      "price": ""
+    },
+    "valid": true,
+    "normalized": {
+      "count": 1
+    }
+  },
+  {
+    "description": "coerce: an empty string on a string key stays a value",
+    "options": {
+      "coerce": true
+    },
+    "data": {
+      "count": 1,
+      "note": ""
+    },
+    "valid": true,
+    "normalized": {
+      "count": 1,
+      "note": ""
+    }
+  },
+  {
+    "description": "coerce: null on a required key becomes absent, so required fails",
+    "options": {
+      "coerce": true
+    },
+    "data": {
+      "count": null
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "count"
+        }
+      }
+    ]
+  },
+  {
+    "description": "coerce: a string with a plus sign is not converted",
+    "options": {
+      "coerce": true
+    },
+    "data": {
+      "count": "+3"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/count",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "string"
+        }
+      }
+    ]
+  },
+  {
+    "description": "coerce: numbers are not converted to strings",
+    "options": {
+      "coerce": true
+    },
+    "data": {
+      "count": 1,
+      "note": 5
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/note",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  }
+]

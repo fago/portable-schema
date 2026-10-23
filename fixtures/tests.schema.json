@@ -35,6 +35,9 @@
           "$ref": "#/$defs/unchecked"
         }
       },
+      "normalized": {
+        "description": "The expected data after normalization, compared exactly."
+      },
       "options": {
         "type": "object",
         "properties": {
@@ -49,6 +52,9 @@
             "items": {
               "type": "string"
             }
+          },
+          "coerce": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
