@@ -32,6 +32,11 @@ final class FixturesTest extends TestCase
         }
     }
 
+    public function testEveryExampleDataFileHasAnExpectationFile(): void
+    {
+        $this->assertSame([], Fixtures::unused());
+    }
+
     #[DataProvider('files')]
     public function testFixtureFilesAreValid(string $file): void
     {

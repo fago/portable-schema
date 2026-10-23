@@ -1,6 +1,10 @@
 import { describe, expect, test } from "vitest";
 import * as Fixtures from "./fixtures.js";
 
+test("every example data file has an expectation file", () => {
+  expect(Fixtures.unused()).toEqual([]);
+});
+
 describe.each(Fixtures.files())("%s", (file) => {
   const [schemaFile, tests] = Fixtures.load(file);
 

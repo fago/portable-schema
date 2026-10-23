@@ -39,6 +39,43 @@ final class Fixtures
     }
 
     /**
+     * Files below examples/ that are neither a case's data nor its expectations.
+     */
+    public const NON_DATA_FILES = [
+        'examples/drupal/agent-tool/repair-loop.mts',
+        'examples/drupal/agent-tool/repair-loop.php',
+        'examples/drupal/agent-tool/repair-loop.txt',
+        'examples/drupal/node-article/introspect.php',
+        'examples/drupal/sdc-hero/hero.draft-04.json',
+        'examples/drupal/sdc-hero/hero/hero.component.yml',
+    ];
+
+    /**
+     * Files below examples/, outside `schemas/`, that no case uses: not a `README.md`, not in NON_DATA_FILES, and
+     * not a `.yml` or `.json` data file with a `.test.json` next to it.
+     *
+     * @return list<string>
+     */
+    public static function unused(): array
+    {
+        $files = new \RecursiveIteratorIterator(new \RecursiveCallbackFilterIterator(
+            new \RecursiveDirectoryIterator(self::DIRECTORY . '/examples', \FilesystemIterator::SKIP_DOTS),
+            fn (\SplFileInfo $file) => !$file->isDir() || $file->getFilename() !== 'schemas',
+        ));
+        $unused = [];
+        foreach ($files as $file) {
+            $name = $file->getFilename();
+            $path = substr($file->getPathname(), strlen(self::DIRECTORY) + 1);
+            if ($name !== 'README.md' && !str_ends_with($name, '.test.json') && !in_array($path, self::NON_DATA_FILES, true)
+                && !(preg_match('/\.(yml|json)$/', $name) && is_file(preg_replace('/\.(yml|json)$/', '.test.json', $file->getPathname())))) {
+                $unused[] = $path;
+            }
+        }
+        sort($unused);
+        return $unused;
+    }
+
+    /**
      * Examples hold one data file per `*.test.json`; conformance fixtures hold a schema file and inline cases.
      */
     public static function isExample(string $testFile): bool

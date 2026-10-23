@@ -45,6 +45,38 @@ export const files = (): string[] => {
   return found.sort();
 };
 
+/** Files below examples/ that are neither a case's data nor its expectations. */
+export const NON_DATA_FILES = [
+  "examples/drupal/agent-tool/repair-loop.mts",
+  "examples/drupal/agent-tool/repair-loop.php",
+  "examples/drupal/agent-tool/repair-loop.txt",
+  "examples/drupal/node-article/introspect.php",
+  "examples/drupal/sdc-hero/hero.draft-04.json",
+  "examples/drupal/sdc-hero/hero/hero.component.yml",
+];
+
+/**
+ * Files below examples/, outside `schemas/`, that no case uses: not a `README.md`, not in NON_DATA_FILES, and not a
+ * `.yml` or `.json` data file with a `.test.json` next to it.
+ */
+export const unused = (): string[] => {
+  const found: string[] = [];
+  const walk = (dir: string): void => {
+    for (const name of readdirSync(dir)) {
+      const path = join(dir, name);
+      const file = relative(DIRECTORY, path);
+      if (statSync(path).isDirectory()) {
+        if (name !== "schemas") walk(path);
+      } else if (name !== "README.md" && !name.endsWith(".test.json") && !NON_DATA_FILES.includes(file)
+        && !(/\.(yml|json)$/u.test(name) && existsSync(path.replace(/\.(yml|json)$/u, ".test.json")))) {
+        found.push(file);
+      }
+    }
+  };
+  walk(join(DIRECTORY, "examples"));
+  return found.sort();
+};
+
 const read = (file: string): unknown => JSON.parse(readFileSync(join(DIRECTORY, file), "utf8"));
 
 /** Examples hold one data file per `*.test.json`; conformance fixtures hold a schema file and inline cases. */
