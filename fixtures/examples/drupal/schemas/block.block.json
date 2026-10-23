@@ -7,8 +7,8 @@
     "id": {
       "title": "ID",
       "type": "string",
-      "$comment": "Core uses /^(?!\\.)[a-z0-9_.]+$/. Lookahead is outside the portable regex subset, so the converter rewrites it.",
-      "pattern": "^[a-z0-9_][a-z0-9_.]*$"
+      "$comment": "Core uses /^(?!\\.)[a-z0-9_.]+$/. Lookahead is outside the portable regex subset, so the converter rewrites it; PCRE's final $ becomes \\n?$.",
+      "pattern": "^[a-z0-9_][a-z0-9_.]*\\n?$"
     },
     "theme": {
       "title": "Theme",
@@ -65,6 +65,9 @@
     }
   },
   "required": [
+    "langcode",
+    "status",
+    "dependencies",
     "id",
     "theme",
     "region",
