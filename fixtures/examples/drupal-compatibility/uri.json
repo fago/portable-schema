@@ -1,0 +1,335 @@
+{
+  "description": "URIs: Drupal's uri DataType, link field and url form element vs. the pinned format uri.",
+  "environment": {
+    "drupal": "Drupal 11.4-dev (11.x at ad3428034a5b), PHP 8.3.6, PCRE2 10.42, egulias/email-validator 4.0.4, symfony/validator v7.4.10",
+    "js": "Node.js 24.22.0, V8 13.6.233.17-node.57, Unicode 17.0"
+  },
+  "columns": {
+    "drupalUri": "uri DataType (config schema uri, uri and link fields): PrimitiveType constraint, parse_url() with a scheme",
+    "drupalLink": "link field item, link_type internal and external, validated as an entity field (LinkType, LinkAccess, LinkExternalProtocols, LinkNotExistingInternal), as user 1",
+    "drupalUrlElement": "UrlHelper::isValid($value, TRUE), as the Form API url element calls it after trim()",
+    "portable": "format uri as pinned in spec/profile.md: RFC 3986 URI; equals the standard; checked against the JSON-Schema-Test-Suite",
+    "uriReference": "format uri-reference: RFC 3986 URI-reference"
+  },
+  "cases": [
+    {
+      "value": "https://example.com",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": true,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "https://example.com/path?q=1#top",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": true,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "HTTPS://EXAMPLE.COM/",
+      "drupalUri": true,
+      "drupalLink": false,
+      "drupalUrlElement": true,
+      "portable": true,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL 'HTTPS://EXAMPLE.COM/' has an invalid protocol."
+    },
+    {
+      "value": "https://user:pass@example.com:8080/",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": true,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "http://[2001:db8::1]/",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": true,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "ftp://ftp.example.com/file.txt",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": true,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "mailto:joe@example.com",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "tel:+1-816-555-1212",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "urn:isbn:0451450523",
+      "drupalUri": true,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL 'urn:isbn:0451450523' has an invalid protocol."
+    },
+    {
+      "value": "javascript:alert(1)",
+      "note": "scheme outside filter_protocols",
+      "drupalUri": true,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL 'javascript:alert(1)' has an invalid protocol."
+    },
+    {
+      "value": "internal:/node/1",
+      "note": "Drupal link field: internal path",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "internal:/",
+      "note": "Drupal link field: front page",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "internal:node/1",
+      "note": "internal: without leading slash",
+      "drupalUri": true,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL 'internal:node/1' is invalid."
+    },
+    {
+      "value": "internal:/user/login?destination=/node",
+      "note": "internal path with query",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "entity:node/1",
+      "note": "Drupal link field: entity reference",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "entity:node",
+      "note": "entity: without an id",
+      "drupalUri": true,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL 'entity:node' has an invalid parameter."
+    },
+    {
+      "value": "route:<nolink>",
+      "note": "Drupal link field: route",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": false
+    },
+    {
+      "value": "route:user.login",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "route:does.not.exist",
+      "note": "route name that does not exist",
+      "drupalUri": true,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL 'route:does.not.exist' doesn't exist."
+    },
+    {
+      "value": "base:robots.txt",
+      "note": "Drupal: path relative to the base URL",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true
+    },
+    {
+      "value": "/node/1",
+      "note": "relative reference, absolute path",
+      "drupalUri": false,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL '/node/1' is invalid."
+    },
+    {
+      "value": "node/1",
+      "note": "relative reference, relative path",
+      "drupalUri": false,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL 'node/1' is invalid."
+    },
+    {
+      "value": "//example.com/x",
+      "note": "network-path (protocol-relative) reference",
+      "drupalUri": false,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL '//example.com/x' has an invalid protocol."
+    },
+    {
+      "value": "#top",
+      "note": "fragment only",
+      "drupalUri": false,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL '#top' is invalid."
+    },
+    {
+      "value": "",
+      "note": "empty string",
+      "drupalUri": false,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": true
+    },
+    {
+      "value": "https://example.com/ä",
+      "note": "unescaped non-ASCII in the path (IRI)",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": false
+    },
+    {
+      "value": "https://exämple.com/",
+      "note": "unescaped non-ASCII host (IRI)",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": false
+    },
+    {
+      "value": "https://example.com/a b",
+      "note": "space in the path",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": false
+    },
+    {
+      "value": "https://example.com/{x}",
+      "note": "braces in the path",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": false
+    },
+    {
+      "value": "https://example.com/%zz",
+      "note": "invalid percent-encoding",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": false
+    },
+    {
+      "value": "https://example.com:abc/",
+      "note": "non-numeric port",
+      "drupalUri": false,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": false,
+      "drupalLinkMessage": "0.uri: The URL 'https://example.com:abc/' is invalid."
+    },
+    {
+      "value": "https://example.com/\n",
+      "note": "trailing line feed",
+      "drupalUri": true,
+      "drupalLink": true,
+      "drupalUrlElement": true,
+      "portable": false,
+      "uriReference": false
+    },
+    {
+      "value": "http://",
+      "note": "scheme and empty authority",
+      "drupalUri": false,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": true,
+      "uriReference": true,
+      "drupalLinkMessage": "0.uri: The URL 'http://' is invalid."
+    },
+    {
+      "value": "1http://example.com",
+      "note": "scheme starts with a digit",
+      "drupalUri": true,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": false,
+      "drupalLinkMessage": "0.uri: The URL '1http://example.com' has an invalid protocol."
+    },
+    {
+      "value": "c:\\windows\\file.txt",
+      "note": "Windows path",
+      "drupalUri": true,
+      "drupalLink": false,
+      "drupalUrlElement": false,
+      "portable": false,
+      "uriReference": false,
+      "drupalLinkMessage": "0.uri: The URL 'c:\\windows\\file.txt' has an invalid protocol."
+    }
+  ]
+}

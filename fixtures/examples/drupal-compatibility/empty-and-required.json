@@ -1,0 +1,310 @@
+{
+  "description": "NotBlank, Choice, empty strings and required keys: Drupal vs. the mappings in docs/drupal.md.",
+  "environment": {
+    "drupal": "Drupal 11.4-dev (11.x at ad3428034a5b), PHP 8.3.6, PCRE2 10.42, egulias/email-validator 4.0.4, symfony/validator v7.4.10",
+    "js": "Node.js 24.22.0, V8 13.6.233.17-node.57, Unicode 17.0"
+  },
+  "columns": {
+    "notBlank": "Symfony NotBlank as registered by Drupal, run on a plain Symfony validator, without and with allowNull; portableMinLength: type string + minLength 1 as in docs/drupal.md; portablePerType: minLength 1 for strings, minItems 1 for arrays, minProperties 1 for objects, const true for booleans, nothing for numbers, null not allowed",
+    "choice": "Symfony Choice with choices [0, 1, 2] (node.type.*:preview_mode), strict by default, run on a plain Symfony validator; Portable: enum [0, 1, 2]",
+    "emptyString": "The empty string against config schema types; Portable: the mapped portable:* type",
+    "config": "Config objects through TypedConfigManager::createFromNameAndData()->validate(); Portable: the schema as docs/drupal.md maps it (keys required unless requiredKey: false, null only with nullable)"
+  },
+  "cases": {
+    "notBlank": [
+      {
+        "json": "\"a\"",
+        "drupalNotBlank": true,
+        "drupalNotBlankAllowNull": true,
+        "portableMinLength": true,
+        "portablePerType": true
+      },
+      {
+        "json": "\"\"",
+        "drupalNotBlank": false,
+        "drupalNotBlankAllowNull": false,
+        "portableMinLength": false,
+        "portablePerType": false
+      },
+      {
+        "json": "\" \"",
+        "drupalNotBlank": true,
+        "drupalNotBlankAllowNull": true,
+        "portableMinLength": true,
+        "portablePerType": true
+      },
+      {
+        "json": "\"0\"",
+        "drupalNotBlank": true,
+        "drupalNotBlankAllowNull": true,
+        "portableMinLength": true,
+        "portablePerType": true
+      },
+      {
+        "json": "0",
+        "drupalNotBlank": true,
+        "drupalNotBlankAllowNull": true,
+        "portableMinLength": false,
+        "portablePerType": true
+      },
+      {
+        "json": "false",
+        "drupalNotBlank": false,
+        "drupalNotBlankAllowNull": false,
+        "portableMinLength": false,
+        "portablePerType": false
+      },
+      {
+        "json": "null",
+        "drupalNotBlank": false,
+        "drupalNotBlankAllowNull": true,
+        "portableMinLength": false,
+        "portablePerType": false
+      },
+      {
+        "json": "[]",
+        "drupalNotBlank": false,
+        "drupalNotBlankAllowNull": false,
+        "portableMinLength": false,
+        "portablePerType": false
+      },
+      {
+        "json": "{}",
+        "drupalNotBlank": false,
+        "drupalNotBlankAllowNull": false,
+        "portableMinLength": false,
+        "portablePerType": false
+      }
+    ],
+    "choice": [
+      {
+        "json": "1",
+        "drupal": true,
+        "portableEnum": true
+      },
+      {
+        "json": "\"1\"",
+        "drupal": false,
+        "portableEnum": false
+      },
+      {
+        "json": "1.0",
+        "drupal": false,
+        "portableEnum": true
+      },
+      {
+        "json": "true",
+        "drupal": false,
+        "portableEnum": false
+      },
+      {
+        "json": "3",
+        "drupal": false,
+        "portableEnum": false
+      },
+      {
+        "json": "null",
+        "drupal": true,
+        "portableEnum": false
+      }
+    ],
+    "emptyString": [
+      {
+        "type": "email",
+        "drupal": true,
+        "portable": false
+      },
+      {
+        "type": "uuid",
+        "drupal": true,
+        "portable": false
+      },
+      {
+        "type": "machine_name",
+        "drupal": true,
+        "portable": false
+      },
+      {
+        "type": "color_hex",
+        "drupal": true,
+        "portable": false
+      },
+      {
+        "type": "uri",
+        "drupal": false,
+        "portable": false,
+        "drupalMessage": "This value should be of the correct primitive type."
+      },
+      {
+        "type": "langcode",
+        "drupal": false,
+        "portable": false,
+        "drupalMessage": "The value you selected is not a valid choice."
+      },
+      {
+        "type": "required_label",
+        "drupal": false,
+        "portable": false,
+        "drupalMessage": "This value should not be blank."
+      }
+    ],
+    "config": [
+      {
+        "name": "system.site",
+        "note": "complete, mail_notification: null as in core system.site.yml",
+        "data": {
+          "langcode": "en",
+          "uuid": "6e4a8f3c-1a2b-4c3d-8e9f-0a1b2c3d4e5f",
+          "name": "Lab",
+          "mail": "admin@example.com",
+          "slogan": "",
+          "page": {
+            "403": "",
+            "404": "",
+            "front": "/user/login"
+          },
+          "admin_compact_mode": false,
+          "weight_select_max": 100,
+          "default_langcode": "en",
+          "mail_notification": null
+        },
+        "drupal": true,
+        "drupalMessages": [],
+        "portable": false
+      },
+      {
+        "name": "system.site",
+        "note": "keys missing; type is not FullyValidatable",
+        "data": {
+          "langcode": "en",
+          "uuid": "6e4a8f3c-1a2b-4c3d-8e9f-0a1b2c3d4e5f",
+          "default_langcode": "en"
+        },
+        "drupal": true,
+        "drupalMessages": [],
+        "portable": false
+      },
+      {
+        "name": "system.site",
+        "note": "null values; type is not FullyValidatable",
+        "data": {
+          "langcode": "en",
+          "uuid": "6e4a8f3c-1a2b-4c3d-8e9f-0a1b2c3d4e5f",
+          "name": null,
+          "mail": null,
+          "slogan": null,
+          "page": {
+            "403": "",
+            "404": "",
+            "front": "/user/login"
+          },
+          "admin_compact_mode": false,
+          "weight_select_max": 100,
+          "default_langcode": "en",
+          "mail_notification": null
+        },
+        "drupal": true,
+        "drupalMessages": [],
+        "portable": false
+      },
+      {
+        "name": "system.maintenance",
+        "note": "complete",
+        "data": {
+          "langcode": "en",
+          "message": "Back soon."
+        },
+        "drupal": true,
+        "drupalMessages": [],
+        "portable": true
+      },
+      {
+        "name": "system.maintenance",
+        "note": "key missing; type is FullyValidatable",
+        "data": {
+          "langcode": "en"
+        },
+        "drupal": false,
+        "drupalMessages": [
+          "'message' is a required key."
+        ],
+        "portable": false
+      },
+      {
+        "name": "system.maintenance",
+        "note": "null value; type is FullyValidatable",
+        "data": {
+          "langcode": "en",
+          "message": null
+        },
+        "drupal": false,
+        "drupalMessages": [
+          "message: This value should not be null."
+        ],
+        "portable": false
+      },
+      {
+        "name": "system.maintenance",
+        "note": "langcode missing (requiredKey: false in config_object)",
+        "data": {
+          "message": "Back soon."
+        },
+        "drupal": false,
+        "drupalMessages": [
+          "The system.maintenance config object must specify a language code, because it contains translatable values."
+        ],
+        "portable": true
+      },
+      {
+        "name": "system.cron",
+        "note": "complete",
+        "data": {
+          "threshold": {
+            "requirements_warning": 172800,
+            "requirements_error": 1209600
+          },
+          "logging": true
+        },
+        "drupal": true,
+        "drupalMessages": [],
+        "portable": true
+      },
+      {
+        "name": "system.cron",
+        "note": "langcode present without translatable values (only a deprecation notice)",
+        "data": {
+          "langcode": "en",
+          "threshold": {
+            "requirements_warning": 172800,
+            "requirements_error": 1209600
+          },
+          "logging": true
+        },
+        "drupal": true,
+        "drupalMessages": [],
+        "portable": true
+      },
+      {
+        "name": "core.entity_view_mode.node.full",
+        "note": "config entity with a translatable label, without langcode; type is not FullyValidatable",
+        "data": {
+          "uuid": "0b7a1f3e-5c2d-4e6f-9a8b-7c6d5e4f3a2b",
+          "status": false,
+          "dependencies": {
+            "module": [
+              "node"
+            ]
+          },
+          "id": "node.full",
+          "label": "Full content",
+          "description": "",
+          "targetEntityType": "node",
+          "cache": true
+        },
+        "drupal": true,
+        "drupalMessages": [],
+        "portable": false
+      }
+    ]
+  }
+}
