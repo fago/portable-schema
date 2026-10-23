@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as Formats from "./formats.js";
 import { isObject, type Json, type JsonObject } from "./json.js";
@@ -23,6 +23,8 @@ export class Registry {
     "https://portable-schema.dev/v1/load",
   ];
 
+  static readonly TYPES_NAMESPACE = "portable";
+
   private schemas = new Map<string, Schema>();
 
   /** Ids by their normalized form. */
@@ -30,11 +32,11 @@ export class Registry {
 
   /** A registry with the type library. */
   static withTypes(): Registry {
-    return new Registry().addDirectory(Registry.TYPES_DIRECTORY);
+    return new Registry().mount(Registry.TYPES_DIRECTORY, Registry.TYPES_NAMESPACE);
   }
 
   /**
-   * Adds a schema under `id`, or under its own $id.
+   * Adds a schema under `id`, or under its own $id. Ids in the `portable:` namespace are reserved for the type library.
    *
    * The id must be an absolute URI without a fragment, dot segments or the `file:` scheme, must not be a meta-schema
    * id, and must differ from every other id after percent-decoding and with the scheme and authority in lower case:
@@ -44,6 +46,13 @@ export class Registry {
   add(schema: Schema, id?: string): this {
     id ??= isObject(schema) && typeof schema["$id"] === "string" ? schema["$id"] : undefined;
     if (id === undefined) throw new Error("A schema without $id needs an id.");
+    if (normalize(id).startsWith(`${Registry.TYPES_NAMESPACE}:`)) {
+      throw new Error(`The schema id ${id} is in the reserved namespace ${Registry.TYPES_NAMESPACE}.`);
+    }
+    return this.store(schema, id);
+  }
+
+  private store(schema: Schema, id: string): this {
     const key = normalize(id);
     if (!Formats.check("uri", id) || id.includes("#") || key.startsWith("file:") || /[:/]\.{1,2}(\/|$)/u.test(normalize(id.split("?")[0]!))) {
       throw new Error(`The schema id ${id} is not an absolute URI without a fragment, dot segments or file: scheme.`);
@@ -59,19 +68,33 @@ export class Registry {
     return this;
   }
 
-  /** Adds every *.json file in `directory`, recursively, by its $id. */
-  addDirectory(directory: string): this {
+  /**
+   * Mounts `directory` under `namespace`: every *.json file below it, except *.test.json, is added by the id
+   * `<namespace>:<relative path without .json>`, percent-decoded. A `$id` in the file must equal that id.
+   */
+  addDirectory(directory: string, namespace: string): this {
+    if (namespace === Registry.TYPES_NAMESPACE) throw new Error(`The namespace ${namespace} is reserved for the type library.`);
+    return this.mount(directory, namespace);
+  }
+
+  private mount(directory: string, namespace: string): this {
+    if (!/^[a-z][a-z0-9_]*$/u.test(namespace)) throw new Error(`The namespace ${namespace} is not a lowercase identifier.`);
     const paths: string[] = [];
     const walk = (dir: string): void => {
       for (const name of readdirSync(dir)) {
         const path = join(dir, name);
         if (statSync(path).isDirectory()) walk(path);
-        else if (name.endsWith(".json")) paths.push(path);
+        else if (name.endsWith(".json") && !name.endsWith(".test.json")) paths.push(path);
       }
     };
     walk(directory);
     for (const path of paths.sort()) {
-      this.add(JSON.parse(readFileSync(path, "utf8")) as Schema);
+      const id = `${namespace}:${decodeBytes(relative(directory, path).split(sep).join("/").slice(0, -".json".length))}`;
+      const schema = JSON.parse(readFileSync(path, "utf8")) as Schema;
+      if (isObject(schema) && schema["$id"] !== undefined && schema["$id"] !== id) {
+        throw new Error(`The file ${path} has the $id ${JSON.stringify(schema["$id"])}, not ${id}.`);
+      }
+      this.store(schema, id);
     }
     return this;
   }
@@ -111,8 +134,11 @@ export class Registry {
 
 /** `id` percent-decoded byte by byte, as PHP's rawurldecode() does, with the scheme and authority in lower case. */
 const normalize = (id: string): string =>
-  id.replace(/^[^:]*:(\/\/[^/?]*)?/u, (prefix) => prefix.toLowerCase())
-    .replace(/%([0-9a-f]{2})/giu, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)));
+  decodeBytes(id.replace(/^[^:]*:(\/\/[^/?]*)?/u, (prefix) => prefix.toLowerCase()));
+
+/** Percent-decoded byte by byte, as PHP's rawurldecode() does. */
+const decodeBytes = (value: string): string =>
+  value.replace(/%([0-9a-f]{2})/giu, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)));
 
 /**
  * The location of the first value below the root with a string `$id` or `$schema`: Hyperjump reads these in every

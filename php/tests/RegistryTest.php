@@ -90,4 +90,58 @@ final class RegistryTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         (new Registry())->add((object) ['$id' => $value], $id);
     }
+
+    /**
+     * A temporary directory with $files: relative path => JSON.
+     *
+     * @param array<string, string> $files
+     */
+    private static function directory(array $files): string
+    {
+        $directory = sys_get_temp_dir() . '/portable-schema-' . bin2hex(random_bytes(6));
+        foreach ($files as $path => $json) {
+            @mkdir(dirname("$directory/$path"), 0777, true);
+            file_put_contents("$directory/$path", $json);
+        }
+        return $directory;
+    }
+
+    public function testMountsADirectory(): void
+    {
+        $directory = self::directory([
+            'block.block.json' => '{"type": "object"}',
+            'block.settings.%2A.json' => '{"$id": "drupal:block.settings.*"}',
+            'catalog/plugins/block.json' => '{"enum": ["a"]}',
+            'block.block.test.json' => '[]',
+        ]);
+        $registry = (new Registry())->addDirectory($directory, 'drupal');
+        $this->assertSame(['drupal:block.block', 'drupal:block.settings.*', 'drupal:catalog/plugins/block'], $registry->ids());
+    }
+
+    public function testRefusesAnIdOtherThanTheFilePath(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Registry())->addDirectory(self::directory(['a.json' => '{"$id": "drupal:b"}']), 'drupal');
+    }
+
+    public static function invalidNamespaces(): iterable
+    {
+        yield 'reserved' => ['portable'];
+        yield 'upper case' => ['Drupal'];
+        yield 'empty' => [''];
+        yield 'with a colon' => ['a:b'];
+    }
+
+    #[DataProvider('invalidNamespaces')]
+    public function testRefusesNamespace(string $namespace): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Registry())->addDirectory(self::directory(['a.json' => 'true']), $namespace);
+    }
+
+    public function testRefusesTheTypesNamespace(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Registry())->add(true, 'PORTABLE:mine');
+    }
 }

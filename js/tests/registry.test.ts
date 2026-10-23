@@ -1,3 +1,6 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
 import { getAllRegisteredSchemaUris } from "@hyperjump/json-schema/draft-2020-12";
 import { expect, test } from "vitest";
 import { Registry, Validator } from "../src/index.js";
@@ -67,4 +70,41 @@ test("META_SCHEMA_IDS are the schemas Hyperjump holds besides the registry's", a
   await Validator.create(registry);
   const others = getAllRegisteredSchemaUris().filter((uri) => !registry.ids().includes(uri));
   expect(others.sort()).toEqual([...Registry.META_SCHEMA_IDS].sort());
+});
+
+/** A temporary directory with `files`: relative path → JSON. */
+const directory = (files: Record<string, string>): string => {
+  const root = mkdtempSync(join(tmpdir(), "portable-schema-"));
+  for (const [path, json] of Object.entries(files)) {
+    mkdirSync(dirname(join(root, path)), { recursive: true });
+    writeFileSync(join(root, path), json);
+  }
+  return root;
+};
+
+test("mounts a directory", () => {
+  const registry = new Registry().addDirectory(directory({
+    "block.block.json": '{"type": "object"}',
+    "block.settings.%2A.json": '{"$id": "drupal:block.settings.*"}',
+    "catalog/plugins/block.json": '{"enum": ["a"]}',
+    "block.block.test.json": "[]",
+  }), "drupal");
+  expect(registry.ids()).toEqual(["drupal:block.block", "drupal:block.settings.*", "drupal:catalog/plugins/block"]);
+});
+
+test("refuses an $id other than the file path", () => {
+  expect(() => new Registry().addDirectory(directory({ "a.json": '{"$id": "drupal:b"}' }), "drupal")).toThrow();
+});
+
+test.each([
+  ["reserved", "portable"],
+  ["upper case", "Drupal"],
+  ["empty", ""],
+  ["with a colon", "a:b"],
+])("refuses a namespace: %s", (_name, namespace) => {
+  expect(() => new Registry().addDirectory(directory({ "a.json": "true" }), namespace)).toThrow();
+});
+
+test("refuses the types namespace", () => {
+  expect(() => new Registry().add(true, "PORTABLE:mine")).toThrow();
 });

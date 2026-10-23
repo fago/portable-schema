@@ -13,7 +13,7 @@ use PortableSchema\Message\Formatter;
 use PortableSchema\Registry;
 use PortableSchema\Validator;
 
-$registry = Registry::withTypes()->addDirectory('schemas');
+$registry = Registry::withTypes()->addDirectory('schemas', 'drupal'); // schemas/block.block.json → drupal:block.block
 $validator = (new Validator($registry))
     ->withCheck('drupal:UniqueField', fn (array $requests) => /* one CheckResult per request */);
 

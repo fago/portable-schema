@@ -29,6 +29,8 @@ final class Registry
         'https://portable-schema.dev/v1/load',
     ];
 
+    public const TYPES_NAMESPACE = 'portable';
+
     /** @var array<string, \stdClass|bool> */
     private array $schemas = [];
 
@@ -40,11 +42,11 @@ final class Registry
      */
     public static function withTypes(): self
     {
-        return (new self())->addDirectory(self::TYPES_DIRECTORY);
+        return (new self())->mount(self::TYPES_DIRECTORY, self::TYPES_NAMESPACE);
     }
 
     /**
-     * Adds a schema under $id, or under its own $id.
+     * Adds a schema under $id, or under its own $id. Ids in the `portable:` namespace are reserved for the type library.
      *
      * The id must be an absolute URI without a fragment, dot segments or the `file:` scheme, must not be a meta-schema
      * id, and must differ from every other id after percent-decoding and with the scheme and authority in lower case:
@@ -57,6 +59,14 @@ final class Registry
         if ($id === null) {
             throw new \InvalidArgumentException('A schema without $id needs an id.');
         }
+        if (str_starts_with(self::normalize($id), self::TYPES_NAMESPACE . ':')) {
+            throw new \InvalidArgumentException("The schema id $id is in the reserved namespace " . self::TYPES_NAMESPACE . '.');
+        }
+        return $this->store($schema, $id);
+    }
+
+    private function store(\stdClass|bool $schema, string $id): self
+    {
         $normalized = self::normalize($id);
         if (!Formats::check('uri', $id) || str_contains($id, '#') || str_starts_with($normalized, 'file:')
             || preg_match('#[:/]\.{1,2}(/|$)#', self::normalize(explode('?', $id)[0]))) {
@@ -115,20 +125,38 @@ final class Registry
     }
 
     /**
-     * Adds every *.json file in $directory, recursively, by its $id.
+     * Mounts $directory under $namespace: every *.json file below it, except *.test.json, is added by the id
+     * `<namespace>:<relative path without .json>`, percent-decoded. A `$id` in the file must equal that id.
      */
-    public function addDirectory(string $directory): self
+    public function addDirectory(string $directory, string $namespace): self
     {
+        if ($namespace === self::TYPES_NAMESPACE) {
+            throw new \InvalidArgumentException("The namespace $namespace is reserved for the type library.");
+        }
+        return $this->mount($directory, $namespace);
+    }
+
+    private function mount(string $directory, string $namespace): self
+    {
+        if (!preg_match('/^[a-z][a-z0-9_]*$/', $namespace)) {
+            throw new \InvalidArgumentException("The namespace $namespace is not a lowercase identifier.");
+        }
+        $directory = rtrim($directory, '/');
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS));
         $paths = [];
         foreach ($files as $file) {
-            if ($file->getExtension() === 'json') {
+            if ($file->getExtension() === 'json' && !str_ends_with($file->getFilename(), '.test.json')) {
                 $paths[] = $file->getPathname();
             }
         }
         sort($paths);
         foreach ($paths as $path) {
-            $this->add(Json::decodeFile($path));
+            $id = $namespace . ':' . rawurldecode(substr($path, strlen($directory) + 1, -strlen('.json')));
+            $schema = Json::decodeFile($path);
+            if ($schema instanceof \stdClass && property_exists($schema, '$id') && $schema->{'$id'} !== $id) {
+                throw new \InvalidArgumentException("The file $path has the \$id " . json_encode($schema->{'$id'}, JSON_UNESCAPED_SLASHES) . ", not $id.");
+            }
+            $this->store($schema, $id);
         }
         return $this;
     }

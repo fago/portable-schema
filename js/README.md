@@ -15,7 +15,7 @@ The validator reads `spec/`, `types/` and `messages/` from the repository, so it
 ```ts
 import { Formatter, Registry, Validator } from "portable-schema";
 
-const registry = Registry.withTypes().addDirectory("schemas");
+const registry = Registry.withTypes().addDirectory("schemas", "drupal"); // schemas/block.block.json → drupal:block.block
 const validator = (await Validator.create(registry))
   .withCheck("drupal:UniqueField", (requests) => /* one CheckResult per request */);
 
