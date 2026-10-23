@@ -5,13 +5,38 @@
     "valid": true
   },
   {
-    "description": "single-label domain is allowed by WHATWG",
+    "description": "single-label domain",
     "data": "joe@localhost",
     "valid": true
   },
   {
-    "description": "quoted local part is not allowed by WHATWG",
+    "description": "quoted local part with a space",
     "data": "\"joe bloggs\"@example.com",
+    "valid": true
+  },
+  {
+    "description": "quoted local part with @",
+    "data": "\"joe@bloggs\"@example.com",
+    "valid": true
+  },
+  {
+    "description": "IPv4 address literal",
+    "data": "joe@[127.0.0.1]",
+    "valid": true
+  },
+  {
+    "description": "IPv6 address literal",
+    "data": "joe@[IPv6:::1]",
+    "valid": true
+  },
+  {
+    "description": "local part of 64 characters",
+    "data": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com",
+    "valid": true
+  },
+  {
+    "description": "missing @",
+    "data": "joe.example.com",
     "valid": false,
     "errors": [
       {
@@ -22,8 +47,92 @@
     ]
   },
   {
-    "description": "missing @",
-    "data": "joe.example.com",
+    "description": "dot at the start of the local part",
+    "data": ".joe@example.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "two dots in the local part",
+    "data": "jo..e@example.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "local part of 65 characters",
+    "data": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid IPv4 address literal",
+    "data": "joe@[127.0.0.300]",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "trailing dot in the domain",
+    "data": "joe@example.com.",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "comment",
+    "data": "joe(comment)@example.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "non-ASCII local part needs idn-email",
+    "data": "jöe@example.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "empty string",
+    "data": "",
     "valid": false,
     "errors": [
       {

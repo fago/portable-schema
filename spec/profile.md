@@ -10,7 +10,7 @@ The full list of allowed keywords follows. Annotations include `$comment`.
 
 ## Formats
 
-Formats come from the [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) ([decision 0003](../docs/decisions/0003-formats-from-the-registry.md)).
+Formats come from the [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) ([decision 0003](../docs/decisions/0003-formats-from-the-registry.md)). Their checks follow the standard the registry names ([decision 0007](../docs/decisions/0007-pinned-checks-follow-the-standard.md)).
 
 - **`format` is an assertion.**
 - **A schema using a format outside this list is refused.**
@@ -22,7 +22,7 @@ Formats come from the [JSON Schema format registry](https://github.com/json-sche
 | `time` | `HH:MM:SS`, optional fraction, offset (`Z` or `±HH:MM`) required. No leap seconds | RFC 3339 full-time |
 | `date-time` | `date`, `T` or `t`, `time` | RFC 3339 date-time |
 | `duration` | ISO 8601 duration as in RFC 3339 appendix A, e.g. `P1Y2M`, `PT30M`, `P2W` | RFC 3339 |
-| `email` | WHATWG "valid email address" (ASCII, the pattern browsers use for `<input type="email">`) | WHATWG HTML |
+| `email` | RFC 5321 `Mailbox`, ASCII only: a dot-atom or quoted-string local part of at most 64 characters, `@`, and a domain as in `hostname` or an address literal (`[a.b.c.d]` with parts 0–255, or `[IPv6:…]` as in `ipv6`). At most 254 characters in total. No comments, folding whitespace or general address literals | RFC 5321 §4.1.2, §4.5.3.1 |
 | `hostname` | Dot-separated labels of letters, digits and hyphens, 1–63 characters each, at most 253 in total; ASCII only | RFC 1123 |
 | `ipv4` | Dotted quad, 0–255 per part, no leading zeros | RFC 2673 |
 | `ipv6` | RFC 4291 text form, incl. `::` compression and an embedded IPv4 tail; no zone ID | RFC 4291 |
