@@ -14,7 +14,7 @@ Refused in every schema and subschema:
 - `$vocabulary`: only meta-schemas declare vocabularies;
 - `$dynamicRef` ([decision 0005](../docs/decisions/0005-profile-only-validators.md)), and by the same decision `$dynamicAnchor`.
 
-A schema is one resource: `$id` and `$schema` only at its root. Below the root, a string `$id` or `$schema` is refused in any object, subschemas and values like `default` or `const` alike.
+A schema is one resource: `$id` and `$schema` only at its root. Below the root, a string `$id` or `$schema` is refused in every object: subschemas and values like `default` or `const` alike.
 
 ## Formats
 
