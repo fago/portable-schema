@@ -1,6 +1,6 @@
 # Drupal compatibility of formats and constraints
 
-Status: draft, for [issue #2](https://github.com/fago/portable-schema/issues/2). The resolutions below are proposals; nothing in `spec/`, `types/` or the decisions changes yet.
+Status: for [issue #2](https://github.com/fago/portable-schema/issues/2). The proposed resolutions are adopted in `spec/`, `types/`, [`docs/drupal.md`](drupal.md#compatibility) and [decision 0007](decisions/0007-pinned-checks-follow-the-standard.md). The alternatives were not taken; the `iri` option stays [open](drupal.md#open-questions).
 
 **Principle:** Portable Schema must not be stricter than Drupal's validators, but it stays with the standard JSON Schema formats.
 
@@ -491,7 +491,3 @@ Portable Schema for `langcode`: `portable:langcode` plus the catalog of this sit
   - `DecimalData`'s `#[JsonSchema]` emits `format: number`, which is not in the registry; `format: decimal` is;
   - `label` and the other `[^\PC]` patterns reject emoji ZWJ sequences and soft hyphens;
   - the `configurable_language` id pattern is not anchored.
-- **Spec, types and decisions this would change:**
-  - `spec/profile.md`: the `email` check (RFC 5321 instead of WHATWG, so decision 0003's orientation for `email`), the `decimal` grammar, and the "Not allowed in v1" list if `iri` is pinned;
-  - `types/v1/langcode.json`: RFC 5646 well-formed tags;
-  - `docs/drupal.md`: the mappings for `Regex` (the `\n?$` rewrite and the `[^\PC]` conversion), `NotBlank`, `Choice`, `requiredKey`, `nullable`, empty strings and `langcode`.
