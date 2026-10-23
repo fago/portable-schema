@@ -1,8 +1,9 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
+import { basename, dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { registerSchema, validate, unregisterSchema } from "@hyperjump/json-schema/draft-2020-12";
 import { BASIC } from "@hyperjump/json-schema/experimental";
+import { parse } from "yaml";
 import { CheckResult, Formatter, Registry, Validator, type Result } from "../src/index.js";
 
 /** Finds the shared fixtures and runs their cases. */
@@ -10,10 +11,14 @@ export const DIRECTORY = fileURLToPath(new URL("../../fixtures", import.meta.url
 
 export const SCHEMA_ID = "urn:portable-schema:fixture";
 
+/** Examples mount their showcase's `schemas/` as `drupal`. */
+export const EXAMPLES_NAMESPACE = "drupal";
+
 export type SchemaFile = { description: string; registry?: Record<string, object | boolean>; schema: object | boolean };
 
 export type Case = {
   description: string;
+  schema?: string;
   data: unknown;
   valid: boolean;
   errors?: unknown[];
@@ -22,6 +27,9 @@ export type Case = {
   messages?: string[];
   checks?: Record<string, { errors: { code: string; params: Record<string, unknown>; message?: string }[]; locations?: string[] }>;
 };
+
+/** An example's `*.test.json`: a case without data and description, and the ID of the schema to validate against. */
+export type Expectation = Omit<Case, "description" | "data" | "schema"> & { schema: string };
 
 /** Every `*.test.json` below fixtures/, relative to it. */
 export const files = (): string[] => {
@@ -39,13 +47,36 @@ export const files = (): string[] => {
 
 const read = (file: string): unknown => JSON.parse(readFileSync(join(DIRECTORY, file), "utf8"));
 
-/** The schema file and the test cases. */
-export const load = (testFile: string): [SchemaFile, Case[]] =>
-  [read(testFile.slice(0, -".test.json".length) + ".json") as SchemaFile, read(testFile) as Case[]];
+/** Examples hold one data file per `*.test.json`; conformance fixtures hold a schema file and inline cases. */
+export const isExample = (testFile: string): boolean => testFile.startsWith("examples/");
 
-/** Validates the fixture files against fixtures/schema.schema.json and fixtures/tests.schema.json. */
-export const check = async (schemaFile: SchemaFile, tests: Case[]): Promise<string[]> =>
-  [...(await problems(schemaFile, "schema.schema.json")), ...(await problems(tests, "tests.schema.json"))];
+/**
+ * For a conformance fixture: the schema file and the test cases. For an example: the expectation file and one case,
+ * the expectations with the data file's data and its name as description.
+ */
+export const load = (testFile: string): [SchemaFile | Expectation, Case[]] => {
+  const base = testFile.slice(0, -".test.json".length);
+  if (!isExample(testFile)) return [read(`${base}.json`) as SchemaFile, read(testFile) as Case[]];
+  const expectation = read(testFile) as Expectation;
+  return [expectation, [{ ...expectation, description: basename(base), data: data(base) }]];
+};
+
+/** The data of `<base>.yml` or `<base>.json`, in the JSON data model. */
+const data = (base: string): unknown => {
+  const files = [`${base}.yml`, `${base}.json`].filter((file) => existsSync(join(DIRECTORY, file)));
+  if (files.length !== 1) throw new Error(`${base} needs one data file, .yml or .json.`);
+  const file = files[0]!;
+  return file.endsWith(".yml") ? parse(readFileSync(join(DIRECTORY, file), "utf8")) : read(file);
+};
+
+/**
+ * Validates the fixture files against the fixture file schemas: fixtures/schema.schema.json and
+ * fixtures/tests.schema.json, or fixtures/expectation.schema.json for an example.
+ */
+export const check = async (testFile: string, schemaFile: SchemaFile | Expectation, tests: Case[]): Promise<string[]> =>
+  isExample(testFile)
+    ? problems(schemaFile, "expectation.schema.json")
+    : [...(await problems(schemaFile, "schema.schema.json")), ...(await problems(tests, "tests.schema.json"))];
 
 /** Validates `data` against the fixture file schema `meta`. */
 export const problems = async (data: unknown, meta: string): Promise<string[]> => {
@@ -56,22 +87,15 @@ export const problems = async (data: unknown, meta: string): Promise<string[]> =
   return result.valid ? [] : [`${meta}: ${JSON.stringify(result.errors)}`];
 };
 
-/** For examples: the `schemas/` and `catalogs/` directories next to the fixture and above it, below fixtures/examples/. */
-export const registryDirectories = (testFile: string): string[] => {
-  const directories: string[] = [];
-  for (let dir = dirname(testFile); dir.startsWith("examples/"); dir = dirname(dir)) {
-    for (const name of ["schemas", "catalogs"]) {
-      const path = join(DIRECTORY, dir, name);
-      if (existsSync(path)) directories.push(path);
-    }
+export const validator = async (testFile: string, schemaFile: SchemaFile | Expectation, testCase: Case): Promise<Validator> => {
+  const registry = Registry.withTypes();
+  if (isExample(testFile)) {
+    registry.addDirectory(join(DIRECTORY, dirname(testFile), "schemas"), EXAMPLES_NAMESPACE);
+  } else {
+    const { schema, registry: schemas } = schemaFile as SchemaFile;
+    registry.add(schema as never, SCHEMA_ID);
+    for (const [id, entry] of Object.entries(schemas ?? {})) registry.add(entry as never, id);
   }
-  return directories;
-};
-
-export const validator = async (testFile: string, schemaFile: SchemaFile, testCase: Case): Promise<Validator> => {
-  const registry = Registry.withTypes().add(schemaFile.schema as never, SCHEMA_ID);
-  for (const directory of registryDirectories(testFile)) registry.addDirectory(directory);
-  for (const [id, schema] of Object.entries(schemaFile.registry ?? {})) registry.add(schema as never, id);
   let validator = await Validator.create(registry);
   for (const [name, canned] of Object.entries(testCase.checks ?? {})) {
     validator = validator.withCheck(name, (requests) => requests.map((request) =>
@@ -80,8 +104,8 @@ export const validator = async (testFile: string, schemaFile: SchemaFile, testCa
   return validator;
 };
 
-export const run = async (testFile: string, schemaFile: SchemaFile, testCase: Case): Promise<Result> =>
-  (await validator(testFile, schemaFile, testCase)).validate(testCase.data, SCHEMA_ID, testCase.options ?? {});
+export const run = async (testFile: string, schemaFile: SchemaFile | Expectation, testCase: Case): Promise<Result> =>
+  (await validator(testFile, schemaFile, testCase)).validate(testCase.data, testCase.schema ?? SCHEMA_ID, testCase.options ?? {});
 
 /** The result projected to the compared keys, with sorted object keys. */
 export const actual = (result: Result): Record<string, unknown> => canonical({

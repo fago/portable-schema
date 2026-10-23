@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:tool.update_image_alt.output",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "",
+      "code": "required",
+      "params": {
+        "property": "alt"
+      }
+    }
+  ],
+  "messages": [
+    "Alternative text is required."
+  ]
+}

@@ -8,11 +8,11 @@
  *
  *   drush php:script introspect.php -- <showcase directory>
  *
- * Writes:
- * - ../schemas/field_item.<type>.json: each field type's item, from its default settings;
- * - schemas/node.article.json: the bundle's fields, referencing the field item types plus
+ * Writes to schemas/, one file per schema ID (`drupal:<path>` → `<path>.json`):
+ * - field_item.<type>.json: each field type's item, from its default settings;
+ * - node.article.json: the bundle's fields, referencing the field item types plus
  *   what the field's own settings add;
- * - ../catalogs/: text formats and languages of the site.
+ * - catalog/: text formats and languages of the site.
  *
  * The data shape is Typed Data's own: field → list of items → properties.
  */
@@ -258,7 +258,7 @@ foreach ($fields as $name => $field) {
   $typeSchema = $item(BaseFieldDefinition::create($type)->setName($name)->setTargetEntityTypeId('node'));
   if (!isset($written[$type])) {
     $written[$type] = TRUE;
-    $write(dirname($directory) . "/schemas/field_item.$type.json", [
+    $write("$directory/schemas/field_item.$type.json", [
       '$schema' => DIALECT,
       '$id' => "drupal:field_item.$type",
       'title' => (string) \Drupal::service('plugin.manager.field.field_type')->getDefinition($type)['label'],
@@ -315,6 +315,6 @@ $catalog = fn (string $id, string $title, string $description, array $entries) =
 ];
 $formats = array_map(fn ($format) => $format->label(), \Drupal::entityTypeManager()->getStorage('filter_format')->loadByProperties(['status' => TRUE]));
 ksort($formats);
-$write(dirname($directory) . "/catalogs/config.filter_format.json", $catalog('drupal:catalog/config/filter_format', 'Text formats', 'Generated from the enabled filter_format config entities.', $formats));
+$write("$directory/schemas/catalog/config/filter_format.json", $catalog('drupal:catalog/config/filter_format', 'Text formats', 'Generated from the enabled filter_format config entities.', $formats));
 $languages = array_map(fn ($language) => $language->getName(), \Drupal::languageManager()->getLanguages(\Drupal\Core\Language\LanguageInterface::STATE_ALL));
-$write(dirname($directory) . "/catalogs/languages.json", $catalog('drupal:catalog/languages', 'Languages', 'Generated from the site\'s languages, including the special ones.', $languages));
+$write("$directory/schemas/catalog/languages.json", $catalog('drupal:catalog/languages', 'Languages', 'Generated from the site\'s languages, including the special ones.', $languages));

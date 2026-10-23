@@ -1,0 +1,19 @@
+{
+  "schema": "drupal:tool.find_images.output",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/images/0/id",
+      "code": "type",
+      "params": {
+        "expected": [
+          "integer"
+        ],
+        "actual": "string"
+      }
+    }
+  ],
+  "messages": [
+    "Image ID has the wrong type."
+  ]
+}

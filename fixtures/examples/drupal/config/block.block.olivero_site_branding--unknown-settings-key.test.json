@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:block.block",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/settings",
+      "code": "unknownProperty",
+      "params": {
+        "property": "use_site_motto"
+      }
+    }
+  ],
+  "messages": [
+    "Block settings: “use_site_motto” is not allowed here."
+  ]
+}

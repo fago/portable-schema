@@ -36,7 +36,7 @@ final class FixturesTest extends TestCase
     public function testFixtureFilesAreValid(string $file): void
     {
         [$schemaFile, $tests] = Fixtures::load($file);
-        $this->assertSame([], Fixtures::check($schemaFile, $tests));
+        $this->assertSame([], Fixtures::check($file, $schemaFile, $tests));
     }
 
     #[DataProvider('cases')]

@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:sdc.portable_showcase.hero",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "",
+      "code": "required",
+      "params": {
+        "property": "heading"
+      }
+    }
+  ],
+  "messages": [
+    "Heading is required."
+  ]
+}

@@ -1,7 +1,4 @@
 {
-  "description": "update_image_alt: tool input, reusing the image field's properties",
-  "schema": {
-    "$schema": "https://portable-schema.dev/v1/schema",
-    "$ref": "drupal:tool.update_image_alt.input"
-  }
+  "image_id": 7,
+  "alt": "Two skiers on a ridge above the clouds"
 }

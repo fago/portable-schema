@@ -42,10 +42,7 @@ const TOOLS = [
 /** Files that exist on the site. */
 const FILES = [7, 8];
 
-$registry = Registry::withTypes();
-foreach (['../schemas', '../catalogs', 'schemas'] as $directory) {
-    $registry->addDirectory(__DIR__ . '/' . $directory);
-}
+$registry = Registry::withTypes()->addDirectory(__DIR__ . '/schemas', 'drupal');
 $validator = (new Validator($registry))->withCheck('drupal:ValidReference', fn (array $requests) => array_map(
     fn (CheckRequest $request) => in_array($request->value, FILES, true)
         ? new CheckResult()

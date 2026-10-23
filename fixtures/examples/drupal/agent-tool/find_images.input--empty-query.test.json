@@ -1,0 +1,17 @@
+{
+  "schema": "drupal:tool.find_images.input",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/query",
+      "code": "minLength",
+      "params": {
+        "limit": 1,
+        "actual": 0
+      }
+    }
+  ],
+  "messages": [
+    "Query must be at least 1 character long."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "drupal:block.block",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/plugin",
+      "code": "enum",
+      "params": {
+        "value": "foo_block",
+        "allowed": [
+          "system_branding_block",
+          "system_main_block",
+          "system_powered_by_block",
+          "broken"
+        ]
+      }
+    }
+  ],
+  "messages": [
+    "Plugin: “foo_block” is not an allowed value. Allowed: Site branding, Main page content, Powered by Drupal, Broken/Missing."
+  ]
+}

@@ -17,19 +17,21 @@ use Symfony\Component\Yaml\Yaml;
  */
 final class SdcHeroTest extends TestCase
 {
-    private const DIRECTORY = Fixtures::DIRECTORY . '/examples/drupal/sdc-hero';
+    private const SHOWCASE = 'examples/drupal/sdc-hero';
+
+    private const DIRECTORY = Fixtures::DIRECTORY . '/' . self::SHOWCASE;
 
     private const ID = 'drupal:sdc.portable_showcase.hero';
 
     private function exporter(): Exporter
     {
-        return new Exporter(Registry::withTypes()->addDirectory(self::DIRECTORY . '/schemas'));
+        return new Exporter(Registry::withTypes()->addDirectory(self::DIRECTORY . '/schemas', Fixtures::EXAMPLES_NAMESPACE));
     }
 
     public function testComponentYmlHasTheProps(): void
     {
         $component = Yaml::parseFile(self::DIRECTORY . '/hero/hero.component.yml');
-        $props = Json::toArray(Json::decodeFile(self::DIRECTORY . '/schemas/sdc.hero.json'));
+        $props = Json::toArray(Json::decodeFile(self::DIRECTORY . '/schemas/sdc.portable_showcase.hero.json'));
         $this->assertEquals(array_diff_key($props, array_flip(['$schema', '$id', 'title', 'description'])), $component['props']);
     }
 
@@ -38,10 +40,19 @@ final class SdcHeroTest extends TestCase
         $this->assertEquals(Json::decodeFile(self::DIRECTORY . '/hero.draft-04.json'), $this->exporter()->draft04(self::ID));
     }
 
+    /**
+     * @return list<\stdClass>
+     */
+    private function cases(): array
+    {
+        $files = array_filter(Fixtures::files(), fn (string $file) => str_starts_with($file, self::SHOWCASE . '/'));
+        return array_merge(...array_map(fn (string $file) => Fixtures::load($file)[1], array_values($files)));
+    }
+
     public function testDraft04ExportValidatesTheCases(): void
     {
         $schema = $this->exporter()->draft04(self::ID);
-        foreach (Json::decodeFile(self::DIRECTORY . '/hero.test.json') as $case) {
+        foreach ($this->cases() as $case) {
             $validator = new Draft04Validator();
             $data = Json::decode(json_encode($case->data));
             $validator->validate($data, $schema);
@@ -56,7 +67,7 @@ final class SdcHeroTest extends TestCase
     {
         $schema = $this->exporter()->draft04(self::ID);
         $differ = [];
-        foreach (Json::decodeFile(self::DIRECTORY . '/hero.test.json') as $case) {
+        foreach ($this->cases() as $case) {
             $props = (object) array_intersect_key(get_object_vars($case->data), get_object_vars($schema->properties));
             $validator = new Draft04Validator();
             $validator->validate($props, $schema, Constraint::CHECK_MODE_TYPE_CAST);
@@ -64,6 +75,6 @@ final class SdcHeroTest extends TestCase
                 $differ[] = $case->description;
             }
         }
-        $this->assertSame(["a prop the component doesn't have"], $differ);
+        $this->assertSame(['hero--unknown-prop'], $differ);
     }
 }

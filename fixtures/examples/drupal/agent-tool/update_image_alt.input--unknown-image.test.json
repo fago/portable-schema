@@ -1,0 +1,29 @@
+{
+  "schema": "drupal:tool.update_image_alt.input",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/image_id",
+      "code": "check.drupal:ValidReference",
+      "params": {
+        "id": 70
+      }
+    }
+  ],
+  "messages": [
+    "The referenced file (70) does not exist."
+  ],
+  "checks": {
+    "drupal:ValidReference": {
+      "errors": [
+        {
+          "code": "check.drupal:ValidReference",
+          "params": {
+            "id": 70
+          },
+          "message": "The referenced file (70) does not exist."
+        }
+      ]
+    }
+  }
+}

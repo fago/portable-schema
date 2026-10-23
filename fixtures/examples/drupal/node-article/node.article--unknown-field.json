@@ -1,0 +1,52 @@
+{
+  "type": [
+    {
+      "target_id": "article"
+    }
+  ],
+  "title": [
+    {
+      "value": "One description, inside and outside Drupal"
+    }
+  ],
+  "langcode": [
+    {
+      "value": "en"
+    }
+  ],
+  "uid": [
+    {
+      "target_id": 1
+    }
+  ],
+  "status": [
+    {
+      "value": true
+    }
+  ],
+  "created": [
+    {
+      "value": 1792531200
+    }
+  ],
+  "body": [
+    {
+      "value": "<p>Portable Schema describes data once.</p>",
+      "format": "restricted_html",
+      "summary": ""
+    }
+  ],
+  "field_image": [
+    {
+      "target_id": 7,
+      "alt": "A diagram of one schema used by PHP and JS",
+      "width": 1200,
+      "height": 630
+    }
+  ],
+  "field_tags": [
+    {
+      "target_id": 3
+    }
+  ]
+}

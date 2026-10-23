@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {}
+id: olivero_powered
+theme: olivero
+region: footer_top
+weight: 0
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: Powered
+  label_display: hidden
+  provider: system
+visibility: {}

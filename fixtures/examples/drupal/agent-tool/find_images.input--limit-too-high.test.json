@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:tool.find_images.input",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/limit",
+      "code": "maximum",
+      "params": {
+        "limit": 50
+      }
+    }
+  ],
+  "messages": [
+    "Limit must be at most 50."
+  ]
+}

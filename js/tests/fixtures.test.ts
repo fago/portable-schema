@@ -5,7 +5,7 @@ describe.each(Fixtures.files())("%s", (file) => {
   const [schemaFile, tests] = Fixtures.load(file);
 
   test("fixture files are valid", async () => {
-    expect(await Fixtures.check(schemaFile, tests)).toEqual([]);
+    expect(await Fixtures.check(file, schemaFile, tests)).toEqual([]);
   });
 
   test.each(tests.map((testCase) => [testCase.description, testCase] as const))("%s", async (_description, testCase) => {

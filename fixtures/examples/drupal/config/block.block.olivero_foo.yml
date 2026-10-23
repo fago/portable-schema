@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {}
+id: olivero_foo
+theme: olivero
+region: header
+weight: 0
+plugin: foo_block
+settings:
+  id: foo_block
+  label: Foo
+  label_display: '0'
+  provider: system
+visibility: {}

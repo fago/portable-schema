@@ -1,0 +1,14 @@
+{
+  "heading": "One description, inside and outside Drupal",
+  "text": "<p>Describe data once.</p>",
+  "image": {
+    "src": "/files/my hero.jpg",
+    "alt": "A mountain ridge above the clouds",
+    "width": 1600,
+    "height": 900
+  },
+  "cta": {
+    "uri": "https://dri.es/one-description-inside-and-outside-drupal",
+    "title": "Read the post"
+  }
+}

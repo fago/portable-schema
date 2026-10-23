@@ -1,0 +1,15 @@
+{
+  "schema": "drupal:canvas.component.*",
+  "valid": true,
+  "checks": {
+    "drupal:Callback": {
+      "errors": []
+    },
+    "drupal:StringParts": {
+      "errors": []
+    },
+    "drupal:KeyForEverySdcProp": {
+      "errors": []
+    }
+  }
+}

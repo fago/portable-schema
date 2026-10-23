@@ -11,6 +11,7 @@ use PortableSchema\Message\Formatter;
 use PortableSchema\Registry;
 use PortableSchema\Result;
 use PortableSchema\Validator;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Finds the shared fixtures and runs their cases.
@@ -38,21 +39,56 @@ final class Fixtures
     }
 
     /**
-     * @return array{\stdClass, list<\stdClass>} the schema file and the test cases
+     * Examples hold one data file per `*.test.json`; conformance fixtures hold a schema file and inline cases.
      */
-    public static function load(string $testFile): array
+    public static function isExample(string $testFile): bool
     {
-        $schemaFile = substr($testFile, 0, -strlen('.test.json')) . '.json';
-        return [Json::decodeFile(self::DIRECTORY . '/' . $schemaFile), Json::decodeFile(self::DIRECTORY . '/' . $testFile)];
+        return str_starts_with($testFile, 'examples/');
     }
 
     /**
-     * Validates the fixture files against fixtures/schema.schema.json and fixtures/tests.schema.json.
+     * For a conformance fixture: the schema file and the test cases. For an example: the expectation file and one
+     * case, the expectations with the data file's data and its name as description.
+     *
+     * @return array{\stdClass, list<\stdClass>}
+     */
+    public static function load(string $testFile): array
+    {
+        $base = substr($testFile, 0, -strlen('.test.json'));
+        $tests = Json::decodeFile(self::DIRECTORY . '/' . $testFile);
+        if (!self::isExample($testFile)) {
+            return [Json::decodeFile(self::DIRECTORY . "/$base.json"), $tests];
+        }
+        $case = clone $tests;
+        $case->description = basename($base);
+        $case->data = self::data(self::DIRECTORY . "/$base");
+        return [$tests, [$case]];
+    }
+
+    /**
+     * The data of `$base.yml` or `$base.json`, in the JSON data model.
+     */
+    private static function data(string $base): mixed
+    {
+        $files = array_filter(["$base.yml", "$base.json"], is_file(...));
+        if (count($files) !== 1) {
+            throw new \RuntimeException("$base needs one data file, .yml or .json.");
+        }
+        $file = reset($files);
+        return str_ends_with($file, '.yml') ? Yaml::parseFile($file, Yaml::PARSE_OBJECT_FOR_MAP) : Json::decodeFile($file);
+    }
+
+    /**
+     * Validates the fixture files against the fixture file schemas: fixtures/schema.schema.json and
+     * fixtures/tests.schema.json, or fixtures/expectation.schema.json for an example.
      *
      * @return list<string> problems found
      */
-    public static function check(\stdClass $schemaFile, array $tests): array
+    public static function check(string $testFile, \stdClass $schemaFile, array $tests): array
     {
+        if (self::isExample($testFile)) {
+            return self::problems($schemaFile, 'expectation.schema.json');
+        }
         return [...self::problems($schemaFile, 'schema.schema.json'), ...self::problems($tests, 'tests.schema.json')];
     }
 
@@ -72,31 +108,20 @@ final class Fixtures
     public const SCHEMA_ID = 'urn:portable-schema:fixture';
 
     /**
-     * For examples: the `schemas/` and `catalogs/` directories next to the fixture and above it, below fixtures/examples/.
-     *
-     * @return list<string>
+     * Examples mount their showcase's `schemas/` as `drupal`.
      */
-    public static function registryDirectories(string $testFile): array
-    {
-        $directories = [];
-        for ($dir = dirname($testFile); str_starts_with($dir, 'examples/'); $dir = dirname($dir)) {
-            foreach (['schemas', 'catalogs'] as $name) {
-                if (is_dir(self::DIRECTORY . "/$dir/$name")) {
-                    $directories[] = self::DIRECTORY . "/$dir/$name";
-                }
-            }
-        }
-        return $directories;
-    }
+    public const EXAMPLES_NAMESPACE = 'drupal';
 
     public static function validator(string $testFile, \stdClass $schemaFile, \stdClass $case): Validator
     {
-        $registry = Registry::withTypes()->add($schemaFile->schema, self::SCHEMA_ID);
-        foreach (self::registryDirectories($testFile) as $directory) {
-            $registry->addDirectory($directory);
-        }
-        foreach (get_object_vars($schemaFile->registry ?? new \stdClass()) as $id => $schema) {
-            $registry->add($schema, $id);
+        $registry = Registry::withTypes();
+        if (self::isExample($testFile)) {
+            $registry->addDirectory(self::DIRECTORY . '/' . dirname($testFile) . '/schemas', self::EXAMPLES_NAMESPACE);
+        } else {
+            $registry->add($schemaFile->schema, self::SCHEMA_ID);
+            foreach (get_object_vars($schemaFile->registry ?? new \stdClass()) as $id => $schema) {
+                $registry->add($schema, $id);
+            }
         }
         $validator = new Validator($registry);
         foreach (get_object_vars($case->checks ?? new \stdClass()) as $name => $canned) {
@@ -115,7 +140,7 @@ final class Fixtures
         $options = $case->options ?? new \stdClass();
         return self::validator($testFile, $schemaFile, $case)->validate(
             $case->data,
-            self::SCHEMA_ID,
+            $case->schema ?? self::SCHEMA_ID,
             partial: $options->partial ?? false,
             emptyAsMissing: $options->emptyAsMissing ?? false,
             locations: $options->locations ?? null,

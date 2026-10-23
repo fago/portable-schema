@@ -28,10 +28,7 @@ const TOOLS: Record<string, { calls: string[]; result: string }> = {
 /** Files that exist on the site. */
 const FILES = [7, 8];
 
-const registry = Registry.withTypes();
-for (const directory of ["../schemas", "../catalogs", "schemas"]) {
-  registry.addDirectory(fileURLToPath(new URL(directory, import.meta.url)));
-}
+const registry = Registry.withTypes().addDirectory(fileURLToPath(new URL("schemas", import.meta.url)), "drupal");
 const validator = (await Validator.create(registry)).withCheck("drupal:ValidReference", (requests: CheckRequest[]) =>
   requests.map((request) => FILES.includes(request.value as number)
     ? new CheckResult()

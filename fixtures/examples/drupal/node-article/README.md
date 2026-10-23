@@ -15,9 +15,9 @@ drush php:script introspect.php -- fixtures/examples/drupal/node-article
 | File | Contents |
 |---|---|
 | [`schemas/node.article.json`](schemas/node.article.json) | The bundle: one property per field, each a list of items |
-| [`../schemas/field_item.*.json`](../schemas) | One item type per field type, from the field type's default settings. Shared with the other Drupal showcases |
-| [`../catalogs/`](../catalogs) | The site's text formats and languages |
-| [`node.article.json`](node.article.json), [`node.article.test.json`](node.article.test.json) | The schema under test and its cases |
+| [`schemas/field_item.*.json`](schemas) | One item type per field type, from the field type's default settings |
+| [`schemas/catalog/`](schemas/catalog) | The site's text formats and languages |
+| `node.article*.json`, `node.article*.test.json` | The cases: one article each, validated against `drupal:node.article` |
 
 ## Mapping
 
@@ -44,9 +44,22 @@ Constraints come from the definitions **and** from the item and list classes (`g
 
 ## What the cases show
 
-- **Valid:** a complete article; without callbacks, the reference and file checks are listed as unchecked.
-- **Invalid:** missing title, empty title field, title too long, image without alt text, unknown text format, an invalid reference and a disallowed file extension (named checks via callbacks, the latter with the check's own message), two images in a single-value field, an unknown field.
-- **Partial validation** of one field, as for a form field on blur.
+| Instance | Valid | Shows |
+|---|---|---|
+| [`node.article.json`](node.article.json) | yes | A complete article |
+| [`node.article--no-callbacks.json`](node.article--no-callbacks.json) | yes | Without callbacks, reference and file checks are unchecked |
+| [`node.article--missing-title.json`](node.article--missing-title.json) | no | Missing title |
+| [`node.article--empty-title.json`](node.article--empty-title.json) | no | Empty title field |
+| [`node.article--title-too-long.json`](node.article--title-too-long.json) | no | Title too long |
+| [`node.article--missing-alt.json`](node.article--missing-alt.json) | no | Image without alt text |
+| [`node.article--unknown-format.json`](node.article--unknown-format.json) | no | Unknown text format |
+| [`node.article--invalid-reference.json`](node.article--invalid-reference.json) | no | Invalid reference |
+| [`node.article--disallowed-extension.json`](node.article--disallowed-extension.json) | no | Disallowed file extension |
+| [`node.article--two-images.json`](node.article--two-images.json) | no | Two images in a single-value field |
+| [`node.article--unknown-field.json`](node.article--unknown-field.json) | no | An unknown field |
+| [`node.article--partial-title.json`](node.article--partial-title.json) | no | Partial with locations: only the title is validated, as on a form field's blur |
+
+The reference and file checks run as named checks via callbacks; the file extension error carries the check's own message.
 
 ## Gaps
 

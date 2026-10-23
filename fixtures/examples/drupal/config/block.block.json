@@ -1,7 +1,0 @@
-{
-  "description": "block.block config entities: dynamic settings and region types, plugin and extension catalogs",
-  "schema": {
-    "$schema": "https://portable-schema.dev/v1/schema",
-    "$ref": "drupal:block.block"
-  }
-}
