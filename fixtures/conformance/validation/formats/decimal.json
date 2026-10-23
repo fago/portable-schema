@@ -1,0 +1,7 @@
+{
+  "description": "format decimal: a string in the pinned grammar, or any number",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "decimal"
+  }
+}

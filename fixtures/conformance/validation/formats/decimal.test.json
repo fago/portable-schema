@@ -1,0 +1,90 @@
+[
+  {
+    "description": "fixed-point string",
+    "data": "123.45",
+    "valid": true
+  },
+  {
+    "description": "negative",
+    "data": "-0.5",
+    "valid": true
+  },
+  {
+    "description": "leading plus",
+    "data": "+1.5",
+    "valid": true
+  },
+  {
+    "description": "no digits after the point",
+    "data": "1.",
+    "valid": true
+  },
+  {
+    "description": "no digits before the point",
+    "data": ".5",
+    "valid": true
+  },
+  {
+    "description": "leading zeros",
+    "data": "007",
+    "valid": true
+  },
+  {
+    "description": "number",
+    "data": 123.45,
+    "valid": true
+  },
+  {
+    "description": "integer",
+    "data": 10,
+    "valid": true
+  },
+  {
+    "description": "exponent",
+    "data": "1e5",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.decimal",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "point only",
+    "data": ".",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.decimal",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "empty string",
+    "data": "",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.decimal",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "trailing line feed",
+    "data": "1.5\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.decimal",
+        "params": {}
+      }
+    ]
+  }
+]
