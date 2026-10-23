@@ -134,7 +134,12 @@ final class Json
         if (is_array($value)) {
             return ['a', array_map(self::canonical(...), $value)];
         }
-        return is_float($value) && self::typeOf($value) === 'integer' && abs($value) < 2 ** 53 ? (int) $value : $value;
+        if (is_int($value) || is_float($value)) {
+            // As JS holds numbers: doubles, integral ones below 2^53 as integers.
+            $value = (float) $value;
+            return floor($value) === $value && abs($value) < 2 ** 53 ? (int) $value : $value;
+        }
+        return $value;
     }
 
     /**
