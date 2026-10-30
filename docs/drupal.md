@@ -111,7 +111,7 @@ From `core/lib/Drupal/Core/TypedData/Plugin/DataType/`:
 | `float` | `portable:number` |
 | `boolean` | `portable:boolean` |
 | `binary` | `portable:binary` (base64) |
-| `decimal` | `portable:decimal` (a string); its format takes core's grammar from `PrimitiveTypeConstraintValidator` (`[+-]?((\d+(\.\d*)?)|(\.\d+))`); the integration turns numbers into strings on export. Core's `#[JsonSchema]` on `DecimalData` emits `format: number`, which is not in the format registry ([open question](#open-questions)) |
+| `decimal` | `portable:decimal` (a string); its format takes core's grammar from `PrimitiveTypeConstraintValidator` (`[+-]?((\d+(\.\d*)?)\|(\.\d+))`); the integration turns numbers into strings on export. Core's `#[JsonSchema]` on `DecimalData` emits `format: number`, which is not in the format registry ([open question](#open-questions)) |
 | `email` | `portable:email` |
 | `uri` | `portable:uri`; for link fields see [Link fields](#link-fields) |
 | `datetime_iso8601` | `portable:date-time`, or `portable:date` for date-only fields. Drupal stores datetimes as UTC without an offset (`Y-m-d\TH:i:s`); the integration adds `Z` on export and removes it on import |
