@@ -11,9 +11,9 @@ Validation always runs on JSON values: object, array, string, number, boolean, n
 | Input | Rule |
 |---|---|
 | JSON | As parsed. Duplicate keys are an error (I-JSON) |
-| YAML | Parsed with the YAML 1.2 core schema; dates stay strings; tags are resolved before validation or refused; anchors and aliases are resolved; merge keys (`<<`) are refused |
-| PHP arrays | The schema decides: where it expects an object, an array is a map, `[]` included; where it expects an array, an array with keys `0…n-1` in order is a list. Any other array where a list is expected is an error. `\stdClass` is always an object |
-| JS values | As `JSON.parse` would produce them. `undefined` is absent |
+| YAML | Parsed with the YAML 1.2 core schema; dates stay strings; anchors and aliases are resolved; keys become strings. Refused: tags outside the core schema, merge keys (`<<`), `.inf` and `.nan`. Duplicate keys are an error |
+| PHP arrays | Decided where a `type` keyword is evaluated against the array: with `object`, it is a map, `[]` included; with `array`, keys `0…n-1` in order make a list, any other array is a `type` error with `actual: "array"`. Where `type` is absent or allows both, keys `0…n-1` in order make a list, anything else a map. `\stdClass` is always an object |
+| JS values | As `JSON.parse` would produce them. `undefined` is absent. Anything `JSON.parse` cannot produce (`Date`, `Map`, `NaN`, `BigInt`, functions) is a `type` error |
 
 ## Absent, null and empty
 
