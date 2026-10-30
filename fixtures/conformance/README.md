@@ -16,7 +16,7 @@ validation/portable-typeBy/block-settings.test.json   its test cases
 | Path | Covers |
 |---|---|
 | `validation/<area>/` | Keywords, types, formats, shaping, catalogs, options and the added keywords |
-| `normalization/` (planned) | Object vs list, coercion |
+| `normalization/` (planned) | Object vs list, absent and null |
 
 Runners find every `*.test.json` and run it against the `.json` file of the same name.
 

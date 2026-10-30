@@ -6,17 +6,16 @@ How a validator evaluates data against a schema, and the options that change wha
 
 ## Steps
 
-1. **Normalize** the data to the JSON data model, and coerce it with `coerce` (see [`normalization.md`](normalization.md)).
+1. **Normalize** the data to the JSON data model (see [`normalization.md`](normalization.md)).
 2. **Evaluate** every keyword of the schema, resolving references through the registry and running named checks (see [`vocabulary.md`](vocabulary.md)). Annotations are collected along the way.
 3. **Shape** the raw errors to one per problem (see [`errors.md`](errors.md)).
 
 ## Options
 
-Except `coerce`, options only filter what is reported. The schema is always evaluated in full, since keywords like `portable-typeBy`, `portable-compare` and `if` depend on other values.
+Options only filter what is reported. The schema is always evaluated in full, since keywords like `portable-typeBy`, `portable-compare` and `if` depend on other values.
 
 | Option | Default | Effect |
 |---|---|---|
-| `coerce` | `false` | Apply the cast table of [`normalization.md`](normalization.md) before validating |
 | `partial` | `false` | Missing values are not errors. Values that are present are validated fully |
 | `emptyAsMissing` | `false` | With `partial`, empty strings, empty arrays and empty objects count as missing |
 | `locations` | all | Only errors and unchecked entries at or below these JSON Pointers are reported |
