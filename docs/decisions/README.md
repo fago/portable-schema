@@ -25,3 +25,4 @@ What follows from it, good and bad.
 | [0004](0004-types-for-all-primitives.md) | A named type for every primitive; standard time formats |
 | [0005](0005-profile-only-validators.md) | Profile-only validators; conformance by fixtures, Bowtie as oracle |
 | [0006](0006-catalogs-as-labeled-oneof.md) | Catalogs as `oneOf` + `const` + `title`, compiled to a set |
+| [0007](0007-pinned-checks-follow-the-standard.md) | Pinned checks follow the standard the registry names; stricter system checks run on the server. Supersedes 0003's WHATWG orientation |

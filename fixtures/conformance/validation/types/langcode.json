@@ -1,0 +1,7 @@
+{
+  "description": "portable:langcode accepts well-formed BCP 47 tags (RFC 5646)",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$ref": "portable:langcode"
+  }
+}

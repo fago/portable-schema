@@ -24,6 +24,7 @@ What a Drupal integration would generate for `block.block.*` config entities, co
 - **`region`** depends on `theme`: `portable-typeBy` selects the theme's region catalog. Core uses a PHP callback for this.
 - **Core's id pattern** uses a lookahead (`(?!\.)`), which is outside the portable regex subset. The converter rewrites it to an equivalent pattern.
 - **Base types stay open; concrete types close the object.**
+- **`required` is on the concrete type:** `block.block.*` is `FullyValidatable`, so it requires the base keys too. The base type `config_entity` has no `required`; it assumes a `FullyValidatable` user, so its keys don't allow `null`. The example leaves out the language catalog and `""` for `id` and `uuid`.
 
 ## Mapping
 
