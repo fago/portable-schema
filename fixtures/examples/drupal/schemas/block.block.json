@@ -65,9 +65,11 @@
     }
   },
   "required": [
+    "uuid",
     "langcode",
     "status",
     "dependencies",
+    "provider",
     "id",
     "theme",
     "region",

@@ -135,7 +135,7 @@
   },
   {
     "description": "non-ASCII local part needs idn-email",
-    "data": "jöe@example.com",
+    "data": "j\u00f6e@example.com",
     "valid": false,
     "errors": [
       {
@@ -172,6 +172,23 @@
   {
     "description": "trailing line feed",
     "data": "joe@example.com\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.email",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "address literal with leading zeros",
+    "data": "joe@[001.002.003.004]",
+    "valid": true
+  },
+  {
+    "description": "general address literal",
+    "data": "joe@[foo:bar]",
     "valid": false,
     "errors": [
       {

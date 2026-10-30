@@ -42,7 +42,7 @@ Formats come from the [JSON Schema format registry](https://github.com/json-sche
 | `json-pointer` | RFC 6901 syntax | RFC 6901 |
 | `relative-json-pointer` | The core form of [decision 0002](../docs/decisions/0002-relative-json-pointer.md): no index adjustments | Relative JSON Pointer draft |
 | `regex` | Within the portable regex subset (see [Patterns](#patterns)) | ECMA-262 |
-| `decimal` | A string `[+-]?([0-9]+(\.[0-9]*)?\|\.[0-9]+)`, e.g. `-1.5`, `+1`, `1.`, `.5`, `007`; no exponent. Any number is valid too | Registry |
+| `decimal` | A string `[+-]?([0-9]+(\.[0-9]*)?\|\.[0-9]+)`, e.g. `-1.5`, `+1`, `1.`, `.5`, `007`; no exponent. Any number is valid too | Registry (names no grammar); the grammar is Drupal's, see [`docs/drupal.md`](../docs/drupal.md#data-types) |
 | `int32` | An integer from −2^31 to 2^31 − 1 | Registry |
 | `html` | Not checked: any string. The format names the content for hosts and widgets | Registry |
 | `commonmark` | Not checked: any string | Registry |
