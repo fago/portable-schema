@@ -1,6 +1,6 @@
 # Profile
 
-Status: draft. This document starts with formats; the rest of the profile follows.
+Status: draft. This document starts with formats and patterns; the rest of the profile follows.
 
 Schemas outside the profile are refused when they are loaded ([decision 0005](../docs/decisions/0005-profile-only-validators.md)).
 
@@ -41,7 +41,7 @@ Formats come from the [JSON Schema format registry](https://github.com/json-sche
 | `uuid` | 8-4-4-4-12 hex digits, case-insensitive; any version | RFC 9562 |
 | `json-pointer` | RFC 6901 syntax | RFC 6901 |
 | `relative-json-pointer` | The core form of [decision 0002](../docs/decisions/0002-relative-json-pointer.md): no index adjustments | Relative JSON Pointer draft |
-| `regex` | Within the portable regex subset (see Patterns, planned) | ECMA-262 |
+| `regex` | Within the portable regex subset (see [Patterns](#patterns)) | ECMA-262 |
 | `decimal` | A string `-?(0\|[1-9][0-9]*)(\.[0-9]+)?`; numbers are not accepted | Registry |
 | `int32` | An integer from −2^31 to 2^31 − 1 | Registry |
 | `html` | Not checked: any string. The format names the content for hosts and widgets | Registry |
@@ -53,6 +53,18 @@ Formats come from the [JSON Schema format registry](https://github.com/json-sche
 - `byte`, `binary`, `base64url`, `char`, `http-date`, `media-range`, `sf-*`: not needed yet.
 
 Adding a format later means pinning its check here and adding fixtures.
+
+## Patterns
+
+`pattern` and the `regex` format use ECMA-262 regular expressions (JSON Schema Validation §6.3.3).
+
+- **Semantics:** as a JS `RegExp` with the `u` flag: code points, `\p{…}` property escapes, `$` only at the very end. Not anchored unless the pattern uses `^` and `$`.
+- **PHP implementations** match with PCRE and the `u` and `D` modifiers, after translating syntax where PCRE differs, so PHP and JS agree.
+- **Converting PCRE patterns** keeps PCRE's verdicts where it can (Drupal: [`docs/drupal.md`](../docs/drupal.md#regex-patterns)):
+  - a final `$` without `D` becomes `\n?$`, since PCRE's `$` also matches before a final newline;
+  - `\pX` and `\PX` without braces are invalid with `u`. `[^\PC]` becomes the explicit categories `[\p{Cc}\p{Cf}\p{Co}]`, without the unassigned `Cn`.
+- **Unicode versions differ** between engines, e.g. PCRE2 10.42 uses Unicode 14, V8 13.6 Unicode 17. Code points that one of them doesn't know (`Cn`, also part of `\p{C}`) can get different verdicts: a known difference. Checks that depend on them run on the server.
+- **Allowed syntax:** the portable subset is still to be defined.
 
 ## Errors
 
