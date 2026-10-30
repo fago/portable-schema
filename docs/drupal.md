@@ -48,8 +48,9 @@ Config schema is built on Typed Data: each config schema type is a typed data de
 
 Drupal enforces required keys and non-null values only for `FullyValidatable` types (`ValidKeysConstraintValidator`, `TypedConfigManager`). The converter does the same:
 
-- **`FullyValidatable` types,** i.e. the root type, or the resolved type below a dynamic type: `required` lists every key without `requiredKey: false`; `null` only with `nullable: true`.
+- **Types with `FullyValidatable`:** the root type or, below a dynamic type, the resolved type. There, `required` lists every key without `requiredKey: false`, and `null` is only allowed with `nullable: true`.
 - **Other types:** no `required`, and scalar values also allow `null`. Example: core's `system.site.yml` has `mail_notification: null` without `nullable`.
+- **Shared base types,** such as `config_entity`, follow the root type that uses them: a converter that emits them once emits them loosest, and the `FullyValidatable` type adds `required` and excludes `null` for the inherited keys.
 - **`langcode`** is required in a `config_object` with translatable values (`LangcodeRequiredIfTranslatableValues`). Otherwise the rule above applies.
 
 ### Dynamic types
@@ -160,7 +161,7 @@ From `core/lib/Drupal/Core/TypedData/Plugin/DataType/`:
 
 The converter turns `Regex` patterns into the ECMA-262 dialect of the [profile](../spec/profile.md#patterns), keeping PCRE's verdicts:
 
-- **Delimiters** are stripped.
+- **Delimiters** are stripped. `u` is implied; for `i`, see the [open questions](#open-questions).
 - **A final `$`** becomes `\n?$`: core's patterns don't use `D`, so `$` also matches before a final newline. Example: `/^[a-z0-9_]+$/` becomes `^[a-z0-9_]+\n?$`.
 - **`[^\PC…]` with `match: false`** becomes a positive pattern of explicit categories, without the unassigned `Cn`:
   - `label`: `^[^\p{Cc}\p{Cf}\p{Co}]*$`;
@@ -174,7 +175,7 @@ The generic types `portable:identifier` and `portable:color` don't get the `\n?$
 
 ### Empty strings
 
-`Email`, `Uuid` and `Regex` skip `""`. Where nothing else forbids it, the converter emits `anyOf: [{"const": ""}, {"$ref": "portable:email"}]`. The standard formats stay unchanged. Widgets and adapters look through this `anyOf` to the type.
+`Email`, `Uuid` and `Regex` skip `""`, and a link item with an empty `uri` is empty, so it is not validated. Where nothing else forbids it, the converter emits `anyOf: [{"const": ""}, {"$ref": "portable:email"}]`. The standard formats stay unchanged. Widgets and adapters look through this `anyOf` to the type.
 
 ### Link fields
 
@@ -195,6 +196,8 @@ Values Drupal accepts and Portable Schema rejects:
 | UTF-8 email addresses (RFC 6531) | `jöe@example.com` | `email` is ASCII; `idn-email` is out of v1 |
 | Non-URIs in `uri` | `https://example.com/ä`, `https://example.com/a b` | `uri` is RFC 3986 |
 | Integers beyond ±(2^53 − 1) | `9007199254740993` | JS can't represent them; matters for `size: big` integer fields |
+| JSON numbers for `decimal` values | `10` | `portable:decimal` is a string; the integration exports numbers as strings |
+| `site_default` in `language_reference` | `site_default` | A Drupal keyword, not a language tag; only config `langcode` allows it |
 | A trailing newline in `color_hex`, `machine_name`, `decimal` | `#ff0000\n` | Drupal's patterns don't use `D`; the generic types and formats don't carry that quirk |
 | Custom language codes that aren't well-formed BCP 47 | `a-b` | Core's `VALID_LANGCODE_REGEX` is looser than RFC 5646 |
 
