@@ -24,7 +24,7 @@ Every primitive has a named type ([decision 0004](../docs/decisions/0004-types-f
 | [`duration`](v1/duration.json) | `string`, `format: duration` |
 | [`timestamp`](v1/timestamp.json) | `integer`, Unix seconds |
 | [`timespan`](v1/timespan.json) | `integer` ≥ 0, seconds |
-| [`langcode`](v1/langcode.json) | `string`, BCP 47 tag |
+| [`langcode`](v1/langcode.json) | `string`, well-formed BCP 47 tag (RFC 5646) |
 | [`label`](v1/label.json) | `string`, single line, translatable |
 | [`text`](v1/text.json) | `string`, multi-line, translatable |
 | [`html`](v1/html.json) | `string`, `format: html`, `contentMediaType: text/html` |
