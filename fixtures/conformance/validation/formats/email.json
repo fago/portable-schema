@@ -1,5 +1,5 @@
 {
-  "description": "format email follows the pinned WHATWG check",
+  "description": "format email follows the pinned RFC 5321 Mailbox check",
   "schema": {
     "$schema": "https://portable-schema.dev/v1/schema",
     "type": "string",
