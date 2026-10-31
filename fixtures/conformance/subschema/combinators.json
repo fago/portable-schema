@@ -1,0 +1,89 @@
+{
+  "description": "subschemaAt expands allOf, follows the branches the value satisfies and keeps a catalog whole",
+  "registry": {
+    "test:catalog/kinds": {
+      "oneOf": [
+        {
+          "const": "page",
+          "title": "Page"
+        },
+        {
+          "const": "post",
+          "title": "Post"
+        }
+      ]
+    },
+    "test:base": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "test:catalog/kinds"
+        }
+      },
+      "required": [
+        "kind"
+      ]
+    }
+  },
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "allOf": [
+      {
+        "$ref": "test:base"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "title": {
+            "$ref": "portable:label"
+          },
+          "link": {
+            "oneOf": [
+              {
+                "$ref": "portable:uri"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "uri": {
+                    "$ref": "portable:uri"
+                  },
+                  "title": {
+                    "$ref": "portable:label"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "if": {
+      "properties": {
+        "kind": {
+          "const": "post"
+        }
+      },
+      "required": [
+        "kind"
+      ]
+    },
+    "then": {
+      "properties": {
+        "body": {
+          "$ref": "portable:text"
+        }
+      }
+    },
+    "else": {
+      "properties": {
+        "body": {
+          "$ref": "portable:html"
+        }
+      }
+    },
+    "unevaluatedProperties": {
+      "$ref": "portable:string"
+    }
+  }
+}

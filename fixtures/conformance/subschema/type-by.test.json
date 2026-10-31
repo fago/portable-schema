@@ -1,0 +1,63 @@
+[
+  {
+    "description": "the typed value: base $ref, then the resolved target and its $ref",
+    "data": {
+      "plugin": "branding"
+    },
+    "location": "/settings",
+    "schemaLocations": [
+      "/properties/settings",
+      "/properties/settings/$ref",
+      "/properties/settings/portable-typeBy",
+      "/properties/settings/portable-typeBy/$ref"
+    ]
+  },
+  {
+    "description": "a property of the resolved target",
+    "data": {
+      "plugin": "branding",
+      "settings": {}
+    },
+    "location": "/settings/use_logo",
+    "schemaLocations": [
+      "/properties/settings/portable-typeBy/properties/use_logo",
+      "/properties/settings/portable-typeBy/properties/use_logo/$ref"
+    ]
+  },
+  {
+    "description": "the fallback closes the object: the boolean schema false applies",
+    "data": {
+      "plugin": "other",
+      "settings": {}
+    },
+    "location": "/settings/use_logo",
+    "schemaLocations": [
+      "/properties/settings/portable-typeBy/unevaluatedProperties"
+    ]
+  },
+  {
+    "description": "source value missing: typeBy is unresolved, the base still applies",
+    "data": {
+      "settings": {
+        "label": "Logo"
+      }
+    },
+    "location": "/settings/label",
+    "schemaLocations": [
+      "/properties/settings/$ref/properties/label",
+      "/properties/settings/$ref/properties/label/$ref"
+    ],
+    "unresolved": [
+      "/properties/settings/portable-typeBy"
+    ]
+  },
+  {
+    "description": "source value missing and the base knows nothing about the property",
+    "data": {},
+    "location": "/settings/use_logo",
+    "schemaLocations": [],
+    "unresolved": [
+      "/properties/settings/portable-typeBy"
+    ]
+  }
+]
