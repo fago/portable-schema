@@ -1,0 +1,21 @@
+{
+  "schema": "drupal:canvas.component.*",
+  "valid": true,
+  "unchecked": [
+    {
+      "instanceLocation": "/active_version",
+      "code": "check.drupal:Callback",
+      "reason": "noProvider"
+    },
+    {
+      "instanceLocation": "/id",
+      "code": "check.drupal:StringParts",
+      "reason": "noProvider"
+    },
+    {
+      "instanceLocation": "/versioned_properties/active/settings/prop_field_definitions",
+      "code": "check.drupal:KeyForEverySdcProp",
+      "reason": "noProvider"
+    }
+  ]
+}

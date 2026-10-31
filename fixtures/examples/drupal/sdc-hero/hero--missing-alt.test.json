@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:sdc.portable_showcase.hero",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/image",
+      "code": "required",
+      "params": {
+        "property": "alt"
+      }
+    }
+  ],
+  "messages": [
+    "Alternative text is required."
+  ]
+}

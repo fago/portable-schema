@@ -1,0 +1,28 @@
+{
+  "schema": "drupal:node.article",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/title",
+      "code": "minItems",
+      "params": {
+        "limit": 1,
+        "actual": 0
+      }
+    }
+  ],
+  "messages": [
+    "Title must have at least 1 item."
+  ],
+  "checks": {
+    "drupal:ValidReference": {
+      "errors": []
+    },
+    "drupal:ReferenceAccess": {
+      "errors": []
+    },
+    "drupal:FileExtension": {
+      "errors": []
+    }
+  }
+}

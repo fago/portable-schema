@@ -154,5 +154,8 @@
   },
   "unchecked": {
     "text": "{label} could not be checked."
+  },
+  "invalid": {
+    "text": "{label} is not valid."
   }
 }

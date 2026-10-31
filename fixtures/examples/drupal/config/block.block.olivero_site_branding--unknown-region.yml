@@ -1,0 +1,19 @@
+uuid: b4d6f8a0-2c3e-4f5a-8b9c-1d2e3f4a5b6c
+langcode: en
+status: true
+dependencies: {}
+id: olivero_site_branding
+theme: olivero
+region: sidebar_first
+weight: 0
+provider: null
+plugin: system_branding_block
+settings:
+  id: system_branding_block
+  label: 'Site branding'
+  label_display: '0'
+  provider: system
+  use_site_logo: true
+  use_site_name: true
+  use_site_slogan: false
+visibility: {}

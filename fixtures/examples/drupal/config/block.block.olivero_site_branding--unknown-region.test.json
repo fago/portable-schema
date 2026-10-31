@@ -1,0 +1,21 @@
+{
+  "schema": "drupal:block.block",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/region",
+      "code": "enum",
+      "params": {
+        "value": "sidebar_first",
+        "allowed": [
+          "header",
+          "content",
+          "footer_top"
+        ]
+      }
+    }
+  ],
+  "messages": [
+    "Region: “sidebar_first” is not an allowed value. Allowed: Header, Content, Footer Top."
+  ]
+}

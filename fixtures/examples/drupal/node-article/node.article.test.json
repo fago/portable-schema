@@ -1,0 +1,15 @@
+{
+  "schema": "drupal:node.article",
+  "valid": true,
+  "checks": {
+    "drupal:ValidReference": {
+      "errors": []
+    },
+    "drupal:ReferenceAccess": {
+      "errors": []
+    },
+    "drupal:FileExtension": {
+      "errors": []
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "description": "partial: checks run only on values that are present",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "portable-check": {
+          "test:Unique": {}
+        }
+      },
+      "alias": {
+        "type": "string",
+        "portable-check": {
+          "test:Unique": {}
+        }
+      }
+    },
+    "required": [
+      "title",
+      "alias"
+    ]
+  }
+}

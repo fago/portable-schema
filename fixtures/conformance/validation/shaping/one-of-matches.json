@@ -1,0 +1,17 @@
+{
+  "description": "oneOf counts every matching branch",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "oneOf": [
+      {
+        "type": "integer"
+      },
+      {
+        "minimum": 0
+      },
+      {
+        "maximum": 5
+      }
+    ]
+  }
+}

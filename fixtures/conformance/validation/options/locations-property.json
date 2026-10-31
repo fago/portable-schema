@@ -1,0 +1,21 @@
+{
+  "description": "errors that name a property (required, unknownProperty) are at that property for locations",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "a": {
+        "type": "object",
+        "properties": {
+          "b": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "c"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

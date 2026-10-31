@@ -1,0 +1,19 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.json_schema_props",
+  "title": "Component settings for JSON Schema props",
+  "description": "Open base type for sources whose components have JSON Schema props (SDC, code components).",
+  "$ref": "drupal:canvas.component_source_settings",
+  "properties": {
+    "prop_field_definitions": {
+      "title": "Prop field definitions",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "drupal:canvas.prop_field_definition"
+      }
+    }
+  },
+  "required": [
+    "prop_field_definitions"
+  ]
+}

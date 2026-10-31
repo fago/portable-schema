@@ -1,0 +1,28 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:tool.find_images.input",
+  "title": "Find images",
+  "description": "Search photos by words in their title, caption or alt text.",
+  "type": "object",
+  "properties": {
+    "query": {
+      "title": "Query",
+      "description": "Words to look for in the title, caption or alt text.",
+      "$ref": "portable:label",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "limit": {
+      "title": "Limit",
+      "description": "The maximum number of images to return.",
+      "$ref": "portable:integer",
+      "minimum": 1,
+      "maximum": 50,
+      "default": 10
+    }
+  },
+  "required": [
+    "query"
+  ],
+  "unevaluatedProperties": false
+}

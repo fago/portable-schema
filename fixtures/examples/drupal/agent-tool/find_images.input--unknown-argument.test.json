@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:tool.find_images.input",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "",
+      "code": "unknownProperty",
+      "params": {
+        "property": "sort"
+      }
+    }
+  ],
+  "messages": [
+    "Find images: “sort” is not allowed here."
+  ]
+}

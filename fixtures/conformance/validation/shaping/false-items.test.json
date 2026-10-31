@@ -1,0 +1,23 @@
+[
+  {
+    "description": "invalid",
+    "data": [
+      1,
+      2,
+      3
+    ],
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/1",
+        "code": "false",
+        "params": {}
+      },
+      {
+        "instanceLocation": "/2",
+        "code": "false",
+        "params": {}
+      }
+    ]
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "description": "format uuid: 8-4-4-4-12 hex digits, case-insensitive, any version",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "uuid"
+  }
+}

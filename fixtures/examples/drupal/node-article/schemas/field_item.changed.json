@@ -1,0 +1,19 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:field_item.changed",
+    "title": "Last changed",
+    "description": "Items of changed fields, with the field type's default settings.",
+    "type": "object",
+    "properties": {
+        "value": {
+            "title": "Timestamp value",
+            "$ref": "portable:timestamp",
+            "minimum": -2147483648,
+            "maximum": 2147483648
+        }
+    },
+    "required": [
+        "value"
+    ],
+    "unevaluatedProperties": false
+}

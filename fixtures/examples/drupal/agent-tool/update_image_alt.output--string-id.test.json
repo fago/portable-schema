@@ -1,0 +1,19 @@
+{
+  "schema": "drupal:tool.update_image_alt.output",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/id",
+      "code": "type",
+      "params": {
+        "expected": [
+          "integer"
+        ],
+        "actual": "string"
+      }
+    }
+  ],
+  "messages": [
+    "Image ID has the wrong type."
+  ]
+}

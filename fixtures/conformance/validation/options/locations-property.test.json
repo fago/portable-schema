@@ -1,0 +1,91 @@
+[
+  {
+    "description": "a missing property is reported for its own location",
+    "data": {
+      "a": {}
+    },
+    "options": {
+      "locations": [
+        "/a/c"
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a",
+        "code": "required",
+        "params": {
+          "property": "c"
+        }
+      }
+    ]
+  },
+  {
+    "description": "an unknown property is reported for its own location",
+    "data": {
+      "a": {
+        "c": "x",
+        "d": 1
+      }
+    },
+    "options": {
+      "locations": [
+        "/a/d"
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a",
+        "code": "unknownProperty",
+        "params": {
+          "property": "d"
+        }
+      }
+    ]
+  },
+  {
+    "description": "other locations hide both",
+    "data": {
+      "a": {
+        "d": 1
+      }
+    },
+    "options": {
+      "locations": [
+        "/a/b"
+      ]
+    },
+    "valid": true
+  },
+  {
+    "description": "the parent location shows both",
+    "data": {
+      "a": {
+        "d": 1
+      }
+    },
+    "options": {
+      "locations": [
+        "/a"
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a",
+        "code": "unknownProperty",
+        "params": {
+          "property": "d"
+        }
+      },
+      {
+        "instanceLocation": "/a",
+        "code": "required",
+        "params": {
+          "property": "c"
+        }
+      }
+    ]
+  }
+]

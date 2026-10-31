@@ -1,0 +1,24 @@
+{
+  "description": "unevaluatedProperties in a referenced schema doesn't see the properties next to the $ref",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "$ref": "#/$defs/closed",
+    "properties": {
+      "b": {
+        "$ref": "portable:integer"
+      }
+    },
+    "$defs": {
+      "closed": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "$ref": "portable:string"
+          }
+        },
+        "unevaluatedProperties": false
+      }
+    }
+  }
+}

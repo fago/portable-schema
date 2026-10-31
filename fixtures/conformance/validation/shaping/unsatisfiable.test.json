@@ -1,0 +1,56 @@
+[
+  {
+    "description": "const outside enum",
+    "data": {
+      "a": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a",
+        "code": "enum",
+        "params": {
+          "value": 1,
+          "allowed": [
+            2
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "description": "const of another type",
+    "data": {
+      "b": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/b",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  },
+  {
+    "description": "two branches that always match",
+    "data": {
+      "c": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/c",
+        "code": "oneOf",
+        "params": {
+          "matched": 2
+        }
+      }
+    ]
+  }
+]

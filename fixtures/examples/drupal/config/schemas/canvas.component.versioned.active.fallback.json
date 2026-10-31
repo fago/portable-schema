@@ -1,0 +1,16 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component.versioned.active.fallback",
+  "title": "Fallback component version",
+  "description": "The active version is the special fallback version: fallback settings only, no fallback metadata.",
+  "type": "object",
+  "properties": {
+    "settings": {
+      "$ref": "drupal:canvas.component_source_settings.fallback"
+    }
+  },
+  "required": [
+    "settings"
+  ],
+  "unevaluatedProperties": false
+}

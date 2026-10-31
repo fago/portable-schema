@@ -1,0 +1,52 @@
+[
+  {
+    "description": "empty unknown property",
+    "data": {
+      "b": ""
+    },
+    "options": {
+      "partial": true,
+      "emptyAsMissing": true
+    },
+    "valid": true
+  },
+  {
+    "description": "non-empty unknown property",
+    "data": {
+      "b": "x"
+    },
+    "options": {
+      "partial": true,
+      "emptyAsMissing": true
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "b"
+        }
+      }
+    ]
+  },
+  {
+    "description": "without the option",
+    "data": {
+      "b": ""
+    },
+    "options": {
+      "partial": true
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "b"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,236 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:node.article",
+    "title": "Article",
+    "description": "node/article, generated from Typed Data by introspect.php.",
+    "type": "object",
+    "properties": {
+        "nid": {
+            "title": "ID",
+            "type": "array",
+            "items": {
+                "$ref": "drupal:field_item.integer",
+                "properties": {
+                    "value": {
+                        "minimum": 0
+                    }
+                }
+            },
+            "maxItems": 1,
+            "readOnly": true
+        },
+        "uuid": {
+            "title": "UUID",
+            "type": "array",
+            "items": {
+                "$ref": "drupal:field_item.uuid"
+            },
+            "maxItems": 1,
+            "readOnly": true
+        },
+        "vid": {
+            "title": "Revision ID",
+            "type": "array",
+            "items": {
+                "$ref": "drupal:field_item.integer",
+                "properties": {
+                    "value": {
+                        "minimum": 0
+                    }
+                }
+            },
+            "maxItems": 1,
+            "readOnly": true
+        },
+        "langcode": {
+            "title": "Language",
+            "type": "array",
+            "items": {
+                "$ref": "drupal:field_item.language"
+            },
+            "maxItems": 1
+        },
+        "type": {
+            "title": "Content type",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "target_id": {
+                        "title": "Content type ID",
+                        "$ref": "portable:string",
+                        "portable-check": {
+                            "drupal:ValidReference": {}
+                        }
+                    }
+                },
+                "required": [
+                    "target_id"
+                ],
+                "unevaluatedProperties": false
+            },
+            "maxItems": 1,
+            "minItems": 1,
+            "readOnly": true
+        },
+        "revision_timestamp": {
+            "title": "Revision create time",
+            "type": "array",
+            "description": "The time that the current revision was created.",
+            "items": {
+                "$ref": "drupal:field_item.created"
+            },
+            "maxItems": 1
+        },
+        "revision_uid": {
+            "title": "Revision user",
+            "type": "array",
+            "description": "The user ID of the author of the current revision.",
+            "items": {
+                "$ref": "drupal:field_item.entity_reference",
+                "properties": {
+                    "target_id": {
+                        "title": "User ID",
+                        "portable-check": {
+                            "drupal:ValidReference": {}
+                        }
+                    }
+                }
+            },
+            "maxItems": 1
+        },
+        "revision_log": {
+            "title": "Revision log message",
+            "type": "array",
+            "description": "Briefly describe the changes you have made.",
+            "items": {
+                "$ref": "drupal:field_item.string_long"
+            },
+            "maxItems": 1
+        },
+        "status": {
+            "title": "Published",
+            "type": "array",
+            "items": {
+                "$ref": "drupal:field_item.boolean"
+            },
+            "maxItems": 1
+        },
+        "uid": {
+            "title": "Authored by",
+            "type": "array",
+            "description": "The username of the content author.",
+            "items": {
+                "$ref": "drupal:field_item.entity_reference",
+                "properties": {
+                    "target_id": {
+                        "title": "User ID",
+                        "portable-check": {
+                            "drupal:ValidReference": {}
+                        }
+                    }
+                }
+            },
+            "maxItems": 1
+        },
+        "title": {
+            "title": "Title",
+            "type": "array",
+            "items": {
+                "$ref": "drupal:field_item.string"
+            },
+            "maxItems": 1,
+            "minItems": 1
+        },
+        "created": {
+            "title": "Authored on",
+            "type": "array",
+            "description": "The date and time that the content was created.",
+            "items": {
+                "$ref": "drupal:field_item.created"
+            },
+            "maxItems": 1
+        },
+        "changed": {
+            "title": "Changed",
+            "type": "array",
+            "description": "The time that the node was last edited.",
+            "items": {
+                "$ref": "drupal:field_item.changed"
+            },
+            "maxItems": 1
+        },
+        "promote": {
+            "title": "Promoted to front page",
+            "type": "array",
+            "items": {
+                "$ref": "drupal:field_item.boolean"
+            },
+            "maxItems": 1
+        },
+        "sticky": {
+            "title": "Sticky at top of lists",
+            "type": "array",
+            "items": {
+                "$ref": "drupal:field_item.boolean"
+            },
+            "maxItems": 1
+        },
+        "default_langcode": {
+            "title": "Default translation",
+            "type": "array",
+            "description": "A flag indicating whether this is the default translation.",
+            "items": {
+                "$ref": "drupal:field_item.boolean"
+            },
+            "maxItems": 1
+        },
+        "revision_default": {
+            "title": "Default revision",
+            "type": "array",
+            "description": "A flag indicating whether this was a default revision when it was saved.",
+            "items": {
+                "$ref": "drupal:field_item.boolean"
+            },
+            "maxItems": 1
+        },
+        "revision_translation_affected": {
+            "title": "Revision translation affected",
+            "type": "array",
+            "description": "Indicates if the last edit of a translation belongs to current revision.",
+            "items": {
+                "$ref": "drupal:field_item.boolean"
+            },
+            "maxItems": 1,
+            "readOnly": true
+        },
+        "body": {
+            "title": "Body",
+            "type": "array",
+            "items": {
+                "$ref": "drupal:field_item.text_with_summary"
+            },
+            "maxItems": 1
+        },
+        "field_image": {
+            "title": "Image",
+            "type": "array",
+            "items": {
+                "$ref": "drupal:field_item.image",
+                "properties": {
+                    "target_id": {
+                        "portable-check": {
+                            "drupal:ValidReference": {}
+                        }
+                    }
+                }
+            },
+            "maxItems": 1
+        }
+    },
+    "required": [
+        "type",
+        "title"
+    ],
+    "unevaluatedProperties": false
+}

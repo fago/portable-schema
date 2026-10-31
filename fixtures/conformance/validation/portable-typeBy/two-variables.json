@@ -1,0 +1,35 @@
+{
+  "description": "portable-typeBy with two variables: a value two levels up and the key; {+…} keeps reserved characters",
+  "registry": {
+    "test:props.sdc:hero.v1": {
+      "type": "object",
+      "properties": {
+        "heading": {
+          "type": "string"
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "source": {
+        "type": "string"
+      },
+      "versions": {
+        "type": "object",
+        "additionalProperties": {
+          "portable-typeBy": {
+            "href": "test:props.{+source}.{version}",
+            "source": {
+              "source": "2/source",
+              "version": "0#"
+            }
+          }
+        }
+      }
+    }
+  }
+}

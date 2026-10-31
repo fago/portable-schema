@@ -1,0 +1,175 @@
+[
+  {
+    "description": "index names, non-canonical numbers and other names",
+    "data": {
+      "10": 1,
+      "2": 1,
+      "01": 1,
+      "-1": 1,
+      "4294967294": 1,
+      "4294967295": 1,
+      "1.0": 1,
+      "": 1,
+      "b": 1,
+      "a": 1,
+      "0": 1,
+      "9007199254740993": 1,
+      "-0": 1,
+      " 1": 1,
+      "1e3": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/0",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/2",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/10",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/4294967294",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/ 1",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/-0",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/-1",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/01",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/1.0",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/1e3",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/4294967295",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/9007199254740993",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/a",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/b",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  }
+]

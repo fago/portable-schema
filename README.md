@@ -80,6 +80,7 @@ Portable Schema itself is not tied to any framework. Integrations, such as one f
 | `php/` | PHP implementation (`fago/portable-schema`) |
 | `js/` | JS implementation (`portable-schema` on npm) |
 | `docs/` | Non-normative documentation, e.g. [scope](docs/scope.md) |
+| `scripts/` | `compare-results.sh`: compares the full results of PHP and JS on every fixture |
 
 ## License
 

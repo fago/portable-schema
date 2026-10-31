@@ -1,0 +1,48 @@
+[
+  {
+    "description": "catalog titles",
+    "data": {
+      "plugin": "foo"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/plugin",
+        "code": "enum",
+        "params": {
+          "value": "foo",
+          "allowed": [
+            "branding",
+            "powered_by"
+          ]
+        }
+      }
+    ],
+    "messages": [
+      "Plugin: “foo” is not an allowed value. Allowed: Site branding, Powered by."
+    ]
+  },
+  {
+    "description": "enum values",
+    "data": {
+      "display": "hidden"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/display",
+        "code": "enum",
+        "params": {
+          "value": "hidden",
+          "allowed": [
+            "0",
+            "visible"
+          ]
+        }
+      }
+    ],
+    "messages": [
+      "Display: “hidden” is not an allowed value. Allowed: 0, visible."
+    ]
+  }
+]

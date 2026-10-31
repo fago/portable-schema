@@ -1,0 +1,17 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:field_item.entity_reference",
+    "title": "Entity reference",
+    "description": "Items of entity_reference fields, with the field type's default settings.",
+    "type": "object",
+    "properties": {
+        "target_id": {
+            "title": "Content ID",
+            "$ref": "portable:integer"
+        }
+    },
+    "required": [
+        "target_id"
+    ],
+    "unevaluatedProperties": false
+}

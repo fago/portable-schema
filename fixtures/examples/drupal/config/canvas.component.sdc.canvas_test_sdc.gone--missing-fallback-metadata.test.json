@@ -1,0 +1,27 @@
+{
+  "schema": "drupal:canvas.component.*",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/versioned_properties/active",
+      "code": "unknownProperty",
+      "params": {
+        "property": "fallback_metadata"
+      }
+    }
+  ],
+  "messages": [
+    "Fallback component version: “fallback_metadata” is not allowed here."
+  ],
+  "checks": {
+    "drupal:Callback": {
+      "errors": []
+    },
+    "drupal:StringParts": {
+      "errors": []
+    },
+    "drupal:KeyForEverySdcProp": {
+      "errors": []
+    }
+  }
+}

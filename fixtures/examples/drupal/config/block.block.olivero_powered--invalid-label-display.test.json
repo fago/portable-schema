@@ -1,0 +1,20 @@
+{
+  "schema": "drupal:block.block",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/settings/label_display",
+      "code": "enum",
+      "params": {
+        "value": "hidden",
+        "allowed": [
+          "0",
+          "visible"
+        ]
+      }
+    }
+  ],
+  "messages": [
+    "Display title: “hidden” is not an allowed value. Allowed: Hidden, Visible."
+  ]
+}

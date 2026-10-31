@@ -1,0 +1,118 @@
+[
+  {
+    "description": "valid: \"example.com\"",
+    "data": "example.com",
+    "valid": true
+  },
+  {
+    "description": "valid: \"localhost\"",
+    "data": "localhost",
+    "valid": true
+  },
+  {
+    "description": "valid: \"a-b.c\"",
+    "data": "a-b.c",
+    "valid": true
+  },
+  {
+    "description": "invalid: \"\"",
+    "data": "",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"exa_mple.com\"",
+    "data": "exa_mple.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"a..b\"",
+    "data": "a..b",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"bücher.de\"",
+    "data": "bücher.de",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+    "data": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"example.com\\n\"",
+    "data": "example.com\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"-a.com\"",
+    "data": "-a.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"a-.com\"",
+    "data": "a-.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.hostname",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "other types are not checked",
+    "data": 1,
+    "valid": true
+  }
+]

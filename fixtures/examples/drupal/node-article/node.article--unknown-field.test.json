@@ -1,0 +1,27 @@
+{
+  "schema": "drupal:node.article",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "",
+      "code": "unknownProperty",
+      "params": {
+        "property": "field_tags"
+      }
+    }
+  ],
+  "messages": [
+    "Article: “field_tags” is not allowed here."
+  ],
+  "checks": {
+    "drupal:ValidReference": {
+      "errors": []
+    },
+    "drupal:ReferenceAccess": {
+      "errors": []
+    },
+    "drupal:FileExtension": {
+      "errors": []
+    }
+  }
+}

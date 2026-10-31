@@ -1,0 +1,82 @@
+[
+  {
+    "description": "integer",
+    "data": {
+      "kind": 1,
+      "value": "x"
+    },
+    "valid": true
+  },
+  {
+    "description": "boolean",
+    "data": {
+      "kind": true,
+      "value": 2
+    },
+    "valid": true
+  },
+  {
+    "description": "an integer written with a fraction",
+    "data": {
+      "kind": 1.0,
+      "value": "x"
+    },
+    "valid": true
+  },
+  {
+    "description": "integer selects its type",
+    "data": {
+      "kind": 1,
+      "value": 2
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/value",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  },
+  {
+    "description": "an object cannot select a type",
+    "data": {
+      "kind": {},
+      "value": 2
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/value",
+        "code": "typeBy.unresolved",
+        "params": {
+          "value": null,
+          "resolved": null
+        }
+      }
+    ]
+  },
+  {
+    "description": "a large integer is written out in full",
+    "data": {
+      "kind": 1e+20,
+      "value": "x"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/value",
+        "code": "typeBy.unresolved",
+        "params": {
+          "value": 1e+20,
+          "resolved": "test:value.100000000000000000000"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,147 @@
+[
+  {
+    "description": "an object under type object",
+    "data": {
+      "o": {}
+    },
+    "valid": true
+  },
+  {
+    "description": "an array under type object",
+    "data": {
+      "o": [
+        1,
+        2
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/o",
+        "code": "type",
+        "params": {
+          "expected": [
+            "object"
+          ],
+          "actual": "array"
+        }
+      }
+    ]
+  },
+  {
+    "description": "an empty array under type array",
+    "data": {
+      "a": []
+    },
+    "valid": true
+  },
+  {
+    "description": "an object under type array",
+    "data": {
+      "a": {}
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a",
+        "code": "type",
+        "params": {
+          "expected": [
+            "array"
+          ],
+          "actual": "object"
+        }
+      }
+    ]
+  },
+  {
+    "description": "not: an object is not an array",
+    "data": {
+      "n": {}
+    },
+    "valid": true
+  },
+  {
+    "description": "not: an array",
+    "data": {
+      "n": [
+        1
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/n",
+        "code": "not",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "if: an empty array takes the array branch",
+    "data": {
+      "c": []
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/c",
+        "code": "minItems",
+        "params": {
+          "limit": 1,
+          "actual": 0
+        }
+      }
+    ]
+  },
+  {
+    "description": "if: an empty object takes the object branch",
+    "data": {
+      "c": {}
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/c",
+        "code": "required",
+        "params": {
+          "property": "k"
+        }
+      }
+    ]
+  },
+  {
+    "description": "oneOf: the array branch",
+    "data": {
+      "x": [
+        1
+      ]
+    },
+    "valid": true
+  },
+  {
+    "description": "oneOf: the object branch",
+    "data": {
+      "x": {
+        "k": 1
+      }
+    },
+    "valid": true
+  },
+  {
+    "description": "oneOf: neither",
+    "data": {
+      "x": 5
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/x",
+        "code": "oneOf",
+        "params": {
+          "matched": 0
+        }
+      }
+    ]
+  }
+]

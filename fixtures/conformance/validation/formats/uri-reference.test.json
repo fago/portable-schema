@@ -1,0 +1,68 @@
+[
+  {
+    "description": "valid: \"https://example.com\"",
+    "data": "https://example.com",
+    "valid": true
+  },
+  {
+    "description": "valid: \"/node/1\"",
+    "data": "/node/1",
+    "valid": true
+  },
+  {
+    "description": "valid: \"../a\"",
+    "data": "../a",
+    "valid": true
+  },
+  {
+    "description": "valid: \"#frag\"",
+    "data": "#frag",
+    "valid": true
+  },
+  {
+    "description": "valid: \"\"",
+    "data": "",
+    "valid": true
+  },
+  {
+    "description": "invalid: \"/a b\"",
+    "data": "/a b",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri-reference",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"http://[::1\"",
+    "data": "http://[::1",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri-reference",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"a/b\\n\"",
+    "data": "a/b\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri-reference",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "other types are not checked",
+    "data": 1,
+    "valid": true
+  }
+]

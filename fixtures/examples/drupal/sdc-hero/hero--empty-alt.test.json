@@ -1,0 +1,17 @@
+{
+  "schema": "drupal:sdc.portable_showcase.hero",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/image/alt",
+      "code": "minLength",
+      "params": {
+        "limit": 1,
+        "actual": 0
+      }
+    }
+  ],
+  "messages": [
+    "Alternative text must be at least 1 character long."
+  ]
+}

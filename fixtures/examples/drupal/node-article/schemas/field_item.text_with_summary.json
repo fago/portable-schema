@@ -1,0 +1,25 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:field_item.text_with_summary",
+    "title": "Long text with summary",
+    "description": "Items of text_with_summary fields, with the field type's default settings.",
+    "type": "object",
+    "properties": {
+        "value": {
+            "title": "Text",
+            "$ref": "portable:string"
+        },
+        "format": {
+            "title": "Text format",
+            "$ref": "drupal:catalog/config/filter_format"
+        },
+        "summary": {
+            "title": "Summary",
+            "$ref": "portable:string"
+        }
+    },
+    "required": [
+        "value"
+    ],
+    "unevaluatedProperties": false
+}

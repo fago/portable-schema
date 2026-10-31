@@ -1,0 +1,27 @@
+{
+  "schema": "drupal:canvas.component.*",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/versioned_properties/active/settings/prop_field_definitions/text",
+      "code": "required",
+      "params": {
+        "property": "derived_schema_metadata"
+      }
+    }
+  ],
+  "messages": [
+    "Derived schema metadata is required."
+  ],
+  "checks": {
+    "drupal:Callback": {
+      "errors": []
+    },
+    "drupal:StringParts": {
+      "errors": []
+    },
+    "drupal:KeyForEverySdcProp": {
+      "errors": []
+    }
+  }
+}

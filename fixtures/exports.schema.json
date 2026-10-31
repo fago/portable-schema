@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portable-schema.dev/fixtures/exports.schema.json",
+  "title": "Export fixtures",
+  "description": "exports/*.json: schemas with their expected export. The validator and a plain validator on the export agree on the tests.",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "required": ["description", "schema", "tests"],
+    "properties": {
+      "description": { "type": "string", "minLength": 1 },
+      "registry": {
+        "description": "Schemas joining the type registry under their $id.",
+        "type": "array",
+        "items": { "type": "object", "required": ["$id"] }
+      },
+      "schema": { "type": "object", "required": ["$id"] },
+      "export": { "description": "The expected inline() export.", "type": "object" },
+      "draft04": { "description": "The expected draft04() export; null: refused.", "type": ["object", "null"] },
+      "tests": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": ["data", "valid"],
+          "properties": { "data": true, "valid": { "type": "boolean" } },
+          "additionalProperties": false
+        }
+      }
+    },
+    "oneOf": [{ "required": ["export"] }, { "required": ["draft04"] }],
+    "additionalProperties": false
+  }
+}

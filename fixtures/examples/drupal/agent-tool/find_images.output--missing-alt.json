@@ -1,0 +1,12 @@
+{
+  "images": [
+    {
+      "id": 7,
+      "title": "Ski tour",
+      "caption": "<p>Above the clouds.</p>",
+      "url": "https://example.com/photos/ski-tour.jpg",
+      "width": 1200,
+      "height": 800
+    }
+  ]
+}

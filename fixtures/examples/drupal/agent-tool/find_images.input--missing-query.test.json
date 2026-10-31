@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:tool.find_images.input",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "",
+      "code": "required",
+      "params": {
+        "property": "query"
+      }
+    }
+  ],
+  "messages": [
+    "Query is required."
+  ]
+}

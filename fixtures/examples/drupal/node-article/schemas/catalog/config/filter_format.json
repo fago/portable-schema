@@ -1,0 +1,16 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:catalog/config/filter_format",
+    "title": "Text formats",
+    "description": "Generated from the enabled filter_format config entities.",
+    "oneOf": [
+        {
+            "const": "plain_text",
+            "title": "Plain text"
+        },
+        {
+            "const": "restricted_html",
+            "title": "Restricted HTML"
+        }
+    ]
+}

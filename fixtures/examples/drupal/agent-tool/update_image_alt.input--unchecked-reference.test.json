@@ -1,0 +1,11 @@
+{
+  "schema": "drupal:tool.update_image_alt.input",
+  "valid": true,
+  "unchecked": [
+    {
+      "instanceLocation": "/image_id",
+      "code": "check.drupal:ValidReference",
+      "reason": "noProvider"
+    }
+  ]
+}

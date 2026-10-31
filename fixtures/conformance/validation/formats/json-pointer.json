@@ -1,0 +1,7 @@
+{
+  "description": "format json-pointer: RFC 6901 syntax",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "json-pointer"
+  }
+}

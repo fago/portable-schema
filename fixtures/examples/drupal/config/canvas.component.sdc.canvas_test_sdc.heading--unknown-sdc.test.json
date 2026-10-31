@@ -1,0 +1,32 @@
+{
+  "schema": "drupal:canvas.component.*",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/source_local_id",
+      "code": "enum",
+      "params": {
+        "value": "canvas_test_sdc:missing",
+        "allowed": [
+          "canvas_test_sdc:heading",
+          "canvas_test_sdc:image",
+          "olivero:teaser"
+        ]
+      }
+    }
+  ],
+  "messages": [
+    "Component ID: “canvas_test_sdc:missing” is not an allowed value. Allowed: Heading, Image, Teaser."
+  ],
+  "checks": {
+    "drupal:Callback": {
+      "errors": []
+    },
+    "drupal:StringParts": {
+      "errors": []
+    },
+    "drupal:KeyForEverySdcProp": {
+      "errors": []
+    }
+  }
+}

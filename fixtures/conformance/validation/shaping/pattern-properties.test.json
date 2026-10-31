@@ -1,0 +1,51 @@
+[
+  {
+    "description": "both patterns fail",
+    "data": {
+      "a": 1,
+      "b": 2
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/b",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  },
+  {
+    "description": "a declared property fails",
+    "data": {
+      "p": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/p",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "description": "true counts as a matching oneOf branch",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "oneOf": [
+      true,
+      {
+        "type": "integer"
+      }
+    ]
+  }
+}
