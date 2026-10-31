@@ -1,12 +1,10 @@
 # Validation
 
-Status: draft.
-
 How a validator evaluates data against a schema, and the options that change what it reports. Results follow [`errors.md`](errors.md).
 
 ## Steps
 
-1. **Normalize** the data to the JSON data model (see `normalization.md`, planned).
+1. **Normalize** the data to the JSON data model (see [`normalization.md`](normalization.md)). PHP arrays are decided during evaluation, where `type` is checked.
 2. **Evaluate** every keyword of the schema, resolving references through the registry and running named checks (see [`vocabulary.md`](vocabulary.md)). Annotations are collected along the way.
 3. **Shape** the raw errors to one per problem (see [`errors.md`](errors.md)).
 

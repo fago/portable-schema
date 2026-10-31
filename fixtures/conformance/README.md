@@ -17,7 +17,6 @@ validation/portable-typeBy/block-settings.test.json   its test cases
 |---|---|
 | `validation/<area>/` | Keywords, types, formats, shaping, catalogs, options and the added keywords |
 | `subschema/` | `subschemaAt`: the schema locations at an instance location ([`spec/validation.md`](../../spec/validation.md)) |
-| `normalization/` (planned) | Object vs list, coercion |
 
 Runners find every `*.test.json` and run it against the `.json` file of the same name.
 
