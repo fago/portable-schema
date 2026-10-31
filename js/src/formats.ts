@@ -13,7 +13,7 @@ const PATTERNS: Record<string, string> = {
   "uuid": String.raw`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`,
   "json-pointer": String.raw`^(?:/(?:[^~/]|~[01])*)*$`,
   "relative-json-pointer": String.raw`^(?:0|[1-9][0-9]*)(?:#|(?:/(?:[^~/]|~[01])*)*)$`,
-  "decimal": String.raw`^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$`,
+  "decimal": String.raw`^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$`,
   "uri-template": String.raw`^(?:[^\x00-\x20"'<>\\^${"`"}{|}\x7f]|%[0-9A-Fa-f]{2}|\{[+#./;?&=,!@|]?(?:[A-Za-z0-9_]|%[0-9A-Fa-f]{2})(?:\.?(?:[A-Za-z0-9_]|%[0-9A-Fa-f]{2}))*(?::[1-9][0-9]{0,3}|\*)?(?:,(?:[A-Za-z0-9_]|%[0-9A-Fa-f]{2})(?:\.?(?:[A-Za-z0-9_]|%[0-9A-Fa-f]{2}))*(?::[1-9][0-9]{0,3}|\*)?)*\})*$`,
 };
 
@@ -23,12 +23,11 @@ export const NAMES = [
   "uri-template", "uuid", "json-pointer", "relative-json-pointer", "regex", "decimal", "int32", "html", "commonmark",
 ];
 
-/** Whether `value` passes the format. Values of other types pass, except for decimal. */
+/** Whether `value` passes the format. Values of other types pass. */
 export const check = (format: string, value: unknown): boolean => {
   if (format === "int32") {
     return typeof value !== "number" || typeOf(value) !== "integer" || (value >= -2147483648 && value <= 2147483647);
   }
-  if (format === "decimal" && typeof value === "number") return false;
   if (typeof value !== "string") return true;
   switch (format) {
     case "date": return date(value);

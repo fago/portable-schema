@@ -23,7 +23,7 @@ final class Formats
         'uuid' => '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
         'json-pointer' => '^(?:/(?:[^~/]|~[01])*)*$',
         'relative-json-pointer' => '^(?:0|[1-9][0-9]*)(?:#|(?:/(?:[^~/]|~[01])*)*)$',
-        'decimal' => '^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$',
+        'decimal' => '^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$',
         'uri-template' => '^(?:[^\x00-\x20"\'<>\\\\^`{|}\x7f]|%[0-9A-Fa-f]{2}|\{[+#./;?&=,!@|]?(?:[A-Za-z0-9_]|%[0-9A-Fa-f]{2})(?:\.?(?:[A-Za-z0-9_]|%[0-9A-Fa-f]{2}))*(?::[1-9][0-9]{0,3}|\*)?(?:,(?:[A-Za-z0-9_]|%[0-9A-Fa-f]{2})(?:\.?(?:[A-Za-z0-9_]|%[0-9A-Fa-f]{2}))*(?::[1-9][0-9]{0,3}|\*)?)*\})*$',
     ];
 
@@ -36,15 +36,12 @@ final class Formats
     ];
 
     /**
-     * Whether $value passes the format. Values of other types pass, except for decimal.
+     * Whether $value passes the format. Values of other types pass.
      */
     public static function check(string $format, mixed $value): bool
     {
         if ($format === 'int32') {
             return !(is_int($value) || is_float($value)) || Json::typeOf($value) !== 'integer' || ($value >= -2147483648 && $value <= 2147483647);
-        }
-        if ($format === 'decimal' && (is_int($value) || is_float($value))) {
-            return false;
         }
         if (!is_string($value)) {
             return true;
