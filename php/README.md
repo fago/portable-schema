@@ -22,10 +22,13 @@ $result->valid;
 $result->errors;     // ValidationError[]: instanceLocation, keywordLocation, code, params
 $result->unchecked;  // Unchecked[]
 Formatter::create()->messages($result); // English messages
+
+$validator->subschemaAt($data, 'drupal:block.block', 'settings.label'); // SubschemaResult: schemaLocations, unresolved
 ```
 
 - **`new Validator()` compiles** every schema of the registry and checks it against the dialect meta-schema; it throws for a schema outside the profile. It keeps a copy of the registry, so schemas added later are not seen. Construction takes about 0.3 ms per schema; `validate()` reuses the compiled schemas.
-- **Data** follows the JSON data model: objects are `\stdClass`, as `json_decode()` returns them.
+- **Data** is normalized to the JSON data model ([`spec/normalization.md`](../spec/normalization.md)): a PHP array is a list or a map by its keys and the schema's `type`, objects convert as `json_encode()` converts them.
+- **`subschemaAt()`** returns the schemas that apply at a location of the data, as `keywordLocation`s, and the keywords left `unresolved` by a missing value ([`spec/validation.md`](../spec/validation.md)).
 - **Schemas** are validated by their id in the registry.
 - **Exports:** `Exporter::inline()` (self-contained JSON Schema 2020-12) and `Exporter::draft04()`.
 
@@ -40,6 +43,7 @@ The same as the JS implementation, with the same names ([validator design](../do
 | `Trace\Tracer` | The evaluation as a tree of schema and keyword nodes |
 | `Shaper` | Turns the trace into one error per problem and applies the options |
 | `Formats`, `TypeBy`, `Check\Checks` | Pinned format checks, the type selection of `portable-typeBy`, named checks run batched per name |
+| `Normalizer`, `Subschema` | Input to the JSON data model; the walk behind `subschemaAt()` |
 | `Message\Formatter` | Message requests from errors and the catalog |
 
 ## Tests

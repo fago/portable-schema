@@ -9,19 +9,28 @@ use Opis\JsonSchema\Helper;
 use Opis\JsonSchema\Info\DataInfo;
 use Opis\JsonSchema\Schemas\ObjectSchema;
 use Opis\JsonSchema\ValidationContext;
+use PortableSchema\Pointer;
 
 /**
  * Evaluates every keyword, also after one failed, as the JS validator does.
  */
 final class FullObjectSchema extends ObjectSchema
 {
-    public static function from(ObjectSchema $schema): self
+    private MapDecisions $decisions;
+
+    public static function from(ObjectSchema $schema, MapDecisions $decisions): self
     {
-        return new self($schema->info(), null, $schema->types, $schema->before, $schema->after);
+        $full = new self($schema->info(), null, $schema->types, $schema->before, $schema->after);
+        $full->decisions = $decisions;
+        return $full;
     }
 
     public function doValidate(ValidationContext $context): ?ValidationError
     {
+        if (is_array($context->currentData()) && MapDecisions::objectOnly($this->info()->data()->type ?? null)) {
+            $this->decisions->locations[Pointer::fromSegments($context->fullDataPath())] = true;
+        }
+
         $keywords = $this->before ?? [];
         if ($this->types && ($type = $context->currentDataType())) {
             $keywords = array_merge($keywords, $this->types[$type] ?? []);

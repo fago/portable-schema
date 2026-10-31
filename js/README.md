@@ -24,9 +24,13 @@ result.valid;
 result.errors;     // ValidationError[]: instanceLocation, keywordLocation, code, params
 result.unchecked;  // Unchecked[]
 Formatter.create().messages(result); // English messages
+
+validator.subschemaAt(data, "drupal:block.block", "settings.label"); // { schemaLocations, unresolved }
 ```
 
 - **`Validator.create()` compiles** every schema of the registry, including the targets of `portable-typeBy`, since Hyperjump compiles asynchronously. It rejects a schema outside the profile, and keeps a copy of the registry, so schemas added later are not seen. `validate()` is synchronous.
+- **Data** is normalized to the JSON data model ([`spec/normalization.md`](../spec/normalization.md)): `undefined` properties are absent, and values `JSON.parse` cannot produce are a `type` error.
+- **`subschemaAt()`** returns the schemas that apply at a location of the data, as `keywordLocation`s, and the keywords left `unresolved` by a missing value ([`spec/validation.md`](../spec/validation.md)).
 - **Exports:** `Exporter.inline()` (self-contained JSON Schema 2020-12) and `Exporter.draft04()`.
 
 ## Design

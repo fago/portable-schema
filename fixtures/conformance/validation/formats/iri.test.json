@@ -1,0 +1,109 @@
+[
+  {
+    "description": "ascii uri",
+    "data": "https://example.com/path?q=1#top",
+    "valid": true
+  },
+  {
+    "description": "non-ascii path",
+    "data": "https://example.com/\u00e4",
+    "valid": true
+  },
+  {
+    "description": "non-ascii host, path, query and fragment",
+    "data": "https://\u4f8b\u3048.jp/\u30d1\u30b9?q=\u00fc#\u9801",
+    "valid": true
+  },
+  {
+    "description": "mailto with a non-ascii local part",
+    "data": "mailto:j\u00f6e@example.com",
+    "valid": true
+  },
+  {
+    "description": "drupal internal scheme",
+    "data": "internal:/node/1",
+    "valid": true
+  },
+  {
+    "description": "drupal entity scheme",
+    "data": "entity:node/1",
+    "valid": true
+  },
+  {
+    "description": "percent-encoded route uri",
+    "data": "route:%3Cnolink%3E",
+    "valid": true
+  },
+  {
+    "description": "space",
+    "data": "https://example.com/a b",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.iri",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "angle brackets",
+    "data": "route:<nolink>",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.iri",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "no scheme",
+    "data": "example.com/\u00e4",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.iri",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "relative reference",
+    "data": "/pfad/\u00e4",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.iri",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "empty",
+    "data": "",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.iri",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "scheme with a digit first",
+    "data": "1http://example.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.iri",
+        "params": {}
+      }
+    ]
+  }
+]

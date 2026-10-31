@@ -19,13 +19,14 @@ Every primitive has a named type ([decision 0004](../docs/decisions/0004-types-f
 | [`email`](v1/email.json) | `string`, `format: email`, `maxLength: 254` |
 | [`uri`](v1/uri.json) | `string`, `format: uri` |
 | [`uri-reference`](v1/uri-reference.json) | `string`, `format: uri-reference` |
+| [`iri`](v1/iri.json) | `string`, `format: iri`; links people enter |
 | [`uuid`](v1/uuid.json) | `string`, `format: uuid` |
 | [`date`](v1/date.json) | `string`, `format: date` |
 | [`date-time`](v1/date-time.json) | `string`, `format: date-time` (offset required) |
 | [`duration`](v1/duration.json) | `string`, `format: duration` |
 | [`timestamp`](v1/timestamp.json) | `integer`, Unix seconds |
 | [`timespan`](v1/timespan.json) | `integer` ≥ 0, seconds |
-| [`langcode`](v1/langcode.json) | `string`, BCP 47 tag |
+| [`langcode`](v1/langcode.json) | `string`, well-formed BCP 47 tag (RFC 5646) |
 | [`label`](v1/label.json) | `string`, single line, translatable |
 | [`text`](v1/text.json) | `string`, multi-line, translatable |
 | [`html`](v1/html.json) | `string`, `format: html`, `contentMediaType: text/html` |

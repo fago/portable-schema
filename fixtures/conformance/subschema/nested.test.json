@@ -1,0 +1,92 @@
+[
+  {
+    "description": "the root",
+    "data": {},
+    "location": "",
+    "schemaLocations": [
+      ""
+    ]
+  },
+  {
+    "description": "a property with a $ref to a portable type",
+    "data": {
+      "title": "Hello"
+    },
+    "location": "/title",
+    "schemaLocations": [
+      "/properties/title",
+      "/properties/title/$ref"
+    ]
+  },
+  {
+    "description": "a nested property",
+    "data": {
+      "author": {
+        "name": "Ann"
+      }
+    },
+    "location": "/author/name",
+    "schemaLocations": [
+      "/properties/author/properties/name",
+      "/properties/author/properties/name/$ref"
+    ]
+  },
+  {
+    "description": "a dotted path equals the pointer",
+    "data": {
+      "author": {
+        "name": "Ann"
+      }
+    },
+    "location": "author.name",
+    "schemaLocations": [
+      "/properties/author/properties/name",
+      "/properties/author/properties/name/$ref"
+    ]
+  },
+  {
+    "description": "a property without a properties entry: additionalProperties",
+    "data": {
+      "author": {
+        "email": "ann@example.com"
+      }
+    },
+    "location": "/author/email",
+    "schemaLocations": [
+      "/properties/author/additionalProperties",
+      "/properties/author/additionalProperties/$ref"
+    ]
+  },
+  {
+    "description": "an array item",
+    "data": {
+      "tags": [
+        "a",
+        "b"
+      ]
+    },
+    "location": "/tags/1",
+    "schemaLocations": [
+      "/properties/tags/items",
+      "/properties/tags/items/$ref"
+    ]
+  },
+  {
+    "description": "a missing nested property resolves: the walk needs no value",
+    "data": {},
+    "location": "/author/name",
+    "schemaLocations": [
+      "/properties/author/properties/name",
+      "/properties/author/properties/name/$ref"
+    ]
+  },
+  {
+    "description": "a missing array item resolves by the schema's type",
+    "data": {},
+    "location": "/tags/0",
+    "schemaLocations": [
+      "/properties/tags/items",
+      "/properties/tags/items/$ref"
+    ]
+  }
+]

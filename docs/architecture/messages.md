@@ -1,7 +1,5 @@
 # Messages
 
-Status: draft.
-
 How our implementations turn the structured errors of [`spec/errors.md`](../../spec/errors.md) into human, localized messages. The catalog format follows [decision 0001](../decisions/0001-message-catalog-format.md).
 
 ## Pipeline

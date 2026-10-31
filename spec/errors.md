@@ -1,7 +1,5 @@
 # Errors
 
-Status: draft.
-
 Validation returns data, not text. Messages are produced from this data by a formatter (see [`docs/architecture/messages.md`](../docs/architecture/messages.md)); message text is not part of the spec.
 
 ## Result

@@ -13,13 +13,15 @@ use PortableSchema\Check\CheckRequest;
 use PortableSchema\Check\CheckResult;
 use PortableSchema\Check\Checks;
 use PortableSchema\Opis\BooleanSchemas;
+use PortableSchema\Opis\MapDecisions;
 use PortableSchema\Opis\MetaSchema;
 use PortableSchema\Opis\Parser;
 use PortableSchema\Opis\RegistryResolver;
+use PortableSchema\Trace\SchemaNode;
 use PortableSchema\Trace\Tracer;
 
 /**
- * Validates data against Portable Schemas. Data follows the JSON data model: objects are \stdClass.
+ * Validates data against Portable Schemas. Data is normalized to the JSON data model (spec/normalization.md).
  */
 final class Validator
 {
@@ -28,6 +30,8 @@ final class Validator
     private readonly Tracer $tracer;
 
     private readonly Checks $checks;
+
+    private readonly MapDecisions $decisions;
 
     private readonly SchemaLoader $loader;
 
@@ -47,7 +51,8 @@ final class Validator
         $this->registry = clone $registry;
         $this->tracer = new Tracer();
         $this->checks = new Checks();
-        $this->loader = new SchemaLoader(new Parser($this->tracer, $this->checks), new RegistryResolver($this->registry), false);
+        $this->decisions = new MapDecisions();
+        $this->loader = new SchemaLoader(new Parser($this->tracer, $this->checks, $this->decisions), new RegistryResolver($this->registry), false);
         foreach ($this->registry->ids() as $id) {
             MetaSchema::assertValid($this->registry->get($id), $id);
         }
@@ -103,16 +108,49 @@ final class Validator
      */
     public function validate(mixed $data, string $id, bool $partial = false, bool $emptyAsMissing = false, ?array $locations = null): Result
     {
-        $compiled = $this->load($id);
-        $data = Json::jsOrder($data);
-
-        $this->tracer->reset();
-        $this->checks->reset();
-        $compiled->validate(new ValidationContext($data, $this->loader, null, null, [], null, PHP_INT_MAX, false));
+        $normalized = Normalizer::normalize($data);
         // Taken before the checks run: a callback may validate again.
-        $root = $this->tracer->root();
+        $root = $this->evaluate($normalized, $id);
         $this->checks->run($this->callbacks, $this->providers);
 
-        return (new Shaper($this->registry, $data, $partial, $emptyAsMissing, $locations))->shape($root);
+        return (new Shaper($this->registry, $normalized->data, $partial, $emptyAsMissing, $locations, $normalized->unrepresentable, $normalized->arrayMaps))->shape($root);
+    }
+
+    /**
+     * Evaluates the normalized data, again after every pass that decided lists to be maps (spec/normalization.md).
+     */
+    private function evaluate(Normalized $normalized, string $id): SchemaNode
+    {
+        $compiled = $this->load($id);
+        $normalized->data = Json::jsOrder($normalized->data);
+        while (true) {
+            $this->tracer->reset();
+            $this->checks->reset();
+            $this->decisions->reset();
+            $compiled->validate(new ValidationContext($normalized->data, $this->loader, null, null, [], null, PHP_INT_MAX, false));
+            if ($this->decisions->locations === []) {
+                return $this->tracer->root();
+            }
+            foreach (array_keys($this->decisions->locations) as $location) {
+                [, $list] = Pointer::get($normalized->data, $location);
+                Json::set($normalized->data, $location, Json::jsOrder((object) $list));
+                $normalized->arrayMaps[$location] = true;
+            }
+        }
+    }
+
+    /**
+     * The schemas that apply at $location of $data, in evaluation order (spec/validation.md, "Subschema at a location").
+     * Named checks don't run.
+     *
+     * @param string $id the schema's id in the registry
+     * @param string $location a JSON Pointer, or a dotted path
+     */
+    public function subschemaAt(mixed $data, string $id, string $location): SubschemaResult
+    {
+        $normalized = Normalizer::normalize($data);
+        $root = $this->evaluate($normalized, $id);
+
+        return (new Subschema($this->registry, $normalized->data, $root))->at($id, $location);
     }
 }

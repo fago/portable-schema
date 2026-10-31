@@ -24,7 +24,7 @@ final class Parser extends SchemaParser
     /** Keywords whose value is a non-negative integer; `1.0` is one. */
     private const INTEGERS = ['maxLength', 'minLength', 'maxItems', 'minItems', 'maxContains', 'minContains', 'maxProperties', 'minProperties'];
 
-    public function __construct(private readonly Tracer $tracer, private readonly Checks $checks)
+    public function __construct(private readonly Tracer $tracer, private readonly Checks $checks, private readonly MapDecisions $decisions)
     {
         parent::__construct([], [
             'allowFilters' => false,
@@ -73,7 +73,7 @@ final class Parser extends SchemaParser
             }
         }
         $schema = parent::parseSchemaKeywords($info, $keywordValidator, $parsers, $shared, $hasRef);
-        return $schema instanceof ObjectSchema ? FullObjectSchema::from($schema) : $schema;
+        return $schema instanceof ObjectSchema ? FullObjectSchema::from($schema, $this->decisions) : $schema;
     }
 
     /**

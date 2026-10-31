@@ -10,6 +10,7 @@ use PortableSchema\Json;
 use PortableSchema\Message\Formatter;
 use PortableSchema\Registry;
 use PortableSchema\Result;
+use PortableSchema\SubschemaResult;
 use PortableSchema\Validator;
 use Symfony\Component\Yaml\Yaml;
 
@@ -172,10 +173,17 @@ final class Fixtures
         return $validator;
     }
 
-    public static function run(string $testFile, \stdClass $schemaFile, \stdClass $case): Result
+    /**
+     * Runs a validation case (`valid`) or a subschema case (`location` + `schemaLocations`).
+     */
+    public static function run(string $testFile, \stdClass $schemaFile, \stdClass $case): Result|SubschemaResult
     {
+        $validator = self::validator($testFile, $schemaFile, $case);
+        if (isset($case->location)) {
+            return $validator->subschemaAt($case->data, $case->schema ?? self::SCHEMA_ID, $case->location);
+        }
         $options = $case->options ?? new \stdClass();
-        return self::validator($testFile, $schemaFile, $case)->validate(
+        return $validator->validate(
             $case->data,
             $case->schema ?? self::SCHEMA_ID,
             partial: $options->partial ?? false,
@@ -187,10 +195,13 @@ final class Fixtures
     /**
      * The result projected to the compared keys, with sorted object keys.
      *
-     * @return array{messages: list<string>, valid: bool, errors: list<array<string, mixed>>, unchecked: list<array<string, mixed>>}
+     * @return array<string, mixed>
      */
-    public static function actual(Result $result): array
+    public static function actual(Result|SubschemaResult $result): array
     {
+        if ($result instanceof SubschemaResult) {
+            return self::canonical(['schemaLocations' => $result->schemaLocations, 'unresolved' => $result->unresolved]);
+        }
         return self::canonical([
             'messages' => Formatter::create()->messages($result),
             'valid' => $result->valid,
@@ -202,10 +213,13 @@ final class Fixtures
     /**
      * What the case expects. Without `errors`, errors are not compared unless the case is valid.
      *
-     * @return array{valid: bool, errors?: list<array<string, mixed>>, unchecked: list<array<string, mixed>>, messages?: list<string>}
+     * @return array<string, mixed>
      */
     public static function expected(\stdClass $case): array
     {
+        if (isset($case->location)) {
+            return self::canonical(['schemaLocations' => $case->schemaLocations, 'unresolved' => $case->unresolved ?? []]);
+        }
         $expected = ['valid' => $case->valid];
         if (isset($case->errors) || $case->valid) {
             $expected['errors'] = Json::toArray($case->errors ?? []);
