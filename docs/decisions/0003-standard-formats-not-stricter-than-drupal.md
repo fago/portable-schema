@@ -1,4 +1,4 @@
-# 0003: Formats from the JSON Schema format registry
+# 0003: Standard formats, not stricter than Drupal's validators
 
 Status: accepted
 

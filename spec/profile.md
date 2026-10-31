@@ -19,7 +19,7 @@ A catalog restricts a value to the facts a system provides ([decision 0006](../d
 
 ## Formats
 
-Formats come from the [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) and their checks follow the standard the registry names ([decision 0003](../docs/decisions/0003-formats-from-the-registry.md)).
+Formats come from the [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) and their checks follow the standard the registry names ([decision 0003](../docs/decisions/0003-standard-formats-not-stricter-than-drupal.md)).
 
 - **`format` is an assertion.**
 - **A schema using a format outside this list is refused.**

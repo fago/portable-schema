@@ -185,7 +185,7 @@ The generic types `portable:identifier` and `portable:color` don't get the `\n?$
 
 ## Compatibility
 
-Portable Schema must not be stricter than Drupal's validators, but it stays with the standard formats ([decision 0003](decisions/0003-formats-from-the-registry.md)). Where Drupal is stricter, its exact check runs on the server as a named check.
+Portable Schema must not be stricter than Drupal's validators, but it stays with the standard formats ([decision 0003](decisions/0003-standard-formats-not-stricter-than-drupal.md)). Where Drupal is stricter, its exact check runs on the server as a named check.
 
 ### Known differences
 
