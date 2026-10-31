@@ -203,7 +203,7 @@ final class Formats
         $local = substr($value, 0, $at);
         $domain = substr($value, $at + 1);
         // RFC 5321 Dot-string or Quoted-string.
-        $localPart = '/^(?:' . self::ATEXT . '+(?:\.' . self::ATEXT . '+)*|"(?:[ !#-\[\]-~]|\\[ -~])*")$/D';
+        $localPart = '/^(?:' . self::ATEXT . '+(?:\.' . self::ATEXT . '+)*|"(?:[ !#-\[\]-~]|\\\\[ -~])*")$/D';
         if (strlen($local) > 64 || !preg_match($localPart, $local)) {
             return false;
         }
