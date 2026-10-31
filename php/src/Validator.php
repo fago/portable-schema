@@ -115,4 +115,23 @@ final class Validator
 
         return (new Shaper($this->registry, $data, $partial, $emptyAsMissing, $locations))->shape($root);
     }
+
+    /**
+     * The schemas that apply at $location of $data, in evaluation order (spec/validation.md, "Subschema at a location").
+     * Named checks don't run.
+     *
+     * @param string $id the schema's id in the registry
+     * @param string $location a JSON Pointer, or a dotted path
+     */
+    public function subschemaAt(mixed $data, string $id, string $location): SubschemaResult
+    {
+        $compiled = $this->load($id);
+        $data = Json::jsOrder($data);
+
+        $this->tracer->reset();
+        $this->checks->reset();
+        $compiled->validate(new ValidationContext($data, $this->loader, null, null, [], null, PHP_INT_MAX, false));
+
+        return (new Subschema($this->registry, $data, $this->tracer->root()))->at($id, $location);
+    }
 }
