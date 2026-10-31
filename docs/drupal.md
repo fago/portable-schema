@@ -41,7 +41,7 @@ Config schema is built on Typed Data: each config schema type is a typed data de
 | `nullable: true` | `type: [<type>, "null"]`; an `enum` also lists `null` |
 | `translatable: true` | `x-portable-translatable: true` (built into `portable:label` and `portable:text`) |
 | `label:` | `title` |
-| `FullyValidatable` | Not a keyword: decides whether `required` and non-null types are emitted |
+| `FullyValidatable` | Not a keyword. Drupal enforces `requiredKey` and `nullable` only for these types, so only their schemas get `required` and non-null types ([below](#required-keys-and-null)) |
 | Type casting on save (`StorableConfigBase::castValue()`) | The integration, before validation: the validator expects typed JSON |
 
 ### Required keys and `null`

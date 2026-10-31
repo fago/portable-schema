@@ -3,14 +3,9 @@
 Status: accepted
 
 ## Context
-[Decision 0003](0003-formats-from-the-registry.md) orients the pinned format checks on browsers and WHATWG where that fits users' expectations, e.g. `email`, and on the referenced RFC otherwise.
+The format registry names a standard for each format, e.g. RFC 5321 for `email`, and the JSON-Schema-Test-Suite tests against it. Drupal's validators differ from these standards in both directions: `Email` rejects quoted local parts, address literals and single-label domains that RFC 5321 allows, and accepts UTF-8 addresses (RFC 6531). Browsers (`<input type="email">`) differ again. A pinned check that follows none of them exactly needs fixtures of its own and can't reuse the test suite.
 
-Comparing the pinned checks with Drupal's validators (core 11.4-dev) and with the standards the format registry names shows:
-
-- **Neither WHATWG nor RFC 5321 matches Drupal's `email` check.** Drupal rejects quoted local parts, address literals and single-label domains, which RFC 5321 allows, and accepts UTF-8 addresses (RFC 6531). WHATWG is looser than Drupal on other cases: dots in the local part, single-label domains, local parts over 64 characters.
-- **WHATWG differs from the standard** on 15 of the 65 string cases of the JSON-Schema-Test-Suite, which the profile would have to filter out.
-
-Principle: Portable Schema must not be stricter than Drupal's validators, but it stays with the standard formats.
+Principle: Portable Schema follows the standard formats without being stricter than Drupal's validators, for compatibility.
 
 ## Decision
 - **Pinned checks follow the standard the format registry names** for the format. `email` is RFC 5321 `Mailbox`, ASCII only.
@@ -18,7 +13,6 @@ Principle: Portable Schema must not be stricter than Drupal's validators, but it
 - **No variants of a standard format,** neither looser nor stricter ones.
 - **A system that is stricter than the standard** runs its exact check on the server as a named check (`portable-check`), e.g. `drupal:Email`.
 - **A system that accepts values the standard doesn't** has a known difference, documented by its integration, or normalizes the values ([decision 0004](0004-types-for-all-primitives.md)).
-- This supersedes 0003's orientation on browsers and WHATWG. The rest of 0003 stays.
 
 ## Consequences
 - The JSON-Schema-Test-Suite's `email` cases apply unfiltered.
