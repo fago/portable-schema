@@ -1,7 +1,5 @@
 # Normalization
 
-Status: draft.
-
 Before validation, the input is turned into the JSON data model. Validation runs on that data, and nothing is converted on the way: a value of the wrong type is a validation error.
 
 ## The JSON data model
