@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:iri",
+  "title": "IRI",
+  "description": "An absolute IRI: a URI that may contain non-ASCII characters, as people enter links.",
+  "type": "string",
+  "format": "iri"
+}
