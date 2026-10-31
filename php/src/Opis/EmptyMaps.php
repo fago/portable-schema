@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace PortableSchema\Opis;
 
 /**
- * The locations where a `type: object` schema met a list during evaluation: the list is a map there.
+ * The locations where `[]` met a schema whose `type` allows object and not array: a map there (spec/normalization.md).
  */
-final class MapDecisions
+final class EmptyMaps
 {
     /** @var array<string, true> */
     public array $locations = [];

@@ -144,14 +144,25 @@ final class Formats
             'email' => self::email($value),
             'hostname' => self::hostname($value),
             'ipv6' => self::ipv6($value),
-            'uri' => self::match('^' . self::uriPattern(self::URI_CHARS) . '$', $value),
-            'uri-reference' => self::match('^(?:' . self::uriPattern(self::URI_CHARS) . '|' . self::relativeRefPattern(self::URI_CHARS) . ')$', $value),
-            'iri' => self::match('^' . self::uriPattern(self::IRI_CHARS) . '$', $value),
-            'iri-reference' => self::match('^(?:' . self::uriPattern(self::IRI_CHARS) . '|' . self::relativeRefPattern(self::IRI_CHARS) . ')$', $value),
+            'uri' => self::match('^' . self::uriPattern(self::URI_CHARS) . '$', $value) && self::ipLiteral($value),
+            'uri-reference' => self::match('^(?:' . self::uriPattern(self::URI_CHARS) . '|' . self::relativeRefPattern(self::URI_CHARS) . ')$', $value) && self::ipLiteral($value),
+            'iri' => self::match('^' . self::uriPattern(self::IRI_CHARS) . '$', $value) && self::ipLiteral($value),
+            'iri-reference' => self::match('^(?:' . self::uriPattern(self::IRI_CHARS) . '|' . self::relativeRefPattern(self::IRI_CHARS) . ')$', $value) && self::ipLiteral($value),
             'regex' => @preg_match('/' . str_replace('/', '\/', $value) . '/u', '') !== false,
             'html', 'commonmark' => true,
             default => isset(self::PATTERNS[$format]) ? self::match(self::PATTERNS[$format], $value) : throw new \InvalidArgumentException("Unknown format $format"),
         };
+    }
+
+    /**
+     * Whether a bracketed host is an IPv6 address. IPvFuture (`[v…]`) passes by syntax.
+     */
+    private static function ipLiteral(string $value): bool
+    {
+        if (!preg_match('~^(?:[A-Za-z][A-Za-z0-9+.\-]*:)?//(?:[^/?#@]*@)?\[([^\]]*)\]~', $value, $m)) {
+            return true;
+        }
+        return preg_match('/^v/i', $m[1]) === 1 || self::ipv6($m[1]);
     }
 
     private static function match(string $pattern, string $value): bool
@@ -203,7 +214,7 @@ final class Formats
         $local = substr($value, 0, $at);
         $domain = substr($value, $at + 1);
         // RFC 5321 Dot-string or Quoted-string.
-        $localPart = '/^(?:' . self::ATEXT . '+(?:\.' . self::ATEXT . '+)*|"(?:[ !#-\[\]-~]|\\[ -~])*")$/D';
+        $localPart = '/^(?:' . self::ATEXT . '+(?:\.' . self::ATEXT . '+)*|"(?:[ !#-\[\]-~]|\\\\[ -~])*")$/D';
         if (strlen($local) > 64 || !preg_match($localPart, $local)) {
             return false;
         }

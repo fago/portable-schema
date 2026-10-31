@@ -16,19 +16,20 @@ use PortableSchema\Pointer;
  */
 final class FullObjectSchema extends ObjectSchema
 {
-    private MapDecisions $decisions;
+    private EmptyMaps $emptyMaps;
 
-    public static function from(ObjectSchema $schema, MapDecisions $decisions): self
+    public static function from(ObjectSchema $schema, EmptyMaps $emptyMaps): self
     {
         $full = new self($schema->info(), null, $schema->types, $schema->before, $schema->after);
-        $full->decisions = $decisions;
+        $full->emptyMaps = $emptyMaps;
         return $full;
     }
 
     public function doValidate(ValidationContext $context): ?ValidationError
     {
-        if (is_array($context->currentData()) && MapDecisions::objectOnly($this->info()->data()->type ?? null)) {
-            $this->decisions->locations[Pointer::fromSegments($context->fullDataPath())] = true;
+        if ($context->currentData() === [] && EmptyMaps::objectOnly($this->info()->data()->type ?? null)) {
+            $context->setCurrentData(new \stdClass());
+            $this->emptyMaps->locations[Pointer::fromSegments($context->fullDataPath())] = true;
         }
 
         $keywords = $this->before ?? [];

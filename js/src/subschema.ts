@@ -35,7 +35,7 @@ export class Subschema {
     for (const token of tokens(location)) {
       const anyMatch = members.some((m) => {
         const schema = this.schema(m);
-        return isObject(schema) && this.modes(schema, found, value).object && isObject(schema["properties"]) && Object.hasOwn(schema["properties"], token);
+        return isObject(schema) && this.modes(schema, found, value).object && (hasProperty(schema, token) || patterns(schema, token).length > 0);
       });
       instanceLocation = Pointer.append(instanceLocation, token);
       const [childFound, childValue] = child(found, value, token);
@@ -48,8 +48,10 @@ export class Subschema {
         if (!isObject(schema)) continue;
         const modes = this.modes(schema, found, value);
         if (modes.object) {
-          if (isObject(schema["properties"]) && Object.hasOwn(schema["properties"], token)) push(m, "properties", token);
-          else if (Object.hasOwn(schema, "additionalProperties")) push(m, "additionalProperties");
+          const matching = patterns(schema, token);
+          if (hasProperty(schema, token)) push(m, "properties", token);
+          for (const pattern of matching) push(m, "patternProperties", pattern);
+          if (!hasProperty(schema, token) && matching.length === 0 && Object.hasOwn(schema, "additionalProperties")) push(m, "additionalProperties");
           if (!anyMatch && Object.hasOwn(schema, "unevaluatedProperties")) push(m, "unevaluatedProperties");
         }
         if (modes.array && isIndex(token)) {
@@ -166,6 +168,13 @@ const below = (m: Member, ...keys: (string | number)[]): Member => ({
 });
 
 const isIndex = (token: string): boolean => /^(0|[1-9][0-9]*)$/u.test(token);
+
+const hasProperty = (schema: JsonObject, token: string): boolean =>
+  isObject(schema["properties"]) && Object.hasOwn(schema["properties"], token);
+
+/** The patternProperties keys whose pattern matches the token. */
+const patterns = (schema: JsonObject, token: string): string[] =>
+  isObject(schema["patternProperties"]) ? Object.keys(schema["patternProperties"]).filter((pattern) => new RegExp(pattern, "u").test(token)) : [];
 
 /** A oneOf whose branches are all consts is one schema: a catalog. */
 const isCatalog = (branches: unknown[]): boolean =>

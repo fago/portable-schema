@@ -1,5 +1,5 @@
 {
-  "description": "subschemaAt walks properties, additionalProperties, items and $ref",
+  "description": "subschemaAt walks properties, patternProperties, additionalProperties, items and $ref",
   "schema": {
     "$schema": "https://portable-schema.dev/v1/schema",
     "type": "object",
@@ -22,6 +22,17 @@
         },
         "additionalProperties": {
           "$ref": "portable:string"
+        }
+      },
+      "meta": {
+        "type": "object",
+        "patternProperties": {
+          "^x-": {
+            "$ref": "portable:string"
+          }
+        },
+        "additionalProperties": {
+          "$ref": "portable:label"
         }
       }
     }

@@ -31,8 +31,7 @@ final class Shaper
 
     /**
      * @param list<string>|null $locations
-     * @param array<string, string> $unrepresentable the host type name per location of a value outside the data model
-     * @param array<string, true> $arrayMaps the locations of maps that were PHP arrays
+     * @param list<string> $unsupported the locations of values outside the data model
      */
     public function __construct(
         private readonly Registry $registry,
@@ -40,8 +39,7 @@ final class Shaper
         private readonly bool $partial = false,
         private readonly bool $emptyAsMissing = false,
         private readonly ?array $locations = null,
-        private readonly array $unrepresentable = [],
-        private readonly array $arrayMaps = [],
+        private readonly array $unsupported = [],
     ) {
     }
 
@@ -85,10 +83,10 @@ final class Shaper
     private function schema(SchemaNode $node, string $location): Shaped
     {
         $shaped = new Shaped();
-        if (isset($this->unrepresentable[$node->instanceLocation])) {
+        if (in_array($node->instanceLocation, $this->unsupported, true)) {
             [, $schema] = $this->registry->resolve($node->uri);
             $type = $schema->type ?? [];
-            $params = ['expected' => is_array($type) ? $type : [$type], 'actual' => $this->unrepresentable[$node->instanceLocation]];
+            $params = ['expected' => is_array($type) ? $type : [$type], 'actual' => 'unsupported'];
             $shaped->errors[] = new ValidationError($node->instanceLocation, Pointer::append($location, 'type'), Pointer::append($node->uri, 'type'), 'type', $params);
             return $shaped;
         }
@@ -149,7 +147,7 @@ final class Shaper
         }
 
         if ($node->children === []) {
-            return new Shaped($node->valid ? [] : $this->leaf($node->keyword, $value, $instance, $node->instanceLocation, $error));
+            return new Shaped($node->valid ? [] : $this->leaf($node->keyword, $value, $instance, $error));
         }
 
         $shaped = new Shaped();
@@ -246,11 +244,11 @@ final class Shaper
      *
      * @return list<ValidationError>
      */
-    private function leaf(string $keyword, mixed $value, mixed $instance, string $instanceLocation, \Closure $error): array
+    private function leaf(string $keyword, mixed $value, mixed $instance, \Closure $error): array
     {
         switch ($keyword) {
             case 'type':
-                return [$error('type', ['expected' => is_array($value) ? $value : [$value], 'actual' => isset($this->arrayMaps[$instanceLocation]) ? 'array' : Json::typeOf($instance)])];
+                return [$error('type', ['expected' => is_array($value) ? $value : [$value], 'actual' => Json::typeOf($instance)])];
             case 'required':
                 if ($this->partial || !$instance instanceof \stdClass) {
                     return [];

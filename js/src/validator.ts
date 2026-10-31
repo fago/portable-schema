@@ -53,7 +53,7 @@ export class Validator {
     checks.run(this.callbacks, this.providers);
 
     const { partial = false, emptyAsMissing = false, locations = null } = options;
-    return new Shaper(this.registry, normalized.data, partial, emptyAsMissing, locations, normalized.unrepresentable).shape(tracer.root()!);
+    return new Shaper(this.registry, normalized.data, partial, emptyAsMissing, locations, normalized.unsupported).shape(tracer.root()!);
   }
 
   /**

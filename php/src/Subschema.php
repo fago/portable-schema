@@ -39,7 +39,7 @@ final class Subschema
             $anyMatch = false;
             foreach ($members as $m) {
                 $schema = $this->schema($m);
-                if ($schema instanceof \stdClass && $this->modes($schema, $found, $value)['object'] && self::hasProperty($schema, $token)) {
+                if ($schema instanceof \stdClass && $this->modes($schema, $found, $value)['object'] && (self::hasProperty($schema, $token) || self::patterns($schema, $token) !== [])) {
                     $anyMatch = true;
                 }
             }
@@ -56,9 +56,14 @@ final class Subschema
                 }
                 $modes = $this->modes($schema, $found, $value);
                 if ($modes['object']) {
+                    $matching = self::patterns($schema, $token);
                     if (self::hasProperty($schema, $token)) {
                         $push($m, 'properties', $token);
-                    } elseif (property_exists($schema, 'additionalProperties')) {
+                    }
+                    foreach ($matching as $pattern) {
+                        $push($m, 'patternProperties', $pattern);
+                    }
+                    if (!self::hasProperty($schema, $token) && $matching === [] && property_exists($schema, 'additionalProperties')) {
                         $push($m, 'additionalProperties');
                     }
                     if (!$anyMatch && property_exists($schema, 'unevaluatedProperties')) {
@@ -232,6 +237,22 @@ final class Subschema
     private static function hasProperty(\stdClass $schema, string $token): bool
     {
         return ($schema->properties ?? null) instanceof \stdClass && property_exists($schema->properties, $token);
+    }
+
+    /**
+     * The patternProperties keys whose pattern matches the token.
+     *
+     * @return list<string>
+     */
+    private static function patterns(\stdClass $schema, string $token): array
+    {
+        if (!($schema->patternProperties ?? null) instanceof \stdClass) {
+            return [];
+        }
+        return array_values(array_filter(
+            array_keys(get_object_vars($schema->patternProperties)),
+            fn (string $pattern) => preg_match('~' . str_replace('~', '\~', $pattern) . '~u', $token) === 1,
+        ));
     }
 
     /**

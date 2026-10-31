@@ -20,6 +20,16 @@
     "valid": true
   },
   {
+    "description": "IPv6 loopback literal",
+    "data": "http://[::1]/",
+    "valid": true
+  },
+  {
+    "description": "IPv6 literal",
+    "data": "http://[2001:db8::1]/",
+    "valid": true
+  },
+  {
     "description": "invalid: \"/relative\"",
     "data": "/relative",
     "valid": false,
@@ -70,6 +80,30 @@
   {
     "description": "invalid: \"https://example.com/\\n\"",
     "data": "https://example.com/\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "literal that is no IPv6 address",
+    "data": "http://[:::]/",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uri",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "literal with dots only",
+    "data": "http://[1.2]/",
     "valid": false,
     "errors": [
       {

@@ -26,16 +26,17 @@ test("values JSON.parse cannot produce are type errors", async () => {
   const schema: JsonObject = { properties: { d: { type: "string" }, m: {}, n: true, b: { type: ["string", "null"] }, f: {}, i: {}, c: {} } };
   const result = await validate(schema, { d: new Date(0), m: new Map(), n: NaN, b: 1n, f: () => 1, i: Infinity, c: new Foo() });
   expect(errors(result)).toEqual([
-    ["/b", "type", { expected: ["string", "null"], actual: "bigint" }],
-    ["/c", "type", { expected: [], actual: "foo" }],
-    ["/d", "type", { expected: ["string"], actual: "date" }],
-    ["/f", "type", { expected: [], actual: "function" }],
-    ["/i", "type", { expected: [], actual: "infinity" }],
-    ["/m", "type", { expected: [], actual: "map" }],
-    ["/n", "type", { expected: [], actual: "nan" }],
+    ["/b", "type", { expected: ["string", "null"], actual: "unsupported" }],
+    ["/c", "type", { expected: [], actual: "unsupported" }],
+    ["/d", "type", { expected: ["string"], actual: "unsupported" }],
+    ["/f", "type", { expected: [], actual: "unsupported" }],
+    ["/i", "type", { expected: [], actual: "unsupported" }],
+    ["/m", "type", { expected: [], actual: "unsupported" }],
+    ["/n", "type", { expected: [], actual: "unsupported" }],
   ]);
   expect(result.errors[2]!.keywordLocation).toBe("/properties/d/type");
-  expect(errors(await validate({ minimum: 1 }, undefined))).toEqual([["", "type", { expected: [], actual: "undefined" }]]);
+  expect(errors(await validate({ minimum: 1 }, undefined))).toEqual([["", "type", { expected: [], actual: "unsupported" }]]);
+  expect(errors(await validate({ minimum: 1 }, Symbol("s")))).toEqual([["", "type", { expected: [], actual: "unsupported" }]]);
 });
 
 test("plain objects are objects, whatever their prototype", async () => {

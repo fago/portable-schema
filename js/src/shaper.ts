@@ -53,8 +53,8 @@ export class Shaper {
     private readonly partial = false,
     private readonly emptyAsMissing = false,
     private readonly locations: string[] | null = null,
-    /** The host type name per location of a value outside the data model. */
-    private readonly unrepresentable: Map<string, string> = new Map(),
+    /** The locations of values outside the data model. */
+    private readonly unsupported: Set<string> = new Set(),
   ) {}
 
   shape(root: SchemaNode): Result {
@@ -90,11 +90,10 @@ export class Shaper {
 
   private schema(node: SchemaNode, location: string): Shaped {
     const shaped = new Shaped();
-    const actual = this.unrepresentable.get(node.instanceLocation);
-    if (actual !== undefined) {
+    if (this.unsupported.has(node.instanceLocation)) {
       const [, schema] = this.registry.resolve(node.uri);
       const type = isObject(schema) ? schema["type"] ?? [] : [];
-      const params = { expected: Array.isArray(type) ? type : [type], actual };
+      const params = { expected: Array.isArray(type) ? type : [type], actual: "unsupported" };
       shaped.errors.push(new ValidationError(node.instanceLocation, Pointer.append(location, "type"), Pointer.append(node.uri, "type"), "type", params));
       return shaped;
     }

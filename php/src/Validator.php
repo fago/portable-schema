@@ -13,7 +13,7 @@ use PortableSchema\Check\CheckRequest;
 use PortableSchema\Check\CheckResult;
 use PortableSchema\Check\Checks;
 use PortableSchema\Opis\BooleanSchemas;
-use PortableSchema\Opis\MapDecisions;
+use PortableSchema\Opis\EmptyMaps;
 use PortableSchema\Opis\MetaSchema;
 use PortableSchema\Opis\Parser;
 use PortableSchema\Opis\RegistryResolver;
@@ -31,7 +31,7 @@ final class Validator
 
     private readonly Checks $checks;
 
-    private readonly MapDecisions $decisions;
+    private readonly EmptyMaps $emptyMaps;
 
     private readonly SchemaLoader $loader;
 
@@ -51,8 +51,8 @@ final class Validator
         $this->registry = clone $registry;
         $this->tracer = new Tracer();
         $this->checks = new Checks();
-        $this->decisions = new MapDecisions();
-        $this->loader = new SchemaLoader(new Parser($this->tracer, $this->checks, $this->decisions), new RegistryResolver($this->registry), false);
+        $this->emptyMaps = new EmptyMaps();
+        $this->loader = new SchemaLoader(new Parser($this->tracer, $this->checks, $this->emptyMaps), new RegistryResolver($this->registry), false);
         foreach ($this->registry->ids() as $id) {
             MetaSchema::assertValid($this->registry->get($id), $id);
         }
@@ -113,30 +113,24 @@ final class Validator
         $root = $this->evaluate($normalized, $id);
         $this->checks->run($this->callbacks, $this->providers);
 
-        return (new Shaper($this->registry, $normalized->data, $partial, $emptyAsMissing, $locations, $normalized->unrepresentable, $normalized->arrayMaps))->shape($root);
+        return (new Shaper($this->registry, $normalized->data, $partial, $emptyAsMissing, $locations, $normalized->unsupported))->shape($root);
     }
 
     /**
-     * Evaluates the normalized data, again after every pass that decided lists to be maps (spec/normalization.md).
+     * Evaluates the normalized data. Every `[]` that a schema decided to be a map is one in the data afterwards.
      */
     private function evaluate(Normalized $normalized, string $id): SchemaNode
     {
         $compiled = $this->load($id);
         $normalized->data = Json::jsOrder($normalized->data);
-        while (true) {
-            $this->tracer->reset();
-            $this->checks->reset();
-            $this->decisions->reset();
-            $compiled->validate(new ValidationContext($normalized->data, $this->loader, null, null, [], null, PHP_INT_MAX, false));
-            if ($this->decisions->locations === []) {
-                return $this->tracer->root();
-            }
-            foreach (array_keys($this->decisions->locations) as $location) {
-                [, $list] = Pointer::get($normalized->data, $location);
-                Json::set($normalized->data, $location, Json::jsOrder((object) $list));
-                $normalized->arrayMaps[$location] = true;
-            }
+        $this->tracer->reset();
+        $this->checks->reset();
+        $this->emptyMaps->reset();
+        $compiled->validate(new ValidationContext($normalized->data, $this->loader, null, null, [], null, PHP_INT_MAX, false));
+        foreach (array_keys($this->emptyMaps->locations) as $location) {
+            Json::set($normalized->data, $location, new \stdClass());
         }
+        return $this->tracer->root();
     }
 
     /**
