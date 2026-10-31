@@ -1,3 +1,4 @@
+import { consts } from "./catalog-set.js";
 import { isObject, type JsonObject } from "./json.js";
 import * as Pointer from "./pointer.js";
 import type { Registry } from "./registry.js";
@@ -9,8 +10,6 @@ export type SubschemaResult = { schemaLocations: string[]; unresolved: string[] 
 
 /** One schema of the set: a registry document, a pointer into it, and its keywordLocation from the root schema. */
 type Member = { id: string; pointer: string; location: string };
-
-const ANNOTATIONS_ONLY = ["title", "description", "$comment", "examples", "default", "deprecated", "readOnly", "writeOnly"];
 
 /**
  * Walks the schemas that apply at a location of the instance (spec/validation.md, "Subschema at a location").
@@ -80,7 +79,7 @@ export class Subschema {
     }
     for (const keyword of ["anyOf", "oneOf"]) {
       const branches = schema[keyword];
-      if (!Array.isArray(branches) || (keyword === "oneOf" && isCatalog(branches))) continue;
+      if (!Array.isArray(branches) || (keyword === "oneOf" && consts(branches) !== null)) continue;
       if (!found) {
         this.unresolved.push(m.location + "/" + keyword);
         continue;
@@ -175,9 +174,3 @@ const hasProperty = (schema: JsonObject, token: string): boolean =>
 /** The patternProperties keys whose pattern matches the token. */
 const patterns = (schema: JsonObject, token: string): string[] =>
   isObject(schema["patternProperties"]) ? Object.keys(schema["patternProperties"]).filter((pattern) => new RegExp(pattern, "u").test(token)) : [];
-
-/** A oneOf whose branches are all consts is one schema: a catalog. */
-const isCatalog = (branches: unknown[]): boolean =>
-  branches.length > 0 && branches.every((branch) =>
-    isObject(branch) && Object.hasOwn(branch, "const")
-    && Object.keys(branch).every((key) => key === "const" || ANNOTATIONS_ONLY.includes(key) || key.startsWith("x-")));

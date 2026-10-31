@@ -12,8 +12,6 @@ use PortableSchema\Trace\SchemaNode;
  */
 final class Subschema
 {
-    private const ANNOTATIONS_ONLY = ['title', 'description', '$comment', 'examples', 'default', 'deprecated', 'readOnly', 'writeOnly'];
-
     /** @var array<string, bool> verdict per schema URI and instance location, from the trace */
     private array $verdicts = [];
 
@@ -110,7 +108,7 @@ final class Subschema
         }
         foreach (['anyOf', 'oneOf'] as $keyword) {
             $branches = $schema->{$keyword} ?? null;
-            if (!is_array($branches) || ($keyword === 'oneOf' && self::isCatalog($branches))) {
+            if (!is_array($branches) || ($keyword === 'oneOf' && CatalogSet::consts($branches) !== null)) {
                 continue;
             }
             if (!$found) {
@@ -275,28 +273,5 @@ final class Subschema
     private static function isIndex(string $token): bool
     {
         return preg_match('/^(0|[1-9][0-9]*)$/D', $token) === 1;
-    }
-
-    /**
-     * A oneOf whose branches are all consts is one schema: a catalog.
-     *
-     * @param list<mixed> $branches
-     */
-    private static function isCatalog(array $branches): bool
-    {
-        if ($branches === []) {
-            return false;
-        }
-        foreach ($branches as $branch) {
-            if (!$branch instanceof \stdClass || !property_exists($branch, 'const')) {
-                return false;
-            }
-            foreach (array_keys(get_object_vars($branch)) as $key) {
-                if ($key !== 'const' && !in_array($key, self::ANNOTATIONS_ONLY, true) && !str_starts_with($key, 'x-')) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }

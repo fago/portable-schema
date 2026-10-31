@@ -88,7 +88,7 @@ const setUp = (): void => {
     },
   });
 
-  // Catalogs are checked by one lookup in a set; other values of these keywords as before.
+  // Catalogs are checked by one lookup in a set; other values: the standard keyword.
   for (const [name, toCatalog] of [["enum", CatalogSet.fromEnum], ["oneOf", CatalogSet.fromOneOf]] as const) {
     const keyword = getKeyword<unknown>(`https://json-schema.org/keyword/${name}`);
     addKeyword<unknown>({
