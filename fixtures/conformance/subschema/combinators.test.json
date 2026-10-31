@@ -1,0 +1,110 @@
+[
+  {
+    "description": "the root: allOf branches and the then branch, in evaluation order",
+    "data": {
+      "kind": "post"
+    },
+    "location": "",
+    "schemaLocations": [
+      "",
+      "/allOf/0",
+      "/allOf/0/$ref",
+      "/allOf/1",
+      "/then"
+    ]
+  },
+  {
+    "description": "a catalog is one schema: no branches",
+    "data": {
+      "kind": "post"
+    },
+    "location": "/kind",
+    "schemaLocations": [
+      "/allOf/0/$ref/properties/kind",
+      "/allOf/0/$ref/properties/kind/$ref"
+    ]
+  },
+  {
+    "description": "a property of an allOf branch",
+    "data": {
+      "kind": "post"
+    },
+    "location": "/title",
+    "schemaLocations": [
+      "/allOf/1/properties/title",
+      "/allOf/1/properties/title/$ref"
+    ]
+  },
+  {
+    "description": "then applies when if holds",
+    "data": {
+      "kind": "post"
+    },
+    "location": "/body",
+    "schemaLocations": [
+      "/then/properties/body",
+      "/then/properties/body/$ref"
+    ]
+  },
+  {
+    "description": "else applies when if fails; unevaluatedProperties does not, a properties entry matched",
+    "data": {
+      "kind": "page"
+    },
+    "location": "/body",
+    "schemaLocations": [
+      "/else/properties/body",
+      "/else/properties/body/$ref"
+    ]
+  },
+  {
+    "description": "no properties entry in the set: unevaluatedProperties",
+    "data": {
+      "kind": "page"
+    },
+    "location": "/extra",
+    "schemaLocations": [
+      "/unevaluatedProperties",
+      "/unevaluatedProperties/$ref"
+    ]
+  },
+  {
+    "description": "oneOf: the branch the value satisfies",
+    "data": {
+      "kind": "page",
+      "link": "https://example.com/"
+    },
+    "location": "/link",
+    "schemaLocations": [
+      "/allOf/1/properties/link",
+      "/allOf/1/properties/link/oneOf/0",
+      "/allOf/1/properties/link/oneOf/0/$ref"
+    ]
+  },
+  {
+    "description": "oneOf: a property below the satisfied branch",
+    "data": {
+      "kind": "page",
+      "link": {
+        "uri": "https://example.com/",
+        "title": "Example"
+      }
+    },
+    "location": "/link/title",
+    "schemaLocations": [
+      "/allOf/1/properties/link/oneOf/1/properties/title",
+      "/allOf/1/properties/link/oneOf/1/properties/title/$ref"
+    ]
+  },
+  {
+    "description": "oneOf with a missing value: unresolved, nothing below it is known",
+    "data": {
+      "kind": "page"
+    },
+    "location": "/link/title",
+    "schemaLocations": [],
+    "unresolved": [
+      "/allOf/1/properties/link/oneOf"
+    ]
+  }
+]

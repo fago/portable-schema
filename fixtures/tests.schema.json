@@ -2,15 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://portable-schema.dev/fixtures/tests.schema.json",
   "title": "Fixture test file",
-  "description": "<name>.test.json: test cases run against <name>.json.",
+  "description": "<name>.test.json: test cases run against <name>.json. A case is a validation case (valid) or a subschema case (location + schemaLocations).",
   "type": "array",
   "minItems": 1,
   "items": {
     "type": "object",
     "required": [
       "description",
-      "data",
-      "valid"
+      "data"
     ],
     "properties": {
       "description": {
@@ -18,6 +17,24 @@
         "minLength": 1
       },
       "data": true,
+      "location": {
+        "description": "A JSON Pointer or dotted path into data.",
+        "type": "string"
+      },
+      "schemaLocations": {
+        "description": "Exactly the expected schema locations, in evaluation order.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "unresolved": {
+        "description": "Exactly the expected unresolved keyword locations; omitted means none.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
       "valid": {
         "type": "boolean"
       },
@@ -103,7 +120,20 @@
         }
       }
     },
-    "additionalProperties": false
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "required": [
+          "valid"
+        ]
+      },
+      {
+        "required": [
+          "location",
+          "schemaLocations"
+        ]
+      }
+    ]
   },
   "$defs": {
     "error": {
