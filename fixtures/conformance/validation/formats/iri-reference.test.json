@@ -1,0 +1,61 @@
+[
+  {
+    "description": "absolute iri",
+    "data": "https://example.com/\u00e4",
+    "valid": true
+  },
+  {
+    "description": "absolute path",
+    "data": "/pfad/\u00e4",
+    "valid": true
+  },
+  {
+    "description": "relative path",
+    "data": "example.com/\u00e4",
+    "valid": true
+  },
+  {
+    "description": "query only",
+    "data": "?q=\u00fc",
+    "valid": true
+  },
+  {
+    "description": "fragment only",
+    "data": "#\u00fc",
+    "valid": true
+  },
+  {
+    "description": "empty reference",
+    "data": "",
+    "valid": true
+  },
+  {
+    "description": "space",
+    "data": "a b",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.iri-reference",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "angle brackets",
+    "data": "<a>",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.iri-reference",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "first segment with a colon parses as a scheme, so an absolute reference",
+    "data": "a:b/c",
+    "valid": true
+  }
+]

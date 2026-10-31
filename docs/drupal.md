@@ -113,7 +113,7 @@ From `core/lib/Drupal/Core/TypedData/Plugin/DataType/`:
 | `binary` | `portable:binary` (base64) |
 | `decimal` | `portable:decimal` (a string); its format takes core's grammar from `PrimitiveTypeConstraintValidator` (`[+-]?((\d+(\.\d*)?)\|(\.\d+))`); the integration turns numbers into strings on export. Core's `#[JsonSchema]` on `DecimalData` emits `format: number`, which is not in the format registry ([open question](#open-questions)) |
 | `email` | `portable:email` |
-| `uri` | `portable:uri`; for link fields see [Link fields](#link-fields) |
+| `uri` | `portable:uri`; link fields use `portable:iri` ([Link fields](#link-fields)) |
 | `datetime_iso8601` | `portable:date-time`, or `portable:date` for date-only fields. Drupal stores datetimes as UTC without an offset (`Y-m-d\TH:i:s`); the integration adds `Z` on export and removes it on import |
 | `duration_iso8601` | `portable:duration` |
 | `timestamp` | `portable:timestamp` |
@@ -150,7 +150,8 @@ From `core/lib/Drupal/Core/TypedData/Plugin/DataType/`:
 | `NotBlank` | Per JSON type: strings `minLength: 1`, arrays `minItems: 1`, objects `minProperties: 1`, booleans `const: true`, numbers nothing. `null` is excluded unless `allowNull`, also for `nullable` values. Not `required`: that is about the key, not the value |
 | `NotNull` | A `type` without `null` |
 | `Email`, `Uuid` | `portable:email`, `portable:uuid`; `""` allowed ([below](#empty-strings)). Drupal is stricter than the standard formats, so its exact check runs on the server: `drupal:Email`, `drupal:Uuid` |
-| `LinkType`, `LinkExternalProtocols`, `LinkNotExistingInternal`, `LinkAccess` | `portable-check` (`drupal:LinkType`, …), run on the server ([Link fields](#link-fields)) |
+| `LinkType`, `LinkExternalProtocols` | A `pattern` on the scheme, generated from the link type and the allowed protocols ([Link fields](#link-fields)) |
+| `LinkNotExistingInternal`, `LinkAccess` | `portable-check` (`drupal:LinkNotExistingInternal`, `drupal:LinkAccess`), run on the server |
 | `ValidKeys` | `properties` + `unevaluatedProperties: false` |
 | `ValidSequenceKeys` | `propertyNames` |
 | `PluginExists`, `EntityBundleExists`, `ConfigExists`, `ExtensionExists` | `$ref` to a catalog: checkable live or statically against a site schema dump |
@@ -179,13 +180,14 @@ The generic types `portable:identifier` and `portable:color` don't get the `\n?$
 
 ### Link fields
 
-- **The `uri` property** maps to `portable:uri` (RFC 3986). Drupal's `uri` DataType only needs a scheme, so it accepts values that are not URIs: a [known difference](#known-differences).
+- **The `uri` property** maps to `portable:iri` (RFC 3987): editors enter links such as `https://example.com/ä`. Drupal's `uri` DataType only needs a scheme, so it also accepts values with spaces or `<` and `>`, which are outside the IRI grammar: a [known difference](#known-differences).
 - **`route:` URIs:** core's `route:<nolink>`, `route:<none>` and `route:<button>` are not URIs. The integration percent-encodes `<` and `>` on export (`route:%3Cnolink%3E`) and decodes them on import.
-- **Link semantics** (allowed protocols, `internal:` paths, existing routes, access) need the site: named checks `drupal:LinkType`, `drupal:LinkExternalProtocols`, `drupal:LinkNotExistingInternal` and `drupal:LinkAccess`, run on the server.
+- **Allowed schemes** are a `pattern` the converter generates from the field's link type and the site's allowed protocols, e.g. `^(https?|mailto|tel|internal|entity|route):` for internal and external links. Every validator enforces it.
+- **Existing routes and access** (`LinkNotExistingInternal`, `LinkAccess`) need the site: named checks `drupal:LinkNotExistingInternal` and `drupal:LinkAccess`, run on the server.
 
 ## Compatibility
 
-Portable Schema must not be stricter than Drupal's validators, but it stays with the standard formats ([decision 0007](decisions/0007-pinned-checks-follow-the-standard.md)). Where Drupal is stricter, its exact check runs on the server as a named check.
+Portable Schema must not be stricter than Drupal's validators, but it stays with the standard formats ([decision 0003](decisions/0003-standard-formats-not-stricter-than-drupal.md)). Where Drupal is stricter, its exact check runs on the server as a named check.
 
 ### Known differences
 
@@ -194,7 +196,7 @@ Values Drupal accepts and Portable Schema rejects:
 | Value | Example | Why |
 |---|---|---|
 | UTF-8 email addresses (RFC 6531) | `jöe@example.com` | `email` is ASCII; `idn-email` is out of v1 |
-| Non-URIs in `uri` | `https://example.com/ä`, `https://example.com/a b` | `uri` is RFC 3986 |
+| Spaces, `<` or `>` in a link `uri` | `https://example.com/a b`, `route:<nolink>` | `portable:iri` is the RFC 3987 grammar; `route:` URIs are percent-encoded on export |
 | Integers beyond ±(2^53 − 1) | `9007199254740993` | JS can't represent them; matters for `size: big` integer fields |
 | JSON numbers for `decimal` values | `10` | `portable:decimal` is a string; the integration exports numbers as strings |
 | `site_default` in `language_reference` | `site_default` | A Drupal keyword, not a language tag; only config `langcode` allows it |
@@ -216,7 +218,6 @@ Drupal is stricter, checked on the server:
   - `DecimalData`'s `#[JsonSchema]` emits `format: number`, which is not in the registry; `format: decimal` is;
   - `label` and the other `[^\PC]` patterns reject emoji ZWJ sequences and soft hyphens;
   - the `configurable_language` id pattern is not anchored, so it matches almost anything.
-- **`iri` for link fields:** IRIs such as `https://example.com/ä` are realistic link input. Option: allow `iri` and `iri-reference` in v1, pinned as RFC 3987 syntax without IDNA processing, and map link fields to `iri`.
 - **The `i` modifier:** `pattern` has no flags. Core uses `i` in `/^\//i` (path aliases), where it changes nothing; other uses need a rewrite.
 
 ## What the Drupal integration provides

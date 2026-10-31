@@ -19,6 +19,7 @@ Every primitive has a named type ([decision 0004](../docs/decisions/0004-types-f
 | [`email`](v1/email.json) | `string`, `format: email`, `maxLength: 254` |
 | [`uri`](v1/uri.json) | `string`, `format: uri` |
 | [`uri-reference`](v1/uri-reference.json) | `string`, `format: uri-reference` |
+| [`iri`](v1/iri.json) | `string`, `format: iri`; links people enter |
 | [`uuid`](v1/uuid.json) | `string`, `format: uuid` |
 | [`date`](v1/date.json) | `string`, `format: date` |
 | [`date-time`](v1/date-time.json) | `string`, `format: date-time` (offset required) |

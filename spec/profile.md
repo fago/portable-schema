@@ -1,6 +1,6 @@
 # Profile
 
-Status: draft. This document starts with formats and patterns; the rest of the profile follows.
+This document covers formats, patterns and catalogs; the rest of the profile follows.
 
 Schemas outside the profile are refused when they are loaded ([decision 0005](../docs/decisions/0005-profile-only-validators.md)).
 
@@ -27,7 +27,7 @@ A catalog restricts a value to the facts a system provides ([decision 0006](../d
 
 ## Formats
 
-Formats come from the [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) ([decision 0003](../docs/decisions/0003-formats-from-the-registry.md)). Their checks follow the standard the registry names ([decision 0007](../docs/decisions/0007-pinned-checks-follow-the-standard.md)).
+Formats come from the [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) and their checks follow the standard the registry names ([decision 0003](../docs/decisions/0003-standard-formats-not-stricter-than-drupal.md)).
 
 - **`format` is an assertion.**
 - **A schema using a format outside this list is refused.**
@@ -45,6 +45,8 @@ Formats come from the [JSON Schema format registry](https://github.com/json-sche
 | `ipv6` | RFC 4291 text form, incl. `::` compression and an embedded IPv4 tail; no zone ID | RFC 4291 |
 | `uri` | An absolute URI per the RFC 3986 grammar: scheme required | RFC 3986 |
 | `uri-reference` | A URI or relative reference per the RFC 3986 grammar | RFC 3986 |
+| `iri` | An absolute IRI per the RFC 3987 grammar: scheme required; `ucschar` and `iprivate` code points where the grammar allows them; the host is checked as syntax only, without IDNA processing | RFC 3987 |
+| `iri-reference` | An IRI or relative reference per the RFC 3987 grammar; `""` is a valid reference | RFC 3987 |
 | `uri-template` | RFC 6570 syntax (levels 1–4) | RFC 6570 |
 | `uuid` | 8-4-4-4-12 hex digits, case-insensitive; any version | RFC 9562 |
 | `json-pointer` | RFC 6901 syntax | RFC 6901 |
@@ -56,7 +58,7 @@ Formats come from the [JSON Schema format registry](https://github.com/json-sche
 | `commonmark` | Not checked: any string | Registry |
 
 **Not allowed in v1:**
-- `idn-email`, `idn-hostname`, `iri`, `iri-reference`: IDNA and Unicode handling would differ between PHP and JS.
+- `idn-email`, `idn-hostname`: IDNA processing would differ between PHP and JS.
 - `int64`, `uint8`, `int8`, `int16`, `double-int`, `float`, `double`, `decimal128`: number ranges beyond what JS represents exactly, or not needed yet.
 - `byte`, `binary`, `base64url`, `char`, `http-date`, `media-range`, `sf-*`: not needed yet.
 
