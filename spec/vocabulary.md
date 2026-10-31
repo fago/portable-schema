@@ -1,6 +1,6 @@
 # Vocabulary
 
-Status: draft. This document starts with `portable-check`; the other keywords follow.
+This document covers `portable-check`; the other keywords follow.
 
 The syntax of every keyword is defined in [`v1/vocab.json`](v1/vocab.json). This document defines their semantics.
 
