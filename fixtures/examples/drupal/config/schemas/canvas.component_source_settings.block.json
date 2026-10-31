@@ -1,0 +1,22 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component_source_settings.block",
+  "title": "Block component settings",
+  "$ref": "drupal:canvas.component_source_settings",
+  "properties": {
+    "default_settings": {
+      "$ref": "drupal:block_settings",
+      "portable-typeBy": {
+        "href": "drupal:block.settings.{+source_local_id}",
+        "source": {
+          "source_local_id": "4/source_local_id"
+        },
+        "fallback": "drupal:block.settings.*"
+      }
+    }
+  },
+  "required": [
+    "default_settings"
+  ],
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,28 @@
+[
+  {
+    "description": "only the required error",
+    "data": {
+      "b": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "z"
+        }
+      }
+    ]
+  },
+  {
+    "description": "partial: valid",
+    "data": {
+      "b": 1
+    },
+    "options": {
+      "partial": true
+    },
+    "valid": true
+  }
+]

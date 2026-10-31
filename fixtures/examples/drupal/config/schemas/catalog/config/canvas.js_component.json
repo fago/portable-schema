@@ -1,0 +1,12 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:catalog/config/canvas.js_component",
+  "title": "Code components",
+  "description": "Generated from the canvas.js_component.* config entities.",
+  "oneOf": [
+    {
+      "const": "canvas_test_code_components_with_props",
+      "title": "With props"
+    }
+  ]
+}

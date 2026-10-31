@@ -1,0 +1,37 @@
+{
+  "schema": "drupal:node.article",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/uid/0/target_id",
+      "code": "check.drupal:ValidReference",
+      "params": {
+        "id": 42
+      }
+    }
+  ],
+  "messages": [
+    "User ID is not valid."
+  ],
+  "checks": {
+    "drupal:ValidReference": {
+      "errors": [
+        {
+          "code": "check.drupal:ValidReference",
+          "params": {
+            "id": 42
+          }
+        }
+      ],
+      "locations": [
+        "/uid/0/target_id"
+      ]
+    },
+    "drupal:ReferenceAccess": {
+      "errors": []
+    },
+    "drupal:FileExtension": {
+      "errors": []
+    }
+  }
+}

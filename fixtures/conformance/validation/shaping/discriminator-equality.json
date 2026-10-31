@@ -1,0 +1,51 @@
+{
+  "description": "const discriminators compare as JSON values",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "oneOf": [
+      {
+        "properties": {
+          "k": {
+            "const": 1
+          },
+          "a": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "a"
+        ]
+      },
+      {
+        "properties": {
+          "k": {
+            "const": {
+              "y": 1,
+              "z": 2
+            }
+          },
+          "b": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "b"
+        ]
+      },
+      {
+        "properties": {
+          "k": {
+            "const": 2
+          },
+          "c": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "c"
+        ]
+      }
+    ]
+  }
+}

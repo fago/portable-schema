@@ -1,0 +1,14 @@
+{
+  "schema": "drupal:sdc.portable_showcase.hero",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/image/src",
+      "code": "format.uri-reference",
+      "params": {}
+    }
+  ],
+  "messages": [
+    "Image URL must be a valid URL or path."
+  ]
+}

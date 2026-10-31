@@ -1,0 +1,31 @@
+{
+  "schema": "drupal:node.article",
+  "valid": true,
+  "unchecked": [
+    {
+      "instanceLocation": "/field_image/0",
+      "code": "check.drupal:ReferenceAccess",
+      "reason": "noProvider"
+    },
+    {
+      "instanceLocation": "/field_image/0",
+      "code": "check.drupal:FileExtension",
+      "reason": "noProvider"
+    },
+    {
+      "instanceLocation": "/field_image/0/target_id",
+      "code": "check.drupal:ValidReference",
+      "reason": "noProvider"
+    },
+    {
+      "instanceLocation": "/type/0/target_id",
+      "code": "check.drupal:ValidReference",
+      "reason": "noProvider"
+    },
+    {
+      "instanceLocation": "/uid/0/target_id",
+      "code": "check.drupal:ValidReference",
+      "reason": "noProvider"
+    }
+  ]
+}

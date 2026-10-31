@@ -1,0 +1,531 @@
+[
+  {
+    "description": "a conflicting type goes into allOf",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t1",
+      "$ref": "portable:string",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "allOf": [
+        {
+          "type": "string"
+        }
+      ],
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tests": [
+      {
+        "data": "x",
+        "valid": true
+      },
+      {
+        "data": null,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "a conflicting pattern goes into allOf",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t2",
+      "$ref": "portable:label",
+      "pattern": "^a"
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "allOf": [
+        {
+          "type": "string",
+          "pattern": "^[^\\r\\n]*$"
+        }
+      ],
+      "pattern": "^a"
+    },
+    "tests": [
+      {
+        "data": "ab",
+        "valid": true
+      },
+      {
+        "data": "a\nb",
+        "valid": false
+      },
+      {
+        "data": "b",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "properties next to a closed type go into allOf",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:closed",
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "string"
+          }
+        },
+        "unevaluatedProperties": false
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t3",
+      "$ref": "test:closed",
+      "properties": {
+        "b": {
+          "type": "integer"
+        }
+      }
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "string"
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      ],
+      "properties": {
+        "b": {
+          "type": "integer"
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": {
+          "a": "x"
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "a": "x",
+          "b": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "bounds merge to the stricter value",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t4",
+      "$ref": "portable:integer",
+      "minimum": 1,
+      "title": "Count"
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "title": "Count"
+    },
+    "tests": [
+      {
+        "data": 1,
+        "valid": true
+      },
+      {
+        "data": 0,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "required and properties merge into an open type; unevaluatedProperties of the using schema too",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:open",
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "string"
+          }
+        }
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t5",
+      "$ref": "test:open",
+      "properties": {
+        "a": {
+          "minLength": 1
+        },
+        "b": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "a"
+      ],
+      "unevaluatedProperties": false
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "a": {
+          "type": "string",
+          "minLength": 1
+        },
+        "b": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "a"
+      ],
+      "unevaluatedProperties": false
+    },
+    "tests": [
+      {
+        "data": {
+          "a": "x",
+          "b": 1
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "a": ""
+        },
+        "valid": false
+      },
+      {
+        "data": {
+          "b": 1
+        },
+        "valid": false
+      },
+      {
+        "data": {
+          "a": "x",
+          "c": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "minContains next to a ref with contains goes into allOf",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:contains",
+        "type": "array",
+        "contains": {
+          "const": 1
+        }
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t20",
+      "$ref": "test:contains",
+      "minContains": 0
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "allOf": [
+        {
+          "type": "array",
+          "contains": {
+            "const": 1
+          }
+        }
+      ],
+      "minContains": 0
+    },
+    "tests": [
+      {
+        "data": [],
+        "valid": false
+      },
+      {
+        "data": [
+          2
+        ],
+        "valid": false
+      },
+      {
+        "data": [
+          1
+        ],
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "maxContains next to a ref with contains goes into allOf",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:contains",
+        "type": "array",
+        "contains": {
+          "const": 1
+        }
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t21",
+      "$ref": "test:contains",
+      "maxContains": 1
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "allOf": [
+        {
+          "type": "array",
+          "contains": {
+            "const": 1
+          }
+        }
+      ],
+      "maxContains": 1
+    },
+    "tests": [
+      {
+        "data": [
+          1,
+          1
+        ],
+        "valid": true
+      },
+      {
+        "data": [
+          2
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "then next to a ref with if goes into allOf",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:if",
+        "if": {
+          "const": 1
+        }
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t22",
+      "$ref": "test:if",
+      "then": false
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "allOf": [
+        {
+          "if": {
+            "const": 1
+          }
+        }
+      ],
+      "then": false
+    },
+    "tests": [
+      {
+        "data": 1,
+        "valid": true
+      },
+      {
+        "data": 2,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "else next to a ref with if goes into allOf",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:if",
+        "if": {
+          "const": 1
+        }
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t23",
+      "$ref": "test:if",
+      "else": false
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "allOf": [
+        {
+          "if": {
+            "const": 1
+          }
+        }
+      ],
+      "else": false
+    },
+    "tests": [
+      {
+        "data": 1,
+        "valid": true
+      },
+      {
+        "data": 2,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "if next to a ref with then goes into allOf",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:then",
+        "then": false
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t24",
+      "$ref": "test:then",
+      "if": {
+        "const": 1
+      }
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "allOf": [
+        {
+          "then": false
+        }
+      ],
+      "if": {
+        "const": 1
+      }
+    },
+    "tests": [
+      {
+        "data": 1,
+        "valid": true
+      },
+      {
+        "data": 2,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "equal values merge regardless of number notation",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:enum",
+        "enum": [
+          1,
+          2
+        ]
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t25",
+      "$ref": "test:enum",
+      "enum": [
+        1.0,
+        2
+      ]
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "enum": [
+        1.0,
+        2
+      ]
+    },
+    "tests": [
+      {
+        "data": 1,
+        "valid": true
+      },
+      {
+        "data": 3,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$defs are inlined where used and left out, recursive ones nothing uses too",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:t26",
+      "type": "object",
+      "properties": {
+        "a": {
+          "$ref": "#/$defs/a"
+        }
+      },
+      "$defs": {
+        "a": {
+          "type": "string"
+        },
+        "tree": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tree"
+          }
+        }
+      }
+    },
+    "export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "a": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": {
+          "a": "x"
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "a": 1
+        },
+        "valid": false
+      }
+    ]
+  }
+]

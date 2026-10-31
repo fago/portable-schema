@@ -4,5 +4,9 @@
   "license": "MIT",
   "workspaces": [
     "js"
-  ]
+  ],
+  "scripts": {
+    "build": "npm run build -w js",
+    "test": "npm test -w js"
+  }
 }

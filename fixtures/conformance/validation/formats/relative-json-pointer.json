@@ -1,0 +1,7 @@
+{
+  "description": "format relative-json-pointer: the core form: levels up, then a pointer or #",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "relative-json-pointer"
+  }
+}

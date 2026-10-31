@@ -1,0 +1,16 @@
+uuid: 7a1f3c5e-9b2d-4e6f-8a0c-1d3e5f7a9b2c
+langcode: en
+status: true
+dependencies: {}
+id: olivero_foo
+theme: olivero
+region: header
+weight: 0
+provider: null
+plugin: foo_block
+settings:
+  id: foo_block
+  label: Foo
+  label_display: '0'
+  provider: system
+visibility: {}

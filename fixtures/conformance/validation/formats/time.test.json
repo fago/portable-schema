@@ -1,0 +1,82 @@
+[
+  {
+    "description": "valid: \"14:30:00Z\"",
+    "data": "14:30:00Z",
+    "valid": true
+  },
+  {
+    "description": "valid: \"14:30:00.5+02:00\"",
+    "data": "14:30:00.5+02:00",
+    "valid": true
+  },
+  {
+    "description": "valid: \"23:59:59-12:00\"",
+    "data": "23:59:59-12:00",
+    "valid": true
+  },
+  {
+    "description": "invalid: \"14:30:00\"",
+    "data": "14:30:00",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.time",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"24:00:00Z\"",
+    "data": "24:00:00Z",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.time",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"23:59:60Z\"",
+    "data": "23:59:60Z",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.time",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"14:30Z\"",
+    "data": "14:30Z",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.time",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"10:00:00Z\\n\"",
+    "data": "10:00:00Z\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.time",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "other types are not checked",
+    "data": 1,
+    "valid": true
+  }
+]

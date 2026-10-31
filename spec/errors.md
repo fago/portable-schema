@@ -57,6 +57,8 @@ Validation returns data, not text. Messages are produced from this data by a for
 | `compare.<op>` | `portable-compare`; `<op>` is `lt`, `le`, `eq`, `ne`, `ge`, `gt` | `other` (the compared value), `otherLocation` |
 | `check.<name>` | `portable-check`, e.g. `check.drupal:UniqueField`; checks may define sub-codes `check.<name>.<sub>` | defined by the check's manifest |
 
+`required`, `unknownProperty`, `propertyNames` and `dependentRequired` are reported at the object (`instanceLocation`) and name the property in `params.property`.
+
 Errors from a schema returned by `portable-refine` carry the code of the failing keyword.
 
 ## Shaping
@@ -72,6 +74,8 @@ Raw JSON Schema evaluation reports many errors for one problem. Implementations 
 3. **`portable-typeBy`:** report only errors of the resolved schema, or `typeBy.unresolved` if neither the target nor the fallback exists.
 4. **`if` / `then` / `else`:** report the errors of the applied branch, not of `if`.
 5. **`$ref`:** errors keep the location of the referencing keyword.
-6. **Order:** by `instanceLocation`, then by `keywordLocation`. Ties keep the order of the keyword's value, e.g. the order of the `required` list.
+6. **`unknownProperty`:** not reported for a property that has another error at or below it, e.g. a `propertyNames` error for the same name.
+7. **Order:** by `instanceLocation`, then by `keywordLocation`, compared segment by segment: array-index segments first, numerically, then the others by code point. Ties keep the order of the keyword's value, e.g. the order of the `required` list. An object's properties are taken in JS order: array-index names ascending, then the others in document order.
+   - An array-index name is the canonical decimal form of an integer from 0 to 2^32 − 2: `1`, `12`, not `01`, `-0` or `1.0`.
 
 Annotations such as `title` are not part of errors. Formatters take them from the annotations collected during validation.

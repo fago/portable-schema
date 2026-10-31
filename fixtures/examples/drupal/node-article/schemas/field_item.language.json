@@ -1,0 +1,18 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:field_item.language",
+    "title": "Language",
+    "description": "Items of language fields, with the field type's default settings.",
+    "type": "object",
+    "properties": {
+        "value": {
+            "title": "Language code",
+            "$ref": "drupal:catalog/languages",
+            "maxLength": 12
+        }
+    },
+    "required": [
+        "value"
+    ],
+    "unevaluatedProperties": false
+}

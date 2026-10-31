@@ -1,0 +1,16 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component_source_settings.fallback",
+  "title": "Fallback component settings",
+  "$ref": "drupal:canvas.component_source_settings",
+  "properties": {
+    "last_active_version": {
+      "title": "Last active version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "last_active_version"
+  ],
+  "unevaluatedProperties": false
+}

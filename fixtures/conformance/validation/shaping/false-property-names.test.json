@@ -1,0 +1,18 @@
+[
+  {
+    "description": "invalid",
+    "data": {
+      "a": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "propertyNames",
+        "params": {
+          "property": "a"
+        }
+      }
+    ]
+  }
+]

@@ -8,6 +8,15 @@ How a validator evaluates data against a schema, and the options that change wha
 2. **Evaluate** every keyword of the schema, resolving references through the registry and running named checks (see [`vocabulary.md`](vocabulary.md)). Annotations are collected along the way.
 3. **Shape** the raw errors to one per problem (see [`errors.md`](errors.md)).
 
+## Registry
+
+Schemas are found by id in a registry. How files get their ids is in [`registry.md`](registry.md).
+
+- **Ids** are absolute URIs without a fragment, dot segments (`.`, `..`) or the `file:` scheme, and are not the id of a JSON Schema or Portable Schema meta-schema. Two ids must differ after percent-decoding, with the scheme and authority in lower case.
+- **A schema's own `$id`**, if it has one, equals its id in the registry.
+- **References** resolve through the registry only. The JSON Schema meta-schemas are not part of it.
+- **Loading** refuses every schema outside the [profile](profile.md), including subschemas no data reaches.
+
 ## Options
 
 Options only filter what is reported. The schema is always evaluated in full, since keywords like `portable-typeBy`, `portable-compare` and `if` depend on other values.
@@ -16,7 +25,7 @@ Options only filter what is reported. The schema is always evaluated in full, si
 |---|---|---|
 | `partial` | `false` | Missing values are not errors. Values that are present are validated fully |
 | `emptyAsMissing` | `false` | With `partial`, empty strings, empty arrays and empty objects count as missing |
-| `locations` | all | Only errors and unchecked entries at or below these JSON Pointers are reported |
+| `locations` | all | Only errors and unchecked entries at or below these JSON Pointers are reported; an error naming a property counts at that property |
 
 ### `partial`
 
@@ -31,7 +40,8 @@ For saving incomplete data: drafts, PATCH requests, multi-step forms. With `part
 
 With `partial: true` and `emptyAsMissing: true`, a property whose value is `""`, `[]` or `{}` is treated as missing:
 
-- it causes no errors;
+- it causes no errors, not even `unknownProperty`;
+- as a `portable-typeBy` source, it selects no schema;
 - `minLength`, `minItems` and `minProperties` don't apply to it;
 - it isn't removed from the data.
 
@@ -39,7 +49,7 @@ Without `partial`, the option has no effect.
 
 ### `locations`
 
-For validating part of the data, e.g. one form field on blur or one step of a wizard. Only results whose `instanceLocation` equals one of the given pointers, or lies below one, are reported.
+For validating part of the data, e.g. one form field on blur or one step of a wizard. Only results whose `instanceLocation` equals one of the given pointers, or lies below one, are reported. An error that names a property in `params.property` (`required`, `unknownProperty`, `propertyNames`, `dependentRequired`) counts at that property's location, so `["/a/c"]` reports `c` missing from `/a`.
 
 Locations combine with `partial`, e.g. to validate the fields of one wizard step while later steps are still empty.
 
@@ -56,11 +66,11 @@ Locations combine with `partial`, e.g. to validate the fields of one wizard step
   - `if`: `then` or `else` by its outcome; `if` itself is not returned;
   - `portable-typeBy`: the resolved target or fallback.
   Each applied schema is expanded in place before the next keyword.
-- **A labeled catalog** ([`profile.md`](profile.md)) is one schema; its branches are not returned.
+- **A catalog** ([`profile.md`](profile.md)), labeled or not: a `oneOf` whose branches are each a `const` with annotations only is one schema; its branches are not returned.
 - **Walk:** start with the root schema, expanded. For each reference token of `location`, replace the set by the child schemas of its members, each expanded:
-  - object: `properties/<token>`; `additionalProperties` where the schema's own `properties` has no entry; `unevaluatedProperties` only when no `properties` entry in the whole set matches;
+  - object: `properties/<token>`; every `patternProperties/<pattern>` whose pattern matches the token; `additionalProperties` where neither matches in the schema's own keywords; `unevaluatedProperties` only when none matches in the whole set;
   - array: `prefixItems/<index>`, else `items`.
-  The value decides between object and array; where it is missing, the schema's `type` does.
+  The value decides between object and array; where it is missing, the schema's `type` does, and without `type` both apply.
 - **Missing values:** a keyword that needs a missing value to choose (`anyOf`, `oneOf`, `if`; `portable-typeBy` with a missing `source` value) is skipped and listed in `unresolved`. The walk continues with the schemas that resolve, so `schemaLocations` holds the schemas known to apply.
 - **Validation** of a set value stays full evaluation with the `locations` option, since `portable-typeBy`, `portable-compare` and `if` depend on sibling values.
 - **Location strings** are JSON Pointers (RFC 6901); `""` is the root.

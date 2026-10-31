@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:sdc.portable_showcase.hero",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/image/width",
+      "code": "minimum",
+      "params": {
+        "limit": 1
+      }
+    }
+  ],
+  "messages": [
+    "Width must be at least 1."
+  ]
+}

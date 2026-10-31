@@ -1,0 +1,7 @@
+{
+  "description": "format time: HH:MM:SS with optional fraction and a required offset, no leap seconds",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "time"
+  }
+}

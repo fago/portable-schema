@@ -1,0 +1,511 @@
+[
+  {
+    "description": "the stricter of minimum and exclusiveMinimum",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d1",
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMinimum": 5,
+      "maximum": 10,
+      "exclusiveMaximum": 20
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "number",
+      "minimum": 5,
+      "exclusiveMinimum": true,
+      "maximum": 10
+    },
+    "tests": [
+      {
+        "data": 6,
+        "valid": true
+      },
+      {
+        "data": 5,
+        "valid": false
+      },
+      {
+        "data": 10,
+        "valid": true
+      },
+      {
+        "data": 11,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "prefixItems and items become items and additionalItems",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d2",
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "string"
+        },
+        true
+      ],
+      "items": false
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        },
+        {}
+      ],
+      "additionalItems": false
+    },
+    "tests": [
+      {
+        "data": [
+          "a",
+          1
+        ],
+        "valid": true
+      },
+      {
+        "data": [
+          1
+        ],
+        "valid": false
+      },
+      {
+        "data": [
+          "a",
+          1,
+          2
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "boolean subschemas become schemas, keywords draft-04 doesn't have are dropped",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d3",
+      "type": "object",
+      "properties": {
+        "a": false,
+        "b": {
+          "type": "string",
+          "contentMediaType": "text/html",
+          "writeOnly": true,
+          "examples": [
+            "x"
+          ]
+        }
+      }
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "properties": {
+        "a": {
+          "not": {}
+        },
+        "b": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": {
+          "b": "x"
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "a": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedProperties next to allOf is refused",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:closed4",
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "string"
+          }
+        },
+        "unevaluatedProperties": false
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d4",
+      "$ref": "test:closed4",
+      "properties": {
+        "b": {
+          "type": "integer"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": {
+          "a": "x"
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "a": "x",
+          "b": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "const outside enum: nothing is allowed",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d20",
+      "const": "c",
+      "enum": [
+        "a",
+        "b"
+      ]
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "not": {}
+    },
+    "tests": [
+      {
+        "data": "a",
+        "valid": false
+      },
+      {
+        "data": "c",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "enum before const outside it: nothing is allowed",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d21",
+      "enum": [
+        "a",
+        "b"
+      ],
+      "const": "c"
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "not": {}
+    },
+    "tests": [
+      {
+        "data": "c",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "const and enum intersect",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d22",
+      "const": "a",
+      "enum": [
+        "a",
+        "b"
+      ]
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "enum": [
+        "a"
+      ]
+    },
+    "tests": [
+      {
+        "data": "a",
+        "valid": true
+      },
+      {
+        "data": "b",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "const next to a ref with enum",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:ab",
+        "enum": [
+          "a",
+          "b"
+        ]
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d23",
+      "$ref": "test:ab",
+      "const": "a"
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "enum": [
+        "a"
+      ]
+    },
+    "tests": [
+      {
+        "data": "a",
+        "valid": true
+      },
+      {
+        "data": "b",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedProperties next to additionalProperties is refused",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d24",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "unevaluatedProperties": false
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": {
+          "a": "x"
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "a": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "contains is refused",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d25",
+      "type": "array",
+      "contains": {
+        "const": 1
+      }
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": [
+          1
+        ],
+        "valid": true
+      },
+      {
+        "data": [
+          2
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "if/then is refused",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d26",
+      "if": {
+        "const": 1
+      },
+      "then": false
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": 1,
+        "valid": false
+      },
+      {
+        "data": 2,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "propertyNames is refused",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d27",
+      "type": "object",
+      "propertyNames": {
+        "maxLength": 1
+      }
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": {
+          "a": 1
+        },
+        "valid": true
+      },
+      {
+        "data": {
+          "ab": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedItems is refused",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d28",
+      "type": "array",
+      "prefixItems": [
+        true
+      ],
+      "unevaluatedItems": false
+    },
+    "draft04": null,
+    "tests": [
+      {
+        "data": [
+          1
+        ],
+        "valid": true
+      },
+      {
+        "data": [
+          1,
+          2
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "keywords without effect are dropped: minContains/maxContains without contains, then/else without if",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d30",
+      "type": "array",
+      "minContains": 2,
+      "maxContains": 0,
+      "then": false,
+      "else": false
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "array"
+    },
+    "tests": [
+      {
+        "data": [],
+        "valid": true
+      },
+      {
+        "data": [
+          1
+        ],
+        "valid": true
+      },
+      {
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "an if without then and else is dropped",
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d31",
+      "type": "string",
+      "if": {
+        "const": "a"
+      }
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "string"
+    },
+    "tests": [
+      {
+        "data": "a",
+        "valid": true
+      },
+      {
+        "data": "b",
+        "valid": true
+      },
+      {
+        "data": 1,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "then next to a ref with if has no if of its own",
+    "registry": [
+      {
+        "$schema": "https://portable-schema.dev/v1/schema",
+        "$id": "test:if32",
+        "if": {
+          "const": 1
+        }
+      }
+    ],
+    "schema": {
+      "$schema": "https://portable-schema.dev/v1/schema",
+      "$id": "test:d32",
+      "$ref": "test:if32",
+      "then": false
+    },
+    "draft04": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "allOf": [
+        {}
+      ]
+    },
+    "tests": [
+      {
+        "data": 1,
+        "valid": true
+      },
+      {
+        "data": 2,
+        "valid": true
+      }
+    ]
+  }
+]

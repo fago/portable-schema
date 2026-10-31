@@ -1,0 +1,31 @@
+{
+  "schema": "drupal:node.article",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/body/0/format",
+      "code": "enum",
+      "params": {
+        "value": "full_html",
+        "allowed": [
+          "plain_text",
+          "restricted_html"
+        ]
+      }
+    }
+  ],
+  "messages": [
+    "Text format: “full_html” is not an allowed value. Allowed: Plain text, Restricted HTML."
+  ],
+  "checks": {
+    "drupal:ValidReference": {
+      "errors": []
+    },
+    "drupal:ReferenceAccess": {
+      "errors": []
+    },
+    "drupal:FileExtension": {
+      "errors": []
+    }
+  }
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "description": "both branches match",
+    "data": {
+      "a": "x",
+      "b": "y"
+    },
+    "valid": true
+  },
+  {
+    "description": "a property only a failed branch evaluated",
+    "data": {
+      "a": "x",
+      "b": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "b"
+        }
+      }
+    ]
+  }
+]

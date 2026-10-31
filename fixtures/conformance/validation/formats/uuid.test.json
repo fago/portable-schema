@@ -1,0 +1,53 @@
+[
+  {
+    "description": "valid: \"8f9e6a0e-3c3a-4b8e-9d7f-1d2c3b4a5e6f\"",
+    "data": "8f9e6a0e-3c3a-4b8e-9d7f-1d2c3b4a5e6f",
+    "valid": true
+  },
+  {
+    "description": "valid: \"8F9E6A0E-3C3A-4B8E-9D7F-1D2C3B4A5E6F\"",
+    "data": "8F9E6A0E-3C3A-4B8E-9D7F-1D2C3B4A5E6F",
+    "valid": true
+  },
+  {
+    "description": "invalid: \"8f9e6a0e3c3a4b8e9d7f1d2c3b4a5e6f\"",
+    "data": "8f9e6a0e3c3a4b8e9d7f1d2c3b4a5e6f",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uuid",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"8f9e6a0e-3c3a-4b8e-9d7f-1d2c3b4a5e6\"",
+    "data": "8f9e6a0e-3c3a-4b8e-9d7f-1d2c3b4a5e6",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uuid",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"123e4567-e89b-12d3-a456-426614174000\\n\"",
+    "data": "123e4567-e89b-12d3-a456-426614174000\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.uuid",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "other types are not checked",
+    "data": 1,
+    "valid": true
+  }
+]

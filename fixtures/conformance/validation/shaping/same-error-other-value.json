@@ -1,0 +1,13 @@
+{
+  "description": "errors that differ in an empty array or object param are kept",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "const": [],
+    "dependentSchemas": {
+      "b": {
+        "const": {}
+      }
+    }
+  }
+}

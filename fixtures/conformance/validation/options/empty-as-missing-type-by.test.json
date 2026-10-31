@@ -1,0 +1,62 @@
+[
+  {
+    "description": "an empty source with partial and emptyAsMissing",
+    "data": {
+      "kind": "",
+      "value": 5
+    },
+    "options": {
+      "partial": true,
+      "emptyAsMissing": true
+    },
+    "valid": true,
+    "errors": []
+  },
+  {
+    "description": "an empty source with partial only selects its schema",
+    "data": {
+      "kind": "",
+      "value": 5
+    },
+    "options": {
+      "partial": true
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/value",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  },
+  {
+    "description": "a source that is present",
+    "data": {
+      "kind": "a",
+      "value": "x"
+    },
+    "options": {
+      "partial": true,
+      "emptyAsMissing": true
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/value",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "string"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,20 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:catalog/languages",
+    "title": "Languages",
+    "description": "Generated from the site's languages, including the special ones.",
+    "oneOf": [
+        {
+            "const": "en",
+            "title": "English"
+        },
+        {
+            "const": "und",
+            "title": "Not specified"
+        },
+        {
+            "const": "zxx",
+            "title": "Not applicable"
+        }
+    ]
+}

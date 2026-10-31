@@ -1,0 +1,92 @@
+[
+  {
+    "description": "known source and version",
+    "data": {
+      "source": "sdc:hero",
+      "versions": {
+        "v1": {
+          "heading": "Hi"
+        }
+      }
+    },
+    "valid": true
+  },
+  {
+    "description": "invalid props of a known version",
+    "data": {
+      "source": "sdc:hero",
+      "versions": {
+        "v1": {
+          "heading": 1
+        }
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/versions/v1/heading",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  },
+  {
+    "description": "unknown version",
+    "data": {
+      "source": "sdc:hero",
+      "versions": {
+        "v2": {}
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/versions/v2",
+        "code": "typeBy.unresolved",
+        "params": {
+          "value": {
+            "source": "sdc:hero",
+            "version": "v2"
+          },
+          "resolved": "test:props.sdc:hero.v2"
+        }
+      }
+    ]
+  },
+  {
+    "description": "missing source",
+    "data": {
+      "versions": {
+        "v1": {}
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/versions/v1",
+        "code": "typeBy.unresolved",
+        "params": {
+          "value": null,
+          "resolved": null
+        }
+      }
+    ]
+  },
+  {
+    "description": "partial: missing source is not an error",
+    "options": {
+      "partial": true
+    },
+    "data": {
+      "versions": {
+        "v1": {}
+      }
+    },
+    "valid": true
+  }
+]

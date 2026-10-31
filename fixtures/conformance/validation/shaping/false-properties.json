@@ -1,0 +1,11 @@
+{
+  "description": "a false property is an unknown property",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "a": false,
+      "b": false
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "description": "a true subschema in a failed $ref target evaluates its property for unevaluatedProperties",
+  "registry": {
+    "test:r": {
+      "properties": {
+        "b": true
+      },
+      "required": [
+        "z"
+      ]
+    }
+  },
+  "schema": {
+    "type": "object",
+    "$ref": "test:r",
+    "unevaluatedProperties": false,
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

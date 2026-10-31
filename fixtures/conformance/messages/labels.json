@@ -1,0 +1,29 @@
+{
+  "description": "labels come from the schema's titles, else the property name; library type titles are not labels",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "title": "Article",
+    "type": "object",
+    "properties": {
+      "title": {
+        "title": "Title",
+        "$ref": "portable:label",
+        "maxLength": 5
+      },
+      "slug": {
+        "$ref": "portable:identifier"
+      },
+      "count": {
+        "$ref": "portable:integer"
+      },
+      "author": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "title",
+      "author"
+    ],
+    "unevaluatedProperties": false
+  }
+}

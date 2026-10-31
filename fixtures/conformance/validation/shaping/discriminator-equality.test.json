@@ -1,0 +1,37 @@
+[
+  {
+    "description": "a number written with a fraction",
+    "data": {
+      "k": 2.0
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "c"
+        }
+      }
+    ]
+  },
+  {
+    "description": "an object with other key order",
+    "data": {
+      "k": {
+        "z": 2,
+        "y": 1
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "b"
+        }
+      }
+    ]
+  }
+]

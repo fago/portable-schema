@@ -1,0 +1,22 @@
+{
+  "description": "a property with its own error is not also reported as unknown",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "b": {
+        "$ref": "portable:string"
+      },
+      "c": {
+        "type": "object",
+        "properties": {
+          "d": {
+            "$ref": "portable:string"
+          }
+        },
+        "unevaluatedProperties": false
+      }
+    },
+    "unevaluatedProperties": false
+  }
+}

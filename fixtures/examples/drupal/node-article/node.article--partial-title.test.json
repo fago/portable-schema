@@ -1,0 +1,23 @@
+{
+  "schema": "drupal:node.article",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/title/0/value",
+      "code": "maxLength",
+      "params": {
+        "limit": 255,
+        "actual": 256
+      }
+    }
+  ],
+  "messages": [
+    "Text value must be at most 255 characters long."
+  ],
+  "options": {
+    "partial": true,
+    "locations": [
+      "/title"
+    ]
+  }
+}
