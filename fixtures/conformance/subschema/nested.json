@@ -1,0 +1,29 @@
+{
+  "description": "subschemaAt walks properties, additionalProperties, items and $ref",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "title": {
+        "$ref": "portable:label"
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "$ref": "portable:label"
+        }
+      },
+      "author": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "portable:label"
+          }
+        },
+        "additionalProperties": {
+          "$ref": "portable:string"
+        }
+      }
+    }
+  }
+}

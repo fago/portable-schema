@@ -1,7 +1,5 @@
 # Validation
 
-Status: draft.
-
 How a validator evaluates data against a schema, and the options that change what it reports. Results follow [`errors.md`](errors.md).
 
 ## Steps
@@ -44,3 +42,28 @@ Without `partial`, the option has no effect.
 For validating part of the data, e.g. one form field on blur or one step of a wizard. Only results whose `instanceLocation` equals one of the given pointers, or lies below one, are reported.
 
 Locations combine with `partial`, e.g. to validate the fields of one wizard step while later steps are still empty.
+
+## Subschema at a location
+
+`subschemaAt(schema, instance, location)` returns the schemas that apply to the value at `location` of `instance`, in evaluation order. Widgets choose their control from them; hosts set a value by path and create missing containers from their `type`.
+
+- **Result:** `schemaLocations`, the list of schema locations, and `unresolved`, the schema locations of keywords the walk skipped (see below).
+- **Schema locations** are JSON Pointers into the root schema in the form of `keywordLocation` ([`errors.md`](errors.md)): they pass through `$ref` and `portable-typeBy` into the resolved schema, e.g. `/properties/settings/$ref/properties/label`.
+- **A schema applies** together with the schemas its keywords apply, in this order:
+  - `$ref`: the referenced schema, resolved through the registry;
+  - `allOf`: every branch;
+  - `anyOf`, `oneOf`: the branches the value is valid against; named checks don't run;
+  - `if`: `then` or `else` by its outcome; `if` itself is not returned;
+  - `portable-typeBy`: the resolved target or fallback.
+  Each applied schema is expanded in place before the next keyword.
+- **A labeled catalog** ([`profile.md`](profile.md)) is one schema; its branches are not returned.
+- **Walk:** start with the root schema, expanded. For each reference token of `location`, replace the set by the child schemas of its members, each expanded:
+  - object: `properties/<token>`; `additionalProperties` where the schema's own `properties` has no entry; `unevaluatedProperties` only when no `properties` entry in the whole set matches;
+  - array: `prefixItems/<index>`, else `items`.
+  The value decides between object and array; where it is missing, the schema's `type` does.
+- **Missing values:** a keyword that needs a missing value to choose (`anyOf`, `oneOf`, `if`; `portable-typeBy` with a missing `source` value) is skipped and listed in `unresolved`. The walk continues with the schemas that resolve, so `schemaLocations` holds the schemas known to apply.
+- **Validation** of a set value stays full evaluation with the `locations` option, since `portable-typeBy`, `portable-compare` and `if` depend on sibling values.
+- **Location strings** are JSON Pointers (RFC 6901); `""` is the root.
+  - **Dotted paths:** a string that does not start with `/` is split on `.`, each part one reference token, without escaping, so keys containing `.` or `/` need the pointer form. `/` means the root too.
+
+Fixtures: [`fixtures/conformance/subschema/`](../fixtures/conformance/subschema).
