@@ -16,6 +16,15 @@ Refused in every schema and subschema:
 
 A schema is one resource: `$id` and `$schema` only at its root. Below the root, a string `$id` or `$schema` is refused in every object: subschemas and values like `default` or `const` alike.
 
+## Catalogs
+
+A catalog restricts a value to the facts a system provides ([decision 0006](../docs/decisions/0006-catalogs-as-labeled-oneof.md)):
+
+- **Labeled:** a `oneOf` whose branches each hold a distinct `const` and a `title`, optionally a `description` and `x-portable-*` annotations.
+- **Unlabeled:** a plain `enum`.
+
+`title` and `description` are translatable schema strings. A failed check reports one `enum` error with the allowed values.
+
 ## Formats
 
 Formats come from the [JSON Schema format registry](https://github.com/json-schema-org/json-schema-spec/blob/main/specs/registries/format.json) ([decision 0003](../docs/decisions/0003-formats-from-the-registry.md)).
