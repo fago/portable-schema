@@ -66,11 +66,11 @@ Locations combine with `partial`, e.g. to validate the fields of one wizard step
   - `if`: `then` or `else` by its outcome; `if` itself is not returned;
   - `portable-typeBy`: the resolved target or fallback.
   Each applied schema is expanded in place before the next keyword.
-- **A labeled catalog** ([`profile.md`](profile.md)) is one schema; its branches are not returned.
+- **A catalog** ([`profile.md`](profile.md)), labeled or not: a `oneOf` whose branches are each a `const` with annotations only is one schema; its branches are not returned.
 - **Walk:** start with the root schema, expanded. For each reference token of `location`, replace the set by the child schemas of its members, each expanded:
-  - object: `properties/<token>`; `additionalProperties` where the schema's own `properties` has no entry; `unevaluatedProperties` only when no `properties` entry in the whole set matches;
+  - object: `properties/<token>`; every `patternProperties/<pattern>` whose pattern matches the token; `additionalProperties` where neither matches in the schema's own keywords; `unevaluatedProperties` only when none matches in the whole set;
   - array: `prefixItems/<index>`, else `items`.
-  The value decides between object and array; where it is missing, the schema's `type` does.
+  The value decides between object and array; where it is missing, the schema's `type` does, and without `type` both apply.
 - **Missing values:** a keyword that needs a missing value to choose (`anyOf`, `oneOf`, `if`; `portable-typeBy` with a missing `source` value) is skipped and listed in `unresolved`. The walk continues with the schemas that resolve, so `schemaLocations` holds the schemas known to apply.
 - **Validation** of a set value stays full evaluation with the `locations` option, since `portable-typeBy`, `portable-compare` and `if` depend on sibling values.
 - **Location strings** are JSON Pointers (RFC 6901); `""` is the root.
