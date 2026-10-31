@@ -1,7 +1,5 @@
 # Validation
 
-Status: draft.
-
 How a validator evaluates data against a schema, and the options that change what it reports. Results follow [`errors.md`](errors.md).
 
 ## Steps
