@@ -1,6 +1,6 @@
 # Profile
 
-This document covers formats; the rest of the profile follows.
+Status: draft. This document starts with formats; the rest of the profile follows.
 
 Schemas outside the profile are refused when they are loaded ([decision 0005](../docs/decisions/0005-profile-only-validators.md)).
 
