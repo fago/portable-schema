@@ -1,0 +1,48 @@
+{
+  "description": "subschemaAt resolves portable-typeBy by a sibling value",
+  "registry": {
+    "test:settings": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "portable:label"
+        }
+      },
+      "required": [
+        "label"
+      ]
+    },
+    "test:settings.branding": {
+      "$ref": "test:settings",
+      "properties": {
+        "use_logo": {
+          "$ref": "portable:boolean"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "test:settings.*": {
+      "$ref": "test:settings",
+      "unevaluatedProperties": false
+    }
+  },
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "plugin": {
+        "type": "string"
+      },
+      "settings": {
+        "$ref": "test:settings",
+        "portable-typeBy": {
+          "href": "test:settings.{plugin}",
+          "source": {
+            "plugin": "1/plugin"
+          },
+          "fallback": "test:settings.*"
+        }
+      }
+    }
+  }
+}
