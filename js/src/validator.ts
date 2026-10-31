@@ -1,5 +1,6 @@
 import { type CheckCallback, type CheckProvider, Checks } from "./checks.js";
 import { compile, evaluate, type Compiled } from "./hyperjump.js";
+import { normalize } from "./normalize.js";
 import type { Registry } from "./registry.js";
 import type { Result } from "./result.js";
 import { Shaper } from "./shaper.js";
@@ -13,7 +14,7 @@ export type ValidateOptions = {
 };
 
 /**
- * Validates data against Portable Schemas. Data follows the JSON data model.
+ * Validates data against Portable Schemas. Data is normalized to the JSON data model (spec/normalization.md).
  */
 export class Validator {
   private callbacks = new Map<string, CheckCallback>();
@@ -45,13 +46,14 @@ export class Validator {
     const url = this.compiled.urls.get(id);
     if (url === undefined) throw new Error(`Unknown schema ${id}`);
 
+    const normalized = normalize(data);
     const tracer = new Tracer();
     const checks = new Checks();
-    evaluate(this.compiled, url, data, tracer, checks);
+    evaluate(this.compiled, url, normalized.data, tracer, checks);
     checks.run(this.callbacks, this.providers);
 
     const { partial = false, emptyAsMissing = false, locations = null } = options;
-    return new Shaper(this.registry, data, partial, emptyAsMissing, locations).shape(tracer.root()!);
+    return new Shaper(this.registry, normalized.data, partial, emptyAsMissing, locations, normalized.unrepresentable).shape(tracer.root()!);
   }
 
   /**
@@ -65,9 +67,10 @@ export class Validator {
     const url = this.compiled.urls.get(id);
     if (url === undefined) throw new Error(`Unknown schema ${id}`);
 
+    const { data: normalized } = normalize(data);
     const tracer = new Tracer();
-    evaluate(this.compiled, url, data, tracer, new Checks());
-    return new Subschema(this.registry, data, tracer.root()!).at(id, location);
+    evaluate(this.compiled, url, normalized, tracer, new Checks());
+    return new Subschema(this.registry, normalized, tracer.root()!).at(id, location);
   }
 
   private clone(): Validator {

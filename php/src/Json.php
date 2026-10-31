@@ -71,6 +71,22 @@ final class Json
     }
 
     /**
+     * Replaces the value at $location in $root.
+     */
+    public static function set(mixed &$root, string $location, mixed $value): void
+    {
+        $target = &$root;
+        foreach (Pointer::segments($location) as $segment) {
+            if ($target instanceof \stdClass) {
+                $target = &$target->{$segment};
+            } else {
+                $target = &$target[(int) $segment];
+            }
+        }
+        $target = $value;
+    }
+
+    /**
      * Converts decoded JSON to plain PHP arrays, e.g. for comparing results.
      */
     public static function toArray(mixed $value): mixed

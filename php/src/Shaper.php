@@ -33,6 +33,8 @@ final class Shaper
 
     /**
      * @param list<string>|null $locations
+     * @param array<string, string> $unrepresentable the host type name per location of a value outside the data model
+     * @param array<string, true> $arrayMaps the locations of maps that were PHP arrays
      */
     public function __construct(
         private readonly Registry $registry,
@@ -40,6 +42,8 @@ final class Shaper
         private readonly bool $partial = false,
         private readonly bool $emptyAsMissing = false,
         private readonly ?array $locations = null,
+        private readonly array $unrepresentable = [],
+        private readonly array $arrayMaps = [],
     ) {
     }
 
@@ -83,6 +87,13 @@ final class Shaper
     private function schema(SchemaNode $node, string $location): Shaped
     {
         $shaped = new Shaped();
+        if (isset($this->unrepresentable[$node->instanceLocation])) {
+            [, $schema] = $this->registry->resolve($node->uri);
+            $type = $schema->type ?? [];
+            $params = ['expected' => is_array($type) ? $type : [$type], 'actual' => $this->unrepresentable[$node->instanceLocation]];
+            $shaped->errors[] = new ValidationError($node->instanceLocation, Pointer::append($location, 'type'), Pointer::append($node->uri, 'type'), 'type', $params);
+            return $shaped;
+        }
         if ($node->boolean) {
             if (!$node->valid) {
                 $shaped->errors[] = new ValidationError($node->instanceLocation, $location, $node->uri, 'false');
@@ -140,7 +151,7 @@ final class Shaper
         }
 
         if ($node->children === []) {
-            return new Shaped($node->valid ? [] : $this->leaf($node->keyword, $value, $instance, $error));
+            return new Shaped($node->valid ? [] : $this->leaf($node->keyword, $value, $instance, $node->instanceLocation, $error));
         }
 
         $shaped = new Shaped();
@@ -237,11 +248,11 @@ final class Shaper
      *
      * @return list<ValidationError>
      */
-    private function leaf(string $keyword, mixed $value, mixed $instance, \Closure $error): array
+    private function leaf(string $keyword, mixed $value, mixed $instance, string $instanceLocation, \Closure $error): array
     {
         switch ($keyword) {
             case 'type':
-                return [$error('type', ['expected' => is_array($value) ? $value : [$value], 'actual' => Json::typeOf($instance)])];
+                return [$error('type', ['expected' => is_array($value) ? $value : [$value], 'actual' => isset($this->arrayMaps[$instanceLocation]) ? 'array' : Json::typeOf($instance)])];
             case 'required':
                 if ($this->partial || !$instance instanceof \stdClass) {
                     return [];
