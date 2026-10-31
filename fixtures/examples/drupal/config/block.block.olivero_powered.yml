@@ -1,3 +1,4 @@
+uuid: 0c2b3e1a-5d4f-4a6b-8c7d-9e0f1a2b3c4d
 langcode: en
 status: true
 dependencies:
@@ -9,6 +10,7 @@ id: olivero_powered
 theme: olivero
 region: footer_top
 weight: 0
+provider: null
 plugin: system_powered_by_block
 settings:
   id: system_powered_by_block
