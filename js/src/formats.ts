@@ -104,10 +104,10 @@ export const check = (format: string, value: unknown): boolean => {
     case "email": return email(value);
     case "hostname": return hostname(value);
     case "ipv6": return ipv6(value);
-    case "uri": return match("^" + URI + "$", value);
-    case "uri-reference": return match("^(?:" + URI + "|" + RELATIVE_REF + ")$", value);
-    case "iri": return match("^" + IRI + "$", value);
-    case "iri-reference": return match("^(?:" + IRI + "|" + IRELATIVE_REF + ")$", value);
+    case "uri": return match("^" + URI + "$", value) && ipLiteral(value);
+    case "uri-reference": return match("^(?:" + URI + "|" + RELATIVE_REF + ")$", value) && ipLiteral(value);
+    case "iri": return match("^" + IRI + "$", value) && ipLiteral(value);
+    case "iri-reference": return match("^(?:" + IRI + "|" + IRELATIVE_REF + ")$", value) && ipLiteral(value);
     case "regex":
       try {
         new RegExp(value, "u");
@@ -125,6 +125,12 @@ export const check = (format: string, value: unknown): boolean => {
 };
 
 const match = (pattern: string, value: string): boolean => new RegExp(pattern, "u").test(value);
+
+/** Whether a bracketed host is an IPv6 address. IPvFuture (`[v…]`) passes by syntax. */
+const ipLiteral = (value: string): boolean => {
+  const m = /^(?:[A-Za-z][A-Za-z0-9+.\-]*:)?\/\/(?:[^/?#@]*@)?\[([^\]]*)\]/u.exec(value);
+  return m === null || /^v/iu.test(m[1]!) || ipv6(m[1]!);
+};
 
 const date = (value: string): boolean => {
   const m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/u.exec(value);
