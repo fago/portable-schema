@@ -18,6 +18,6 @@ The `portable-schema.dev` base URI is a placeholder until a domain is chosen.
 | [`errors.md`](errors.md) | Result format, error codes and params, shaping rules (draft) |
 | [`profile.md`](profile.md) | Allowed and restricted standard keywords; rules where JSON Schema leaves a choice. Formats so far (draft) |
 | [`vocabulary.md`](vocabulary.md) | Semantics of each added keyword. `portable-check` so far (draft) |
-| [`validation.md`](validation.md) | Validation steps; partial validation and other reporting options (draft) |
+| [`validation.md`](validation.md) | Validation steps; partial validation and other reporting options; the subschema at a location (draft) |
 | `normalization.md` (planned) | JSON data model, object vs list, coercion cast table |
 | `catalogs.md` (planned) | Catalogs, registry resolution (live and static), site schema dumps |
