@@ -3,9 +3,73 @@ import { typeOf } from "./json.js";
 /**
  * The pinned format checks of spec/profile.md.
  */
-const URI = String.raw`(?:[A-Za-z][A-Za-z0-9+.\-]*:(?://(?:(?:[A-Za-z0-9\-._~!$&'()*+,;=:]|%[0-9A-Fa-f]{2})*@)?(?:\[(?:[0-9A-Fa-f:.]+|v[0-9A-Fa-f]+\.[A-Za-z0-9\-._~!$&'()*+,;=:]+)\]|(?:[A-Za-z0-9\-._~!$&'()*+,;=]|%[0-9A-Fa-f]{2})*)(?::[0-9]*)?(?:/(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*|/(?:(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+(?:/(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*)?|(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+(?:/(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*|)(?:\?(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})*)?(?:#(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})*)?)`;
 
-const RELATIVE_REF = String.raw`(?:(?://(?:(?:[A-Za-z0-9\-._~!$&'()*+,;=:]|%[0-9A-Fa-f]{2})*@)?(?:\[(?:[0-9A-Fa-f:.]+|v[0-9A-Fa-f]+\.[A-Za-z0-9\-._~!$&'()*+,;=:]+)\]|(?:[A-Za-z0-9\-._~!$&'()*+,;=]|%[0-9A-Fa-f]{2})*)(?::[0-9]*)?(?:/(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*|/(?:(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+(?:/(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*)?|(?:[A-Za-z0-9\-._~!$&'()*+,;=@]|%[0-9A-Fa-f]{2})+(?:/(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*|)(?:\?(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})*)?(?:#(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})*)?)`;
+/** RFC 3987 ucschar and iprivate, as PCRE writes them; JS reads `\u{…}`. Split at the BMP: PCRE2 10.46 mis-compiles a class holding every range. */
+const UCSCHAR = String.raw`\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}`;
+
+const UCSCHAR_ASTRAL = String.raw`\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}`;
+
+const IPRIVATE = String.raw`\x{E000}-\x{F8FF}`;
+
+const IPRIVATE_ASTRAL = String.raw`\x{F0000}-\x{FFFFD}\x{100000}-\x{10FFFD}`;
+
+const UNRESERVED = String.raw`A-Za-z0-9\-._~`;
+
+/** The character sets of the RFC 3986 URI grammar, or with `ucschar` and `iprivate` of the RFC 3987 IRI grammar. */
+type Chars = {
+  /** the unreserved characters, as a class body */
+  u: string;
+  /** unreserved characters above the BMP */
+  astral: string;
+  /** characters the query allows in addition */
+  q: string;
+  qAstral: string;
+};
+
+const PCT = "%[0-9A-Fa-f]{2}";
+
+/** A class of `body`, plus the astral characters as a second class. */
+const cls = (chars: Chars, body: string, query = false): string => {
+  const astral = chars.astral + (query ? chars.qAstral : "");
+  return astral === "" ? `[${body}]` : `(?:[${body}]|[${astral}])`;
+};
+
+const authority = (chars: Chars): string => {
+  const userinfo = String.raw`(?:(?:${cls(chars, chars.u + "!$&'()*+,;=:")}|${PCT})*@)?`;
+  const host = String.raw`(?:\[(?:[0-9A-Fa-f:.]+|v[0-9A-Fa-f]+\.[A-Za-z0-9\-._~!$&'()*+,;=:]+)\]|(?:${cls(chars, chars.u + "!$&'()*+,;=")}|${PCT})*)`;
+  return String.raw`//${userinfo}${host}(?::[0-9]*)?`;
+};
+
+const pchar = (chars: Chars): string => String.raw`(?:${cls(chars, chars.u + "!$&'()*+,;=:@")}|${PCT})`;
+
+const segments = (chars: Chars): string => String.raw`(?:/${pchar(chars)}*)*`;
+
+const queryAndFragment = (chars: Chars): string =>
+  String.raw`(?:\?(?:${cls(chars, chars.u + "!$&'()*+,;=:@/?" + chars.q, true)}|${PCT})*)?(?:#(?:${cls(chars, chars.u + "!$&'()*+,;=:@/?")}|${PCT})*)?`;
+
+/** The URI of RFC 3986, or the IRI of RFC 3987. */
+const uriPattern = (chars: Chars): string => {
+  const hierPart = String.raw`(?:${authority(chars)}${segments(chars)}|/(?:${pchar(chars)}+${segments(chars)})?|${pchar(chars)}+${segments(chars)}|)`;
+  return String.raw`(?:[A-Za-z][A-Za-z0-9+.\-]*:${hierPart}${queryAndFragment(chars)})`;
+};
+
+/** The relative-ref of RFC 3986, or the irelative-ref of RFC 3987. */
+const relativeRefPattern = (chars: Chars): string => {
+  const relativePart = String.raw`(?:${authority(chars)}${segments(chars)}|/(?:${pchar(chars)}+${segments(chars)})?|(?:${cls(chars, chars.u + "!$&'()*+,;=@")}|${PCT})+${segments(chars)}|)`;
+  return String.raw`(?:${relativePart}${queryAndFragment(chars)})`;
+};
+
+const URI_CHARS: Chars = { u: UNRESERVED, astral: "", q: "", qAstral: "" };
+
+const IRI_CHARS: Chars = { u: UNRESERVED + UCSCHAR, astral: UCSCHAR_ASTRAL, q: IPRIVATE, qAstral: IPRIVATE_ASTRAL };
+
+const URI = uriPattern(URI_CHARS);
+
+const RELATIVE_REF = relativeRefPattern(URI_CHARS);
+
+const IRI = uriPattern(IRI_CHARS).replaceAll(String.raw`\x{`, String.raw`\u{`);
+
+const IRELATIVE_REF = relativeRefPattern(IRI_CHARS).replaceAll(String.raw`\x{`, String.raw`\u{`);
 
 const PATTERNS: Record<string, string> = {
   "duration": String.raw`^P(?:(?:[0-9]+D|[0-9]+M(?:[0-9]+D)?|[0-9]+Y(?:[0-9]+M(?:[0-9]+D)?)?)(?:T(?:[0-9]+H(?:[0-9]+M(?:[0-9]+S)?)?|[0-9]+M(?:[0-9]+S)?|[0-9]+S))?|T(?:[0-9]+H(?:[0-9]+M(?:[0-9]+S)?)?|[0-9]+M(?:[0-9]+S)?|[0-9]+S)|[0-9]+W)$`,
@@ -19,8 +83,9 @@ const PATTERNS: Record<string, string> = {
 
 /** The formats allowed by the profile. */
 export const NAMES = [
-  "date", "time", "date-time", "duration", "email", "hostname", "ipv4", "ipv6", "uri", "uri-reference",
-  "uri-template", "uuid", "json-pointer", "relative-json-pointer", "regex", "decimal", "int32", "html", "commonmark",
+  "date", "time", "date-time", "duration", "email", "hostname", "ipv4", "ipv6", "uri", "uri-reference", "iri",
+  "iri-reference", "uri-template", "uuid", "json-pointer", "relative-json-pointer", "regex", "decimal", "int32", "html",
+  "commonmark",
 ];
 
 /** Whether `value` passes the format. Values of other types pass. */
@@ -41,6 +106,8 @@ export const check = (format: string, value: unknown): boolean => {
     case "ipv6": return ipv6(value);
     case "uri": return match("^" + URI + "$", value);
     case "uri-reference": return match("^(?:" + URI + "|" + RELATIVE_REF + ")$", value);
+    case "iri": return match("^" + IRI + "$", value);
+    case "iri-reference": return match("^(?:" + IRI + "|" + IRELATIVE_REF + ")$", value);
     case "regex":
       try {
         new RegExp(value, "u");
