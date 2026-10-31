@@ -37,12 +37,21 @@ Config schema is built on Typed Data: each config schema type is a typed data de
 | `type: sequence` (keyed) | `type: object` with `additionalProperties` |
 | Type inheritance (`type: config_entity` plus extra keys) | `$ref` to the base type, plus the extra `properties` |
 | Mappings closed by default (`ValidKeys: <infer>`) | Concrete types close with `unevaluatedProperties: false`; base types stay open |
-| All keys required by default; `requiredKey: false` | `required` lists the required keys |
-| `nullable: true` | `type: [<type>, "null"]` |
+| All keys required by default; `requiredKey: false` | `required` lists the required keys, for `FullyValidatable` types only ([below](#required-keys-and-null)) |
+| `nullable: true` | `type: [<type>, "null"]`; an `enum` also lists `null` |
 | `translatable: true` | `x-portable-translatable: true` (built into `portable:label` and `portable:text`) |
 | `label:` | `title` |
-| `FullyValidatable` | A schema-level flag, not a keyword |
-| Type casting on save (`StorableConfigBase::castValue()`) | The normalization step, with a cast table defined in the spec |
+| `FullyValidatable` | Not a keyword. Drupal enforces `requiredKey` and `nullable` only for these types, so only their schemas get `required` and non-null types ([below](#required-keys-and-null)) |
+| Type casting on save (`StorableConfigBase::castValue()`) | The integration, before validation: the validator expects typed JSON |
+
+### Required keys and `null`
+
+Drupal enforces required keys and non-null values only for `FullyValidatable` types (`ValidKeysConstraintValidator`, `TypedConfigManager`). The converter does the same:
+
+- **Types with `FullyValidatable`:** the root type or, below a dynamic type, the resolved type. There, `required` lists every key without `requiredKey: false`, and `null` is only allowed with `nullable: true`.
+- **Other types:** no `required`, and scalar values also allow `null`. Example: core's `system.site.yml` has `mail_notification: null` without `nullable`.
+- **Shared base types,** such as `config_entity`, follow the root type that uses them: a converter that emits them once emits them loosest, and the `FullyValidatable` type adds `required` and excludes `null` for the inherited keys.
+- **`langcode`** is required in a `config_object` with translatable values (`LangcodeRequiredIfTranslatableValues`). Otherwise the rule above applies.
 
 ### Dynamic types
 
@@ -80,12 +89,14 @@ From `core/config/schema/core.data_types.schema.yml`:
 | `text` | `portable:text` |
 | `uuid` | `portable:uuid` |
 | `machine_name` | `portable:identifier` + `maxLength: 166` (the config entity ID limit) |
-| `langcode` | `portable:langcode` + `$ref` to the site's language catalog (core uses a `Choice` callback) |
+| `langcode` | `anyOf: [{"$ref": "portable:langcode"}, {"const": "site_default"}]` + `$ref` to the site's language catalog, which lists `site_default` too (core uses a `Choice` callback) |
 | `color_hex` | `portable:color` |
 | `weight` | `portable:weight` |
 | `mapping`, `sequence` | `object`; `array` or keyed `object` |
 | `undefined`, `ignore` | `{}` |
 | `path`, `date_format`, `plural_label`, `bytes`, `config_dependencies`, `config_object`, `config_entity` | Drupal integration types, generated |
+
+`email`, `uuid`, `machine_name` and `color_hex` also allow `""`, since their constraints skip it ([Empty strings](#empty-strings)).
 
 ## Typed Data
 
@@ -96,13 +107,13 @@ From `core/lib/Drupal/Core/TypedData/Plugin/DataType/`:
 | DataType | Portable Schema |
 |---|---|
 | `string` | `portable:string` |
-| `integer` | `portable:integer` (within ±(2^53 − 1), so JS agrees) |
+| `integer` | `portable:integer` (within ±(2^53 − 1), so JS agrees; Drupal goes up to ±2^63: a [known difference](#known-differences)) |
 | `float` | `portable:number` |
 | `boolean` | `portable:boolean` |
 | `binary` | `portable:binary` (base64) |
-| `decimal` | `portable:decimal` (a string). Core's `#[JsonSchema]` on `DecimalData` emits `format: number`, which is not in the format registry |
+| `decimal` | `portable:decimal` (a string); its format takes core's grammar from `PrimitiveTypeConstraintValidator` (`[+-]?((\d+(\.\d*)?)\|(\.\d+))`); the integration turns numbers into strings on export. Core's `#[JsonSchema]` on `DecimalData` emits `format: number`, which is not in the format registry ([open question](#open-questions)) |
 | `email` | `portable:email` |
-| `uri` | `portable:uri` |
+| `uri` | `portable:uri`; link fields use `portable:iri` ([Link fields](#link-fields)) |
 | `datetime_iso8601` | `portable:date-time`, or `portable:date` for date-only fields. Drupal stores datetimes as UTC without an offset (`Y-m-d\TH:i:s`); the integration adds `Z` on export and removes it on import |
 | `duration_iso8601` | `portable:duration` |
 | `timestamp` | `portable:timestamp` |
@@ -131,26 +142,90 @@ From `core/lib/Drupal/Core/TypedData/Plugin/DataType/`:
 | Constraint | Portable Schema |
 |---|---|
 | `Length` | `minLength`, `maxLength` |
-| `Choice`, `AllowedValues`, `Enum` | `enum`, or `oneOf` + `const` + `title` for labeled options |
-| `Regex` | `pattern`, within the portable regex subset. Lookarounds, possessive quantifiers and PCRE-only syntax have to be rewritten |
+| `Choice`, `AllowedValues`, `Enum` | `enum`, or `oneOf` + `const` + `title` for labeled options. `Choice` skips `null`: where `null` is allowed ([above](#required-keys-and-null)), the `enum` also lists `null` |
+| `Regex` | `pattern`, converted from PCRE ([below](#regex-patterns)). Lookarounds, possessive quantifiers and PCRE-only syntax have to be rewritten |
 | `Range` | `minimum`, `maximum` |
 | `PositiveOrZero` | `minimum: 0` |
 | `Count` | `minItems`, `maxItems` |
-| `NotBlank` | `minLength: 1`, or `required` |
+| `NotBlank` | Per JSON type: strings `minLength: 1`, arrays `minItems: 1`, objects `minProperties: 1`, booleans `const: true`, numbers nothing. `null` is excluded unless `allowNull`, also for `nullable` values. Not `required`: that is about the key, not the value |
 | `NotNull` | A `type` without `null` |
-| `Email`, `Uuid` | `portable:email`, `portable:uuid` |
+| `Email`, `Uuid` | `portable:email`, `portable:uuid`; `""` allowed ([below](#empty-strings)). Drupal is stricter than the standard formats, so its exact check runs on the server: `drupal:Email`, `drupal:Uuid` |
+| `LinkType`, `LinkExternalProtocols` | A `pattern` on the scheme, generated from the link type and the allowed protocols ([Link fields](#link-fields)) |
+| `LinkNotExistingInternal`, `LinkAccess` | `portable-check` (`drupal:LinkNotExistingInternal`, `drupal:LinkAccess`), run on the server |
 | `ValidKeys` | `properties` + `unevaluatedProperties: false` |
 | `ValidSequenceKeys` | `propertyNames` |
 | `PluginExists`, `EntityBundleExists`, `ConfigExists`, `ExtensionExists` | `$ref` to a catalog: checkable live or statically against a site schema dump |
 | `ValidReference`, `UniqueField`, `UniquePathAlias`, `ReferenceAccess` and other checks that need content or the current user | `portable-check`: run by a provider on the server; reported as unchecked where no provider is available |
 | `Callback` | Case by case. Example: `block.block`'s region check becomes a catalog of the theme's regions, selected with `portable-typeBy` |
 
+### Regex patterns
+
+The converter turns `Regex` patterns into the ECMA-262 dialect of the [profile](../spec/profile.md#patterns), keeping PCRE's verdicts:
+
+- **Delimiters** are stripped. `u` is implied; for `i`, see the [open questions](#open-questions).
+- **A final `$`** becomes `\n?$`: core's patterns don't use `D`, so `$` also matches before a final newline. Example: `/^[a-z0-9_]+$/` becomes `^[a-z0-9_]+\n?$`.
+- **`[^\PC…]` with `match: false`** becomes a positive pattern of explicit categories, without the unassigned `Cn`:
+  - `label`: `^[^\p{Cc}\p{Cf}\p{Co}]*$`;
+  - `text`: `^(?:[\x09\x0a\x0d]|[^\p{Cc}\p{Cf}\p{Co}])*$`;
+  - `plural_label`: `^(?:\x03|[^\p{Cc}\p{Cf}\p{Co}])*$`.
+  Unassigned code points stay a server check.
+- **Other `match: false` patterns** become `not: {"pattern": …}`.
+- **`""`:** `Regex` skips it, see [Empty strings](#empty-strings).
+
+The generic types `portable:identifier` and `portable:color` don't get the `\n?$` rewrite.
+
+### Empty strings
+
+`Email`, `Uuid` and `Regex` skip `""`, and a link item with an empty `uri` is empty, so it is not validated. Where nothing else forbids it, the converter emits `anyOf: [{"const": ""}, {"$ref": "portable:email"}]`. The standard formats stay unchanged. Widgets and adapters look through this `anyOf` to the type.
+
+### Link fields
+
+- **The `uri` property** maps to `portable:iri` (RFC 3987): editors enter links such as `https://example.com/ä`. Drupal's `uri` DataType only needs a scheme, so it also accepts values with spaces or `<` and `>`, which are outside the IRI grammar: a [known difference](#known-differences).
+- **`route:` URIs:** core's `route:<nolink>`, `route:<none>` and `route:<button>` are not URIs. The integration percent-encodes `<` and `>` on export (`route:%3Cnolink%3E`) and decodes them on import.
+- **Allowed schemes** are a `pattern` the converter generates from the field's link type and the site's allowed protocols, e.g. `^(https?|mailto|tel|internal|entity|route):` for internal and external links. Every validator enforces it.
+- **Existing routes and access** (`LinkNotExistingInternal`, `LinkAccess`) need the site: named checks `drupal:LinkNotExistingInternal` and `drupal:LinkAccess`, run on the server.
+
+## Compatibility
+
+Portable Schema must not be stricter than Drupal's validators, but it stays with the standard formats ([decision 0003](decisions/0003-standard-formats-not-stricter-than-drupal.md)). Where Drupal is stricter, its exact check runs on the server as a named check.
+
+### Known differences
+
+Values Drupal accepts and Portable Schema rejects:
+
+| Value | Example | Why |
+|---|---|---|
+| UTF-8 email addresses (RFC 6531) | `jöe@example.com` | `email` is ASCII; `idn-email` is out of v1 |
+| Spaces, `<` or `>` in a link `uri` | `https://example.com/a b`, `route:<nolink>` | `portable:iri` is the RFC 3987 grammar; `route:` URIs are percent-encoded on export |
+| Integers beyond ±(2^53 − 1) | `9007199254740993` | JS can't represent them; matters for `size: big` integer fields |
+| JSON numbers for `decimal` values | `10` | `portable:decimal` is a string; the integration exports numbers as strings |
+| `site_default` in `language_reference` | `site_default` | A Drupal keyword, not a language tag; only config `langcode` allows it |
+| A trailing newline in `color_hex`, `machine_name`, `decimal` | `#ff0000\n` | Drupal's patterns don't use `D`; the generic types and formats don't carry that quirk |
+| Custom language codes that aren't well-formed BCP 47 | `a-b` | Core's `VALID_LANGCODE_REGEX` is looser than RFC 5646 |
+
+Numeric strings and booleans for `integer` and `float` are a normalization question (cast table), not a difference of the types.
+
+Drupal is stricter, checked on the server:
+
+- `email`: quoted local parts, address literals, single-label domains (`drupal:Email`);
+- `uuid`: version and variant digits, the nil and max UUIDs (`drupal:Uuid`);
+- link fields: see [Link fields](#link-fields);
+- patterns: code points unassigned in Drupal's PCRE Unicode version.
+
+### Open questions
+
+- **Core issues,** upstream first:
+  - `DecimalData`'s `#[JsonSchema]` emits `format: number`, which is not in the registry; `format: decimal` is;
+  - `label` and the other `[^\PC]` patterns reject emoji ZWJ sequences and soft hyphens;
+  - the `configurable_language` id pattern is not anchored, so it matches almost anything.
+- **The `i` modifier:** `pattern` has no flags. Core uses `i` in `/^\//i` (path aliases), where it changes nothing; other uses need a rewrite.
+
 ## What the Drupal integration provides
 
 - **Generated schemas** for config schema types, entity and field definitions, and plugin configuration.
 - **Catalogs** of site facts: plugins per manager, bundles, fields, config entities, modules, themes, languages. Live, or in a site schema dump for one code base and module set.
 - **Providers** for checks that need the running site (`portable-check`, `portable-refine`).
-- **Value conversion** where Drupal stores values differently, e.g. UTC datetimes without an offset.
+- **Value conversion** where Drupal stores values differently, e.g. UTC datetimes without an offset, decimals given as numbers, `route:` URIs with `<` and `>`.
 - **Message translation** through `t()` (see [`architecture/messages.md`](architecture/messages.md)).
 
 ## Adoption: changing core
