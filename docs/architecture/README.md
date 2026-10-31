@@ -5,6 +5,6 @@ How the reference implementations in [`php/`](../../php) and [`js/`](../../js) a
 | Document | Covers |
 |---|---|
 | [`messages.md`](messages.md) | Formatting errors into messages; translator adapters for Drupal `t()` and vue-i18n |
-| [`validator.md`](validator.md) | Compile and interpret steps, API, named check providers and local callbacks (draft) |
+| [`validator.md`](validator.md) | Compile and interpret steps, API, named check providers and local callbacks |
 | `registry.md` (planned) | Schema registry, catalog resolution (live and static), providers |
 | [`agents.md`](agents.md) | How agents find and validate schemas: CLI, MCP server, Claude Code skill and hook, function calling (plan) |

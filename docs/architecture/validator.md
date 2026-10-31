@@ -1,7 +1,5 @@
 # Validator
 
-Status: draft.
-
 How the reference validators in PHP and JS are built. Both follow the same design. The normative behaviour is in [`spec/validation.md`](../../spec/validation.md), [`spec/vocabulary.md`](../../spec/vocabulary.md) and [`spec/errors.md`](../../spec/errors.md).
 
 ## Flow
