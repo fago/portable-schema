@@ -27,7 +27,7 @@ $validator->subschemaAt($data, 'drupal:block.block', 'settings.label'); // Subsc
 ```
 
 - **`new Validator()` compiles** every schema of the registry and checks it against the dialect meta-schema; it throws for a schema outside the profile. It keeps a copy of the registry, so schemas added later are not seen. Construction takes about 0.3 ms per schema; `validate()` reuses the compiled schemas.
-- **Data** is normalized to the JSON data model ([`spec/normalization.md`](../spec/normalization.md)): a PHP array is a list or a map by its keys and the schema's `type`, objects convert as `json_encode()` converts them.
+- **Data** is normalized to the JSON data model ([`spec/normalization.md`](../spec/normalization.md)): a PHP array is a list or a map by its keys (`[]` by the schema's `type`), objects convert as `json_encode()` converts them, unsupported values are `type` errors.
 - **`subschemaAt()`** returns the schemas that apply at a location of the data, as `keywordLocation`s, and the keywords left `unresolved` by a missing value ([`spec/validation.md`](../spec/validation.md)).
 - **Schemas** are validated by their id in the registry.
 - **Exports:** `Exporter::inline()` (self-contained JSON Schema 2020-12) and `Exporter::draft04()`.

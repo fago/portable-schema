@@ -56,29 +56,35 @@ final class NormalizationTest extends TestCase
         return array_map(fn ($e) => [$e->instanceLocation, $e->code, Json::toArray($e->params)], $result->errors);
     }
 
-    public function testArrayIsAMapUnderTypeObject(): void
+    public function testEmptyArrayIsAMapUnderTypeObject(): void
     {
         $schema = '"type": "object", "properties": {"a": {}}, "required": ["a"], "additionalProperties": false';
         $this->assertTrue($this->validate($schema, ['a' => 1])->valid);
         $this->assertSame([['', 'required', ['property' => 'a']]], $this->errors($this->validate($schema, [])));
-        $this->assertSame(
-            [['', 'unknownProperty', ['property' => '0']], ['', 'required', ['property' => 'a']]],
-            $this->errors($this->validate($schema, ['b'])),
-        );
+        $this->assertTrue($this->validate('"type": ["object", "null"], "minProperties": 0', [])->valid);
+        $this->assertSame([['', 'minProperties', ['limit' => 1, 'actual' => 0]]], $this->errors($this->validate('"type": "object", "minProperties": 1', [])));
     }
 
-    public function testArrayIsAListUnderTypeArray(): void
+    public function testListIsNoObject(): void
+    {
+        $schema = '"type": "object", "properties": {"a": {}}, "required": ["a"]';
+        $this->assertSame([['', 'type', ['expected' => ['object'], 'actual' => 'array']]], $this->errors($this->validate($schema, ['b'])));
+        $this->assertSame([['', 'type', ['expected' => ['object'], 'actual' => 'array']]], $this->errors($this->validate($schema, [1, 2])));
+    }
+
+    public function testEmptyArrayIsAListElsewhere(): void
+    {
+        $this->assertTrue($this->validate('"type": "array"', [])->valid);
+        $this->assertSame([['', 'minItems', ['limit' => 1, 'actual' => 0]]], $this->errors($this->validate('"type": ["object", "array"], "minItems": 1', [])));
+        $this->assertSame([['', 'minItems', ['limit' => 1, 'actual' => 0]]], $this->errors($this->validate('"minItems": 1', [])));
+    }
+
+    public function testMapIsNoArray(): void
     {
         $schema = '"type": "array", "minItems": 2';
         $this->assertTrue($this->validate($schema, [1, 2])->valid);
-        $this->assertSame(
-            [['', 'type', ['expected' => ['array'], 'actual' => 'array']]],
-            $this->errors($this->validate($schema, ['a' => 1, 'b' => 2])),
-        );
-        $this->assertSame(
-            [['', 'type', ['expected' => ['array'], 'actual' => 'array']]],
-            $this->errors($this->validate($schema, [1 => 'a', 0 => 'b'])),
-        );
+        $this->assertSame([['', 'type', ['expected' => ['array'], 'actual' => 'object']]], $this->errors($this->validate($schema, ['a' => 1, 'b' => 2])));
+        $this->assertSame([['', 'type', ['expected' => ['array'], 'actual' => 'object']]], $this->errors($this->validate($schema, [1 => 'a', 0 => 'b'])));
     }
 
     public function testArrayWithoutTypeIsDecidedByItsKeys(): void
@@ -86,17 +92,13 @@ final class NormalizationTest extends TestCase
         $schema = '"properties": {"a": {"type": "integer"}}, "items": {"type": "string"}';
         $this->assertSame([['/a', 'type', ['expected' => ['integer'], 'actual' => 'string']]], $this->errors($this->validate($schema, ['a' => 'x'])));
         $this->assertSame([['/0', 'type', ['expected' => ['string'], 'actual' => 'integer']]], $this->errors($this->validate($schema, [1])));
-        $this->assertTrue($this->validate('"type": ["object", "array"], "minItems": 1', [1])->valid);
     }
 
-    public function testNestedListIsAMapWhereTypeObjectIsEvaluated(): void
+    public function testNestedEmptyArrayIsAMapWhereTypeObjectApplies(): void
     {
-        $schema = '"type": "object", "properties": {"settings": {"$ref": "#/$defs/s"}}, "$defs": {"s": {"type": "object", "additionalProperties": false}}';
-        $this->assertTrue($this->validate($schema, ['settings' => []])->valid);
-        $this->assertSame(
-            [['/settings', 'unknownProperty', ['property' => '0']]],
-            $this->errors($this->validate($schema, ['settings' => ['x']])),
-        );
+        $schema = '"type": "object", "properties": {"settings": {"$ref": "#/$defs/s"}}, "$defs": {"s": {"type": "object", "required": ["label"]}}';
+        $this->assertSame([['/settings', 'required', ['property' => 'label']]], $this->errors($this->validate($schema, ['settings' => []])));
+        $this->assertSame([['/settings', 'type', ['expected' => ['object'], 'actual' => 'array']]], $this->errors($this->validate($schema, ['settings' => ['x']])));
     }
 
     public function testObjectsAsJsonEncodeConvertsThem(): void
@@ -115,13 +117,13 @@ final class NormalizationTest extends TestCase
         $schema = '"properties": {"f": {"type": "string"}, "r": {}, "n": true, "e": {"type": ["string", "null"]}}';
         $result = $this->validate($schema, ['f' => fn () => 1, 'r' => fopen('php://memory', 'r'), 'n' => NAN, 'e' => Side::Left]);
         $this->assertSame([
-            ['/e', 'type', ['expected' => ['string', 'null'], 'actual' => 'enum']],
-            ['/f', 'type', ['expected' => ['string'], 'actual' => 'closure']],
-            ['/n', 'type', ['expected' => [], 'actual' => 'nan']],
-            ['/r', 'type', ['expected' => [], 'actual' => 'resource']],
+            ['/e', 'type', ['expected' => ['string', 'null'], 'actual' => 'unsupported']],
+            ['/f', 'type', ['expected' => ['string'], 'actual' => 'unsupported']],
+            ['/n', 'type', ['expected' => [], 'actual' => 'unsupported']],
+            ['/r', 'type', ['expected' => [], 'actual' => 'unsupported']],
         ], $this->errors($result));
         $this->assertSame('/properties/f/type', $result->errors[1]->keywordLocation);
-        $this->assertSame(['', 'type', ['expected' => [], 'actual' => 'infinity']], $this->errors($this->validate('"minimum": 1', INF))[0]);
+        $this->assertSame(['', 'type', ['expected' => [], 'actual' => 'unsupported']], $this->errors($this->validate('"minimum": 1', INF))[0]);
     }
 
     public function testSubschemaAtNormalizesTheSameWay(): void
@@ -129,5 +131,6 @@ final class NormalizationTest extends TestCase
         $registry = Registry::withTypes()->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:s", "type": "object", "properties": {"a": {"type": "object", "properties": {"b": {"type": "string"}}}}}'));
         $result = (new Validator($registry))->subschemaAt(['a' => []], 'test:s', 'a.b');
         $this->assertSame(['/properties/a/properties/b'], $result->schemaLocations);
+        $this->assertSame([], (new Validator($registry))->subschemaAt(['a' => ['x']], 'test:s', 'a.b')->schemaLocations);
     }
 }

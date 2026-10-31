@@ -10,14 +10,11 @@ namespace PortableSchema;
 final class Normalized
 {
     /**
-     * @param array<string, string> $unrepresentable the host type name per location of a value the model can't hold;
-     *   the value itself is null in $data
-     * @param array<string, true> $arrayMaps the locations of maps that were PHP arrays
+     * @param list<string> $unsupported the locations of values the model can't hold; the value itself is null in $data
      */
     public function __construct(
         public mixed $data,
-        public readonly array $unrepresentable,
-        public array $arrayMaps,
+        public readonly array $unsupported,
     ) {
     }
 }
