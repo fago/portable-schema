@@ -18,7 +18,6 @@ final class Formats
         RE;
 
     private const PATTERNS = [
-        'email' => '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~\-]+@[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$',
         'duration' => '^P(?:(?:[0-9]+D|[0-9]+M(?:[0-9]+D)?|[0-9]+Y(?:[0-9]+M(?:[0-9]+D)?)?)(?:T(?:[0-9]+H(?:[0-9]+M(?:[0-9]+S)?)?|[0-9]+M(?:[0-9]+S)?|[0-9]+S))?|T(?:[0-9]+H(?:[0-9]+M(?:[0-9]+S)?)?|[0-9]+M(?:[0-9]+S)?|[0-9]+S)|[0-9]+W)$',
         'ipv4' => '^(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\.(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}$',
         'uuid' => '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
@@ -54,6 +53,7 @@ final class Formats
             'date' => self::date($value),
             'time' => self::time($value),
             'date-time' => (bool) preg_match('/^([^Tt]+)[Tt](.+)$/D', $value, $m) && self::date($m[1]) && self::time($m[2]),
+            'email' => self::email($value),
             'hostname' => self::hostname($value),
             'ipv6' => self::ipv6($value),
             'uri' => self::match('^' . self::URI . '$', $value),
@@ -92,6 +92,74 @@ final class Formats
             return false;
         }
         return !isset($m[6]) || ((int) $m[6] <= 23 && (int) $m[7] <= 59);
+    }
+
+    private const ATEXT = '[A-Za-z0-9!#$%&\'*+\/=?^_`{|}~\-]';
+
+    /**
+     * RFC 5321 Snum: 1-3 digits, 0-255, leading zeros allowed.
+     */
+    private const SNUM = '(?:[01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5])';
+
+    /**
+     * RFC 5321 Mailbox, ASCII: a local part of at most 64 characters, `@`, a hostname or an address literal.
+     */
+    private static function email(string $value): bool
+    {
+        $at = strrpos($value, '@');
+        if ($at === false || strlen($value) > 254) {
+            return false;
+        }
+        $local = substr($value, 0, $at);
+        $domain = substr($value, $at + 1);
+        // RFC 5321 Dot-string or Quoted-string.
+        $localPart = '/^(?:' . self::ATEXT . '+(?:\.' . self::ATEXT . '+)*|"(?:[ !#-\[\]-~]|\\[ -~])*")$/D';
+        if (strlen($local) > 64 || !preg_match($localPart, $local)) {
+            return false;
+        }
+        if (!str_starts_with($domain, '[')) {
+            return self::hostname($domain);
+        }
+        if (!str_ends_with($domain, ']')) {
+            return false;
+        }
+        $literal = substr($domain, 1, -1);
+        return self::ipv4Literal($literal) || (preg_match('/^ipv6:/i', $literal) && self::ipv6Literal(substr($literal, 5)));
+    }
+
+    private static function ipv4Literal(string $value): bool
+    {
+        return (bool) preg_match('/^' . self::SNUM . '(?:\.' . self::SNUM . '){3}$/D', $value);
+    }
+
+    /**
+     * RFC 5321 IPv6-addr: 8 groups, or `::` with at most 6 groups; an IPv4 tail counts as 2 groups.
+     */
+    private static function ipv6Literal(string $value): bool
+    {
+        if (preg_match('/^(.*:)((?:[0-9]{1,3}\.){3}[0-9]{1,3})$/D', $value, $m)) {
+            if (!self::ipv4Literal($m[2])) {
+                return false;
+            }
+            $value = $m[1] . '0:0';
+        }
+        $parts = explode('::', $value);
+        if (count($parts) > 2) {
+            return false;
+        }
+        $count = 0;
+        foreach ($parts as $part) {
+            if ($part === '') {
+                continue;
+            }
+            foreach (explode(':', $part) as $group) {
+                if (!preg_match('/^[0-9A-Fa-f]{1,4}$/D', $group)) {
+                    return false;
+                }
+                $count++;
+            }
+        }
+        return count($parts) === 2 ? $count <= 6 : $count === 8;
     }
 
     private static function hostname(string $value): bool

@@ -8,7 +8,6 @@ const URI = String.raw`(?:[A-Za-z][A-Za-z0-9+.\-]*:(?://(?:(?:[A-Za-z0-9\-._~!$&
 const RELATIVE_REF = String.raw`(?:(?://(?:(?:[A-Za-z0-9\-._~!$&'()*+,;=:]|%[0-9A-Fa-f]{2})*@)?(?:\[(?:[0-9A-Fa-f:.]+|v[0-9A-Fa-f]+\.[A-Za-z0-9\-._~!$&'()*+,;=:]+)\]|(?:[A-Za-z0-9\-._~!$&'()*+,;=]|%[0-9A-Fa-f]{2})*)(?::[0-9]*)?(?:/(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*|/(?:(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})+(?:/(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*)?|(?:[A-Za-z0-9\-._~!$&'()*+,;=@]|%[0-9A-Fa-f]{2})+(?:/(?:[A-Za-z0-9\-._~!$&'()*+,;=:@]|%[0-9A-Fa-f]{2})*)*|)(?:\?(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})*)?(?:#(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})*)?)`;
 
 const PATTERNS: Record<string, string> = {
-  "email": String.raw`^[a-zA-Z0-9.!#$%&'*+/=?^_${"`"}{|}~\-]+@[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$`,
   "duration": String.raw`^P(?:(?:[0-9]+D|[0-9]+M(?:[0-9]+D)?|[0-9]+Y(?:[0-9]+M(?:[0-9]+D)?)?)(?:T(?:[0-9]+H(?:[0-9]+M(?:[0-9]+S)?)?|[0-9]+M(?:[0-9]+S)?|[0-9]+S))?|T(?:[0-9]+H(?:[0-9]+M(?:[0-9]+S)?)?|[0-9]+M(?:[0-9]+S)?|[0-9]+S)|[0-9]+W)$`,
   "ipv4": String.raw`^(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\.(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}$`,
   "uuid": String.raw`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`,
@@ -38,6 +37,7 @@ export const check = (format: string, value: unknown): boolean => {
       const m = /^([^Tt]+)[Tt](.+)$/u.exec(value);
       return m !== null && date(m[1]!) && time(m[2]!);
     }
+    case "email": return email(value);
     case "hostname": return hostname(value);
     case "ipv6": return ipv6(value);
     case "uri": return match("^" + URI + "$", value);
@@ -75,6 +75,49 @@ const time = (value: string): boolean => {
   if (!m) return false;
   if (Number(m[1]) > 23 || Number(m[2]) > 59 || Number(m[3]) > 59) return false;
   return m[6] === undefined || (Number(m[6]) <= 23 && Number(m[7]) <= 59);
+};
+
+const ATEXT = String.raw`[A-Za-z0-9!#$%&'*+/=?^_${"`"}{|}~\-]`;
+
+/** RFC 5321 Dot-string or Quoted-string. */
+const LOCAL_PART = new RegExp(String.raw`^(?:${ATEXT}+(?:\.${ATEXT}+)*|"(?:[ !#-\[\]-~]|\\[ -~])*")$`, "u");
+
+/** RFC 5321 Snum: 1-3 digits, 0-255, leading zeros allowed. */
+const SNUM = String.raw`(?:[01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5])`;
+
+const IPV4_LITERAL = new RegExp(String.raw`^${SNUM}(?:\.${SNUM}){3}$`, "u");
+
+/** RFC 5321 Mailbox, ASCII: a local part of at most 64 characters, `@`, a hostname or an address literal. */
+const email = (value: string): boolean => {
+  const at = value.lastIndexOf("@");
+  if (at === -1 || value.length > 254) return false;
+  const local = value.slice(0, at);
+  const domain = value.slice(at + 1);
+  if (local.length > 64 || !LOCAL_PART.test(local)) return false;
+  if (!domain.startsWith("[")) return hostname(domain);
+  if (!domain.endsWith("]")) return false;
+  const literal = domain.slice(1, -1);
+  return IPV4_LITERAL.test(literal) || (/^ipv6:/iu.test(literal) && ipv6Literal(literal.slice(5)));
+};
+
+/** RFC 5321 IPv6-addr: 8 groups, or `::` with at most 6 groups; an IPv4 tail counts as 2 groups. */
+const ipv6Literal = (value: string): boolean => {
+  const tail = /^(.*:)((?:[0-9]{1,3}\.){3}[0-9]{1,3})$/u.exec(value);
+  if (tail) {
+    if (!IPV4_LITERAL.test(tail[2]!)) return false;
+    value = tail[1] + "0:0";
+  }
+  const parts = value.split("::");
+  if (parts.length > 2) return false;
+  let count = 0;
+  for (const part of parts) {
+    if (part === "") continue;
+    for (const group of part.split(":")) {
+      if (!/^[0-9A-Fa-f]{1,4}$/u.test(group)) return false;
+      count++;
+    }
+  }
+  return parts.length === 2 ? count <= 6 : count === 8;
 };
 
 const hostname = (value: string): boolean => {
