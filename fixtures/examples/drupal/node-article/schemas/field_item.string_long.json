@@ -1,0 +1,17 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:field_item.string_long",
+    "title": "Long text",
+    "description": "Items of string_long fields, with the field type's default settings.",
+    "type": "object",
+    "properties": {
+        "value": {
+            "title": "Text value",
+            "$ref": "portable:string"
+        }
+    },
+    "required": [
+        "value"
+    ],
+    "unevaluatedProperties": false
+}

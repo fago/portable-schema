@@ -1,0 +1,7 @@
+{
+  "description": "format hostname: dot-separated labels of letters, digits and hyphens, ASCII only",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "hostname"
+  }
+}

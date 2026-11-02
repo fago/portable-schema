@@ -1,0 +1,10 @@
+{
+  "description": "errors follow their instance location: array-index segments first, numerically, then the others by code point",
+  "schema": {
+    "type": "object",
+    "additionalProperties": {
+      "type": "string"
+    },
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

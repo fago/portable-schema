@@ -1,0 +1,18 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component.versioned.active.*",
+  "title": "Active component version",
+  "description": "The active version: its settings must be valid for the source.",
+  "$ref": "drupal:canvas.component.versioned.*.*",
+  "properties": {
+    "settings": {
+      "portable-typeBy": {
+        "href": "drupal:canvas.component_source_settings.{source}",
+        "source": {
+          "source": "3/source"
+        },
+        "fallback": "drupal:canvas.component_source_settings.*"
+      }
+    }
+  }
+}

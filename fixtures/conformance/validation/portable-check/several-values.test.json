@@ -1,0 +1,129 @@
+[
+  {
+    "description": "no provider: one unchecked entry per value and check",
+    "data": {
+      "tags": [
+        "a",
+        "b"
+      ]
+    },
+    "valid": true,
+    "unchecked": [
+      {
+        "instanceLocation": "/tags/0",
+        "code": "check.test:Unique",
+        "reason": "noProvider"
+      },
+      {
+        "instanceLocation": "/tags/0",
+        "code": "check.test:Allowed",
+        "reason": "noProvider"
+      },
+      {
+        "instanceLocation": "/tags/1",
+        "code": "check.test:Unique",
+        "reason": "noProvider"
+      },
+      {
+        "instanceLocation": "/tags/1",
+        "code": "check.test:Allowed",
+        "reason": "noProvider"
+      }
+    ]
+  },
+  {
+    "description": "a callback for one check: the other stays unchecked",
+    "checks": {
+      "test:Unique": {
+        "errors": [
+          {
+            "code": "check.test:Unique",
+            "params": {}
+          }
+        ]
+      }
+    },
+    "data": {
+      "tags": [
+        "a"
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/tags/0",
+        "code": "check.test:Unique",
+        "params": {}
+      }
+    ],
+    "unchecked": [
+      {
+        "instanceLocation": "/tags/0",
+        "code": "check.test:Allowed",
+        "reason": "noProvider"
+      }
+    ]
+  },
+  {
+    "description": "sub-codes",
+    "checks": {
+      "test:Unique": {
+        "errors": []
+      },
+      "test:Allowed": {
+        "errors": [
+          {
+            "code": "check.test:Allowed.unknown",
+            "params": {
+              "value": "x"
+            }
+          }
+        ]
+      }
+    },
+    "data": {
+      "tags": [
+        "x",
+        "y"
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/tags/0",
+        "code": "check.test:Allowed.unknown",
+        "params": {
+          "value": "x"
+        }
+      },
+      {
+        "instanceLocation": "/tags/1",
+        "code": "check.test:Allowed.unknown",
+        "params": {
+          "value": "x"
+        }
+      }
+    ]
+  },
+  {
+    "description": "a value with the wrong type is not checked",
+    "data": {
+      "tags": [
+        1
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/tags/0",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  }
+]

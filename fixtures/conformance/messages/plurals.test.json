@@ -1,0 +1,44 @@
+[
+  {
+    "description": "one",
+    "data": {
+      "code": ""
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/code",
+        "code": "minLength",
+        "params": {
+          "limit": 1,
+          "actual": 0
+        }
+      }
+    ],
+    "messages": [
+      "Code must be at least 1 character long."
+    ]
+  },
+  {
+    "description": "other",
+    "data": {
+      "tags": [
+        "a"
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/tags",
+        "code": "minItems",
+        "params": {
+          "limit": 2,
+          "actual": 1
+        }
+      }
+    ],
+    "messages": [
+      "Tags must have at least 2 items."
+    ]
+  }
+]

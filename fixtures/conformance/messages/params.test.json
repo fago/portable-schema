@@ -1,0 +1,99 @@
+[
+  {
+    "description": "root label",
+    "data": {},
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "minProperties",
+        "params": {
+          "limit": 1,
+          "actual": 0
+        }
+      }
+    ],
+    "messages": [
+      "Value must have at least 1 entry."
+    ]
+  },
+  {
+    "description": "dependency label",
+    "data": {
+      "end": "x"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "dependentRequired",
+        "params": {
+          "property": "start",
+          "dependency": "end"
+        }
+      }
+    ],
+    "messages": [
+      "Start is required when End is set."
+    ]
+  },
+  {
+    "description": "unresolved type",
+    "data": {
+      "kind": "foo",
+      "settings": {}
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/settings",
+        "code": "typeBy.unresolved",
+        "params": {
+          "value": "foo",
+          "resolved": "test:settings.foo"
+        }
+      }
+    ],
+    "messages": [
+      "Settings: there is no definition for “foo”."
+    ]
+  },
+  {
+    "description": "numbers as JavaScript writes them",
+    "data": {
+      "amount": 1e+20
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/amount",
+        "code": "maximum",
+        "params": {
+          "limit": 1e+19
+        }
+      }
+    ],
+    "messages": [
+      "Amount must be at most 10000000000000000000."
+    ]
+  },
+  {
+    "description": "a fraction",
+    "data": {
+      "amount": 0.3
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/amount",
+        "code": "multipleOf",
+        "params": {
+          "divisor": 0.5
+        }
+      }
+    ],
+    "messages": [
+      "Amount must be a multiple of 0.5."
+    ]
+  }
+]

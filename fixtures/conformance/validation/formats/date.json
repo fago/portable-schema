@@ -1,0 +1,7 @@
+{
+  "description": "format date: a real calendar date, no time or offset",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "date"
+  }
+}

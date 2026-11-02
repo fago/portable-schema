@@ -1,0 +1,36 @@
+{
+  "schema": "drupal:canvas.component.*",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/versioned_properties/active/settings/prop_field_definitions/text/field_widget",
+      "code": "enum",
+      "params": {
+        "value": "wysiwyg",
+        "allowed": [
+          "string_textfield",
+          "options_select",
+          "boolean_checkbox",
+          "number",
+          "image_image",
+          "link_default",
+          "text_textarea"
+        ]
+      }
+    }
+  ],
+  "messages": [
+    "Default field widget: “wysiwyg” is not an allowed value. Allowed: Textfield, Select list, Single on/off checkbox, Number field, Image, Link, Text area (multiple rows)."
+  ],
+  "checks": {
+    "drupal:Callback": {
+      "errors": []
+    },
+    "drupal:StringParts": {
+      "errors": []
+    },
+    "drupal:KeyForEverySdcProp": {
+      "errors": []
+    }
+  }
+}

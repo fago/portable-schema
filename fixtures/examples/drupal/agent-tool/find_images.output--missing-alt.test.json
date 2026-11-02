@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:tool.find_images.output",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/images/0",
+      "code": "required",
+      "params": {
+        "property": "alt"
+      }
+    }
+  ],
+  "messages": [
+    "Alternative text is required."
+  ]
+}

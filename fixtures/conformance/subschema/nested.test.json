@@ -88,5 +88,31 @@
       "/properties/tags/items",
       "/properties/tags/items/$ref"
     ]
+  },
+  {
+    "description": "a property matching a patternProperties pattern",
+    "data": {
+      "meta": {
+        "x-id": "1"
+      }
+    },
+    "location": "/meta/x-id",
+    "schemaLocations": [
+      "/properties/meta/patternProperties/^x-",
+      "/properties/meta/patternProperties/^x-/$ref"
+    ]
+  },
+  {
+    "description": "no pattern matches: additionalProperties",
+    "data": {
+      "meta": {
+        "id": "1"
+      }
+    },
+    "location": "/meta/id",
+    "schemaLocations": [
+      "/properties/meta/additionalProperties",
+      "/properties/meta/additionalProperties/$ref"
+    ]
   }
 ]

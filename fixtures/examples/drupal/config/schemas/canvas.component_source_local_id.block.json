@@ -1,0 +1,6 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component_source_local_id.block",
+  "title": "Block plugin ID",
+  "$ref": "drupal:catalog/plugins/block"
+}

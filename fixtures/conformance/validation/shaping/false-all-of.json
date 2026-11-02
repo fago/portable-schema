@@ -1,0 +1,9 @@
+{
+  "description": "false in allOf",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "allOf": [
+      false
+    ]
+  }
+}

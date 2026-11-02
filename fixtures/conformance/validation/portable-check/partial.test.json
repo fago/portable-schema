@@ -1,0 +1,58 @@
+[
+  {
+    "description": "partial with one value",
+    "options": {
+      "partial": true
+    },
+    "data": {
+      "title": "x"
+    },
+    "valid": true,
+    "unchecked": [
+      {
+        "instanceLocation": "/title",
+        "code": "check.test:Unique",
+        "reason": "noProvider"
+      }
+    ]
+  },
+  {
+    "description": "partial with emptyAsMissing: an empty value is not checked",
+    "options": {
+      "partial": true,
+      "emptyAsMissing": true
+    },
+    "data": {
+      "title": "x",
+      "alias": ""
+    },
+    "valid": true,
+    "unchecked": [
+      {
+        "instanceLocation": "/title",
+        "code": "check.test:Unique",
+        "reason": "noProvider"
+      }
+    ]
+  },
+  {
+    "description": "locations: only checks at the location are reported",
+    "options": {
+      "locations": [
+        "/alias"
+      ]
+    },
+    "data": {
+      "title": "x",
+      "alias": "y"
+    },
+    "valid": true,
+    "unchecked": [
+      {
+        "instanceLocation": "/alias",
+        "code": "check.test:Unique",
+        "reason": "noProvider"
+      }
+    ]
+  }
+]

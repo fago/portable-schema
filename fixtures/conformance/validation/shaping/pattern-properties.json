@@ -1,0 +1,23 @@
+{
+  "description": "every pattern is evaluated; additionalProperties doesn't apply to declared keys",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "p": {
+        "type": "string"
+      }
+    },
+    "patternProperties": {
+      "^a": {
+        "type": "string"
+      },
+      "^b": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": {
+      "type": "integer"
+    }
+  }
+}

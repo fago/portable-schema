@@ -1,0 +1,99 @@
+[
+  {
+    "description": "valid: \"0\"",
+    "data": "0",
+    "valid": true
+  },
+  {
+    "description": "valid: \"1/plugin\"",
+    "data": "1/plugin",
+    "valid": true
+  },
+  {
+    "description": "valid: \"0#\"",
+    "data": "0#",
+    "valid": true
+  },
+  {
+    "description": "valid: \"2/a/b\"",
+    "data": "2/a/b",
+    "valid": true
+  },
+  {
+    "description": "invalid: \"01\"",
+    "data": "01",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.relative-json-pointer",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"-1/a\"",
+    "data": "-1/a",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.relative-json-pointer",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"1+1/a\"",
+    "data": "1+1/a",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.relative-json-pointer",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"/a\"",
+    "data": "/a",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.relative-json-pointer",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"#\"",
+    "data": "#",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.relative-json-pointer",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "invalid: \"0\\n\"",
+    "data": "0\n",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.relative-json-pointer",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "other types are not checked",
+    "data": 1,
+    "valid": true
+  }
+]

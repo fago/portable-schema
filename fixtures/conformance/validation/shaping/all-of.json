@@ -1,0 +1,15 @@
+{
+  "description": "every allOf branch is evaluated, also after one failed",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "string",
+    "allOf": [
+      {
+        "minLength": 3
+      },
+      {
+        "maxLength": 1
+      }
+    ]
+  }
+}

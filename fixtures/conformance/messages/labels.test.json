@@ -1,0 +1,109 @@
+[
+  {
+    "description": "required: the missing property's title",
+    "data": {},
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "title"
+        }
+      },
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "author"
+        }
+      }
+    ],
+    "messages": [
+      "Title is required.",
+      "author is required."
+    ]
+  },
+  {
+    "description": "use-site title, plural limit",
+    "data": {
+      "title": "Too long"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "author"
+        }
+      },
+      {
+        "instanceLocation": "/title",
+        "code": "maxLength",
+        "params": {
+          "limit": 5,
+          "actual": 8
+        }
+      }
+    ],
+    "messages": [
+      "author is required.",
+      "Title must be at most 5 characters long."
+    ]
+  },
+  {
+    "description": "no title: the property name, not the type's title",
+    "data": {
+      "title": "x",
+      "author": "a",
+      "slug": "A",
+      "count": "1"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/count",
+        "code": "type",
+        "params": {
+          "expected": [
+            "integer"
+          ],
+          "actual": "string"
+        }
+      },
+      {
+        "instanceLocation": "/slug",
+        "code": "pattern",
+        "params": {
+          "pattern": "^[a-z0-9_]+$"
+        }
+      }
+    ],
+    "messages": [
+      "count has the wrong type.",
+      "slug has an invalid format."
+    ]
+  },
+  {
+    "description": "unknown property: the object's title",
+    "data": {
+      "title": "x",
+      "author": "a",
+      "extra": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "extra"
+        }
+      }
+    ],
+    "messages": [
+      "Article: “extra” is not allowed here."
+    ]
+  }
+]

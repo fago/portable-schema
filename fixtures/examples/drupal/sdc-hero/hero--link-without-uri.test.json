@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:sdc.portable_showcase.hero",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/cta",
+      "code": "required",
+      "params": {
+        "property": "uri"
+      }
+    }
+  ],
+  "messages": [
+    "URL is required."
+  ]
+}

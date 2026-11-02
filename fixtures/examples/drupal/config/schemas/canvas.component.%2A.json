@@ -1,0 +1,94 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component.*",
+  "title": "Component",
+  "description": "canvas.component.* in Drupal Canvas' config/schema/canvas.schema.yml.",
+  "$ref": "drupal:versioned_config_entity",
+  "properties": {
+    "label": {
+      "title": "Label",
+      "$ref": "portable:label",
+      "minLength": 1
+    },
+    "status": {
+      "title": "Status",
+      "$ref": "portable:boolean"
+    },
+    "active_version": {
+      "portable-check": {
+        "drupal:Callback": {
+          "callback": [
+            "\\Drupal\\canvas\\Entity\\Component",
+            "validateActiveVersion"
+          ]
+        }
+      }
+    },
+    "id": {
+      "title": "Component",
+      "type": "string",
+      "maxLength": 166,
+      "portable-check": {
+        "drupal:StringParts": {
+          "separator": ".",
+          "reservedCharacters": [
+            ":"
+          ],
+          "reservedCharactersSubstitute": ".",
+          "parts": [
+            "1/source",
+            "1/source_local_id"
+          ]
+        }
+      }
+    },
+    "provider": {
+      "title": "Provider",
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "source": {
+      "title": "Source plugin",
+      "$ref": "drupal:catalog/plugins/canvas_component_source",
+      "pattern": "^[a-z0-9_]+$",
+      "not": {
+        "const": "fallback"
+      },
+      "x-portable-messages": {
+        "not": "The “fallback” source plugin does not provide any components; it only serves as a fallback."
+      }
+    },
+    "source_local_id": {
+      "portable-typeBy": {
+        "href": "drupal:canvas.component_source_local_id.{source}",
+        "source": {
+          "source": "1/source"
+        },
+        "fallback": "drupal:canvas.component_source_local_id.*"
+      }
+    },
+    "versioned_properties": {
+      "additionalProperties": {
+        "portable-typeBy": {
+          "href": "drupal:canvas.component.versioned.{key}.{active_version}",
+          "source": {
+            "key": "0#",
+            "active_version": "2/active_version"
+          },
+          "fallback": "drupal:canvas.component.versioned.*"
+        }
+      }
+    }
+  },
+  "required": [
+    "label",
+    "id",
+    "provider",
+    "source",
+    "source_local_id"
+  ],
+  "unevaluatedProperties": false
+}

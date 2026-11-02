@@ -1,0 +1,22 @@
+{
+  "schema": "drupal:tool.update_image_alt.input",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/alt",
+      "code": "minLength",
+      "params": {
+        "limit": 1,
+        "actual": 0
+      }
+    }
+  ],
+  "messages": [
+    "Alternative text must be at least 1 character long."
+  ],
+  "checks": {
+    "drupal:ValidReference": {
+      "errors": []
+    }
+  }
+}

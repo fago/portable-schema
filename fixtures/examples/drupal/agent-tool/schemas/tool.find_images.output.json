@@ -1,0 +1,19 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:tool.find_images.output",
+  "title": "Found images",
+  "type": "object",
+  "properties": {
+    "images": {
+      "title": "Images",
+      "type": "array",
+      "items": {
+        "$ref": "drupal:tool.image"
+      }
+    }
+  },
+  "required": [
+    "images"
+  ],
+  "unevaluatedProperties": false
+}

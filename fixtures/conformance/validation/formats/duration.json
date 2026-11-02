@@ -1,0 +1,7 @@
+{
+  "description": "format duration: ISO 8601 durations as in RFC 3339 appendix A",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "duration"
+  }
+}

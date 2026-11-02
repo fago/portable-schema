@@ -1,0 +1,109 @@
+[
+  {
+    "description": "every key with a type error",
+    "data": {
+      "a b": 1,
+      "^x": 1,
+      "%": 1,
+      "#": 1,
+      "~": 1,
+      "a/b": 1,
+      "ä": 1,
+      "|": 1,
+      "p|": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/#",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/%",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/^x",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/a b",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/a~1b",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/p|",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/|",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/~0",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      },
+      {
+        "instanceLocation": "/ä",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  }
+]

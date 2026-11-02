@@ -1,0 +1,21 @@
+{
+  "description": "named checks on array items and several checks per value",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "tags": {
+        "type": "array",
+        "items": {
+          "$ref": "portable:label",
+          "portable-check": {
+            "test:Unique": {},
+            "test:Allowed": {
+              "list": "tags"
+            }
+          }
+        }
+      }
+    }
+  }
+}

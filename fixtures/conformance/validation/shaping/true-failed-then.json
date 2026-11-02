@@ -1,0 +1,17 @@
+{
+  "description": "a true subschema in a failed then evaluates its property for unevaluatedProperties",
+  "schema": {
+    "type": "object",
+    "if": true,
+    "then": {
+      "properties": {
+        "b": true
+      },
+      "required": [
+        "z"
+      ]
+    },
+    "unevaluatedProperties": false,
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

@@ -40,6 +40,16 @@
     "valid": true
   },
   {
+    "description": "quoted local part with an escaped quote",
+    "data": "\"a\\\"b\"@example.com",
+    "valid": true
+  },
+  {
+    "description": "quoted local part with an escaped backslash",
+    "data": "\"a\\\\b\"@example.com",
+    "valid": true
+  },
+  {
     "description": "IPv6 tag in lower case",
     "data": "joe@[ipv6:::1]",
     "valid": true
@@ -135,7 +145,7 @@
   },
   {
     "description": "non-ASCII local part needs idn-email",
-    "data": "j\u00f6e@example.com",
+    "data": "jöe@example.com",
     "valid": false,
     "errors": [
       {

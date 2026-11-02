@@ -1,0 +1,7 @@
+{
+  "description": "format uri: an absolute URI per RFC 3986: scheme required",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "uri"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "drupal:tool.update_image_alt.output",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "",
+      "code": "unknownProperty",
+      "params": {
+        "property": "exif"
+      }
+    }
+  ],
+  "messages": [
+    "Updated image: “exif” is not allowed here."
+  ]
+}

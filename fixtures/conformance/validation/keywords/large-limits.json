@@ -1,0 +1,15 @@
+{
+  "description": "integer limits beyond 2^63 limit nothing more",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "max": {
+        "maxLength": 1e+20
+      },
+      "min": {
+        "minLength": 1e+20
+      }
+    },
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

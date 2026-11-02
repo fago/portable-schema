@@ -1,0 +1,25 @@
+[
+  {
+    "description": "the condition holds",
+    "data": {
+      "b": 1
+    },
+    "valid": true
+  },
+  {
+    "description": "the condition fails",
+    "data": {
+      "b": "x"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "b"
+        }
+      }
+    ]
+  }
+]

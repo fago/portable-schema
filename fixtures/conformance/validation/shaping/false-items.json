@@ -1,0 +1,11 @@
+{
+  "description": "false items",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "array",
+    "prefixItems": [
+      true
+    ],
+    "items": false
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "a false pattern property is an unknown property",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "patternProperties": {
+      "^x": false
+    }
+  }
+}

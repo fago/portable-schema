@@ -1,0 +1,11 @@
+{
+  "description": "errors for several properties follow JS key order: array-index names ascending, then the others in document order",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "b": true
+    },
+    "additionalProperties": false,
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

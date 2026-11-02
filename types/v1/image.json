@@ -1,0 +1,30 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:image",
+  "title": "Image",
+  "description": "An image to display. Open: use sites may add keys or require alt.",
+  "type": "object",
+  "properties": {
+    "src": {
+      "title": "Image URL",
+      "$ref": "portable:uri-reference"
+    },
+    "alt": {
+      "title": "Alternative text",
+      "$ref": "portable:label"
+    },
+    "width": {
+      "title": "Width",
+      "$ref": "portable:integer",
+      "minimum": 1
+    },
+    "height": {
+      "title": "Height",
+      "$ref": "portable:integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "src"
+  ]
+}

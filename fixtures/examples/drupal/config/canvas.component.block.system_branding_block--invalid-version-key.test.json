@@ -1,0 +1,27 @@
+{
+  "schema": "drupal:canvas.component.*",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/versioned_properties",
+      "code": "propertyNames",
+      "params": {
+        "property": "ab"
+      }
+    }
+  ],
+  "messages": [
+    "Version history: “ab” is not a valid key."
+  ],
+  "checks": {
+    "drupal:Callback": {
+      "errors": []
+    },
+    "drupal:StringParts": {
+      "errors": []
+    },
+    "drupal:KeyForEverySdcProp": {
+      "errors": []
+    }
+  }
+}

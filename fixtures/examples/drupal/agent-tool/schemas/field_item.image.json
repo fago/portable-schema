@@ -1,0 +1,45 @@
+{
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "$id": "drupal:field_item.image",
+    "title": "Image",
+    "description": "Items of image fields, with the field type's default settings.",
+    "type": "object",
+    "properties": {
+        "target_id": {
+            "title": "File ID",
+            "$ref": "portable:integer"
+        },
+        "alt": {
+            "title": "Alternative text",
+            "$ref": "portable:string",
+            "description": "Alternative image text, for the image's 'alt' attribute.",
+            "minLength": 1
+        },
+        "title": {
+            "title": "Title",
+            "$ref": "portable:string",
+            "description": "Image title text, for the image's 'title' attribute."
+        },
+        "width": {
+            "title": "Width",
+            "$ref": "portable:integer",
+            "description": "The width of the image in pixels."
+        },
+        "height": {
+            "title": "Height",
+            "$ref": "portable:integer",
+            "description": "The height of the image in pixels."
+        }
+    },
+    "required": [
+        "target_id",
+        "alt"
+    ],
+    "portable-check": {
+        "drupal:ReferenceAccess": {},
+        "drupal:FileExtension": {
+            "extensions": "png gif jpg jpeg webp"
+        }
+    },
+    "unevaluatedProperties": false
+}

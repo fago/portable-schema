@@ -1,0 +1,27 @@
+{
+  "schema": "drupal:canvas.component.*",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/versioned_properties/active/settings/default_settings",
+      "code": "unknownProperty",
+      "params": {
+        "property": "use_site_motto"
+      }
+    }
+  ],
+  "messages": [
+    "Block settings: “use_site_motto” is not allowed here."
+  ],
+  "checks": {
+    "drupal:Callback": {
+      "errors": []
+    },
+    "drupal:StringParts": {
+      "errors": []
+    },
+    "drupal:KeyForEverySdcProp": {
+      "errors": []
+    }
+  }
+}

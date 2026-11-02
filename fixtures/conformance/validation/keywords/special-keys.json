@@ -1,0 +1,38 @@
+{
+  "description": "keys that JSON Pointers escape and URIs percent-encode; parity of keywordLocation and absoluteKeywordLocation is checked by scripts/compare-results.sh",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "a b": {
+        "type": "string"
+      },
+      "^x": {
+        "type": "string"
+      },
+      "%": {
+        "type": "string"
+      },
+      "#": {
+        "type": "string"
+      },
+      "~": {
+        "type": "string"
+      },
+      "a/b": {
+        "type": "string"
+      },
+      "ä": {
+        "type": "string"
+      },
+      "|": {
+        "type": "string"
+      }
+    },
+    "patternProperties": {
+      "^p\\|": {
+        "type": "string"
+      }
+    }
+  }
+}
