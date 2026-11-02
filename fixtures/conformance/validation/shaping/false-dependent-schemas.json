@@ -1,0 +1,10 @@
+{
+  "description": "a false dependent schema",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "dependentSchemas": {
+      "a": false
+    }
+  }
+}

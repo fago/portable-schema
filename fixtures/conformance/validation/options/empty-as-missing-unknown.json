@@ -1,0 +1,13 @@
+{
+  "description": "with emptyAsMissing, an empty unknown property counts as missing",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "a": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

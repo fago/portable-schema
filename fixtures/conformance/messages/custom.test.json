@@ -1,0 +1,67 @@
+[
+  {
+    "description": "the type's message",
+    "data": {
+      "mail": "x"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/mail",
+        "code": "format.email",
+        "params": {}
+      }
+    ],
+    "messages": [
+      "Email: please enter an address like joe@example.com."
+    ]
+  },
+  {
+    "description": "the use site's message",
+    "data": {
+      "backup": "x"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/backup",
+        "code": "format.email",
+        "params": {}
+      }
+    ],
+    "messages": [
+      "Backup email needs an @."
+    ]
+  },
+  {
+    "description": "a check's own code: no catalog entry",
+    "checks": {
+      "test:Unique": {
+        "errors": [
+          {
+            "code": "check.test:Unique",
+            "params": {
+              "value": "Jo"
+            }
+          }
+        ]
+      }
+    },
+    "data": {
+      "name": "Jo"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/name",
+        "code": "check.test:Unique",
+        "params": {
+          "value": "Jo"
+        }
+      }
+    ],
+    "messages": [
+      "Name is not valid."
+    ]
+  }
+]

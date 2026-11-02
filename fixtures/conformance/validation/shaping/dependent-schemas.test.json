@@ -1,0 +1,26 @@
+[
+  {
+    "description": "both fail",
+    "data": {
+      "a": 1,
+      "b": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "x"
+        }
+      },
+      {
+        "instanceLocation": "",
+        "code": "required",
+        "params": {
+          "property": "y"
+        }
+      }
+    ]
+  }
+]

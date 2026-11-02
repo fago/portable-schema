@@ -1,0 +1,36 @@
+[
+  {
+    "description": "in range",
+    "data": 2147483647,
+    "valid": true
+  },
+  {
+    "description": "below range",
+    "data": -2147483649,
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.int32",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "above range",
+    "data": 2147483648,
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.int32",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "strings are not checked",
+    "data": "x",
+    "valid": true
+  }
+]

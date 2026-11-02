@@ -6,17 +6,17 @@
   },
   {
     "description": "non-ascii path",
-    "data": "https://example.com/\u00e4",
+    "data": "https://example.com/ä",
     "valid": true
   },
   {
     "description": "non-ascii host, path, query and fragment",
-    "data": "https://\u4f8b\u3048.jp/\u30d1\u30b9?q=\u00fc#\u9801",
+    "data": "https://例え.jp/パス?q=ü#頁",
     "valid": true
   },
   {
     "description": "mailto with a non-ascii local part",
-    "data": "mailto:j\u00f6e@example.com",
+    "data": "mailto:jöe@example.com",
     "valid": true
   },
   {
@@ -32,6 +32,16 @@
   {
     "description": "percent-encoded route uri",
     "data": "route:%3Cnolink%3E",
+    "valid": true
+  },
+  {
+    "description": "IPv6 loopback literal",
+    "data": "http://[::1]/",
+    "valid": true
+  },
+  {
+    "description": "IPv6 literal",
+    "data": "http://[2001:db8::1]/",
     "valid": true
   },
   {
@@ -60,7 +70,7 @@
   },
   {
     "description": "no scheme",
-    "data": "example.com/\u00e4",
+    "data": "example.com/ä",
     "valid": false,
     "errors": [
       {
@@ -72,7 +82,7 @@
   },
   {
     "description": "relative reference",
-    "data": "/pfad/\u00e4",
+    "data": "/pfad/ä",
     "valid": false,
     "errors": [
       {
@@ -97,6 +107,30 @@
   {
     "description": "scheme with a digit first",
     "data": "1http://example.com",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.iri",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "literal that is no IPv6 address",
+    "data": "http://[:::]/",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "format.iri",
+        "params": {}
+      }
+    ]
+  },
+  {
+    "description": "literal with dots only",
+    "data": "http://[1.2]/",
     "valid": false,
     "errors": [
       {

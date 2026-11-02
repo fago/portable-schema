@@ -1,0 +1,41 @@
+{
+  "schema": "drupal:canvas.component.*",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/source",
+      "code": "not",
+      "params": {}
+    },
+    {
+      "instanceLocation": "/versioned_properties/active/settings",
+      "code": "required",
+      "params": {
+        "property": "last_active_version"
+      }
+    },
+    {
+      "instanceLocation": "/versioned_properties/active/settings",
+      "code": "unknownProperty",
+      "params": {
+        "property": "prop_field_definitions"
+      }
+    }
+  ],
+  "messages": [
+    "The “fallback” source plugin does not provide any components; it only serves as a fallback.",
+    "Last active version is required.",
+    "Settings: “prop_field_definitions” is not allowed here."
+  ],
+  "checks": {
+    "drupal:Callback": {
+      "errors": []
+    },
+    "drupal:StringParts": {
+      "errors": []
+    },
+    "drupal:KeyForEverySdcProp": {
+      "errors": []
+    }
+  }
+}

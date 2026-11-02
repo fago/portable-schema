@@ -1,0 +1,37 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component.versioned.*.*",
+  "title": "Component version",
+  "description": "A version: source-specific settings (not validated, they may be outdated) and fallback metadata.",
+  "type": "object",
+  "properties": {
+    "settings": {
+      "title": "Settings"
+    },
+    "fallback_metadata": {
+      "title": "Fallback metadata",
+      "type": "object",
+      "properties": {
+        "slot_definitions": {
+          "title": "Slot definitions",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "drupal:canvas.slot_definition"
+          }
+        }
+      },
+      "required": [
+        "slot_definitions"
+      ],
+      "unevaluatedProperties": false
+    }
+  },
+  "required": [
+    "settings",
+    "fallback_metadata"
+  ],
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,43 @@
+{
+  "description": "{+var} keeps reserved characters; a value that expands to a fragment selects nothing, since targets are registry ids",
+  "registry": {
+    "test:s.d": {
+      "type": "object",
+      "$defs": {
+        "q": {
+          "type": "string"
+        }
+      },
+      "properties": {
+        "n": {
+          "type": "integer"
+        }
+      }
+    },
+    "test:s.a/b": {
+      "type": "object",
+      "properties": {
+        "n": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "schema": {
+    "type": "object",
+    "properties": {
+      "p": {
+        "type": "string"
+      },
+      "v": {
+        "portable-typeBy": {
+          "href": "test:s.{+p}",
+          "source": {
+            "p": "1/p"
+          }
+        }
+      }
+    },
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

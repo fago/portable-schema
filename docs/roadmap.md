@@ -33,4 +33,5 @@ Planned work that isn't started yet.
   - An `llms.txt` overview of the spec.
 - **LLM export profiles.** Down-level exports of schemas as tool parameters and structured-output formats, per provider; e.g. OpenAI's strict mode requires `additionalProperties: false` and all properties in `required`.
 - **"Did you mean" suggestions** in catalog and `enum` errors, for humans and agents.
+- **Compile cache.** Both validators compile and meta-check every registry schema when created: about 25 ms for the 75 schemas of the Canvas showcase in PHP. For site registries with hundreds of schemas: a cache of the compiled registry, or skipping the meta-check for generated registries.
 - **Remote registries.** Async preloading of `portable-typeBy` targets in JS (`validateAsync()`: walk the sources in the data, fetch and compile the missing targets, then validate), and lazy compiling for large registries.

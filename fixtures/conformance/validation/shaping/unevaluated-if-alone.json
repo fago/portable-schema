@@ -1,0 +1,15 @@
+{
+  "description": "an if without then and else still evaluates properties",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "if": {
+      "properties": {
+        "b": {
+          "$ref": "portable:integer"
+        }
+      }
+    },
+    "unevaluatedProperties": false
+  }
+}

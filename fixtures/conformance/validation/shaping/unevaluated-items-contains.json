@@ -1,0 +1,11 @@
+{
+  "description": "contains evaluates the matching items only",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "array",
+    "contains": {
+      "type": "string"
+    },
+    "unevaluatedItems": false
+  }
+}

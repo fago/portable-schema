@@ -1,0 +1,55 @@
+[
+  {
+    "description": "a numeric key longer than maxLength",
+    "data": {
+      "a": {
+        "123": 1
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a",
+        "code": "propertyNames",
+        "params": {
+          "property": "123"
+        }
+      }
+    ]
+  },
+  {
+    "description": "a numeric key is a string",
+    "data": {
+      "b": {
+        "1": 1,
+        "123": 1
+      }
+    },
+    "valid": true,
+    "errors": []
+  },
+  {
+    "description": "a numeric key is reported at its own location",
+    "data": {
+      "a": {
+        "123": 1,
+        "ab": 1
+      }
+    },
+    "options": {
+      "locations": [
+        "/a/123"
+      ]
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/a",
+        "code": "propertyNames",
+        "params": {
+          "property": "123"
+        }
+      }
+    ]
+  }
+]

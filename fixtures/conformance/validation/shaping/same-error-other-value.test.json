@@ -1,0 +1,25 @@
+[
+  {
+    "description": "both consts fail",
+    "data": {
+      "b": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "const",
+        "params": {
+          "expected": []
+        }
+      },
+      {
+        "instanceLocation": "",
+        "code": "const",
+        "params": {
+          "expected": {}
+        }
+      }
+    ]
+  }
+]

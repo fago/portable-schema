@@ -1,0 +1,7 @@
+{
+  "description": "format ipv6: RFC 4291 text form with :: and an IPv4 tail, no zone ID",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "format": "ipv6"
+  }
+}

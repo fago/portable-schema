@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PortableSchema\Tests;
+
+use PHPUnit\Framework\TestCase;
+use PortableSchema\Json;
+use PortableSchema\Registry;
+use PortableSchema\Validator;
+
+final class ValidatorTest extends TestCase
+{
+    private const DIALECT = 'https://portable-schema.dev/v1/schema';
+
+    public function testDoesNotSeeSchemasAddedLater(): void
+    {
+        $registry = Registry::withTypes()
+            ->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:late", "type": "object", "portable-typeBy": {"href": "test:late.{k}", "source": {"k": "0/k"}}}'))
+            ->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:late.a", "type": "object"}'));
+        $validator = new Validator($registry);
+        $registry->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:late.b", "type": "string"}'));
+        $this->assertSame(['typeBy.unresolved'], array_map(fn ($e) => $e->code, $validator->validate(Json::decode('{"k": "b"}'), 'test:late')->errors));
+        $this->expectException(\OutOfBoundsException::class);
+        $validator->validate('x', 'test:late.b');
+    }
+
+    public function testDoesNotSeeSchemasReplacedLater(): void
+    {
+        $registry = Registry::withTypes()->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:c", "title": "Count", "type": "integer"}'));
+        $validator = new Validator($registry);
+        $before = $validator->validate('x', 'test:c');
+        $registry->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:c", "title": "Name", "type": "string"}'));
+        $this->assertEquals($before, $validator->validate('x', 'test:c'));
+    }
+
+    public function testDoesNotSeeSchemasChangedLater(): void
+    {
+        $registry = Registry::withTypes()->add(Json::decode('{"$schema": "' . self::DIALECT . '", "$id": "test:c", "required": ["a"]}'));
+        $validator = new Validator($registry);
+        $registry->get('test:c')->required = [];
+        $this->assertFalse($validator->validate(new \stdClass(), 'test:c')->valid);
+    }
+}

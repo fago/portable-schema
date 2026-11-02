@@ -1,0 +1,25 @@
+{
+  "description": "schemas no value satisfies are still schemas",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "a": {
+        "const": 1,
+        "enum": [
+          2
+        ]
+      },
+      "b": {
+        "type": "string",
+        "const": 1
+      },
+      "c": {
+        "oneOf": [
+          {},
+          {}
+        ]
+      }
+    }
+  }
+}

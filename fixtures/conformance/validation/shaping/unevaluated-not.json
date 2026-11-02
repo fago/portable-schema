@@ -1,0 +1,23 @@
+{
+  "description": "unevaluatedProperties: false ignores properties evaluated inside not",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "a": {
+        "$ref": "portable:string"
+      }
+    },
+    "not": {
+      "properties": {
+        "b": {
+          "$ref": "portable:integer"
+        }
+      },
+      "required": [
+        "b"
+      ]
+    },
+    "unevaluatedProperties": false
+  }
+}

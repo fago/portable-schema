@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portable-schema.dev/fixtures/expectation.schema.json",
+  "title": "Example expectation file",
+  "description": "<name>.test.json next to an example data file <name>.yml or <name>.json: what validating the data against `schema` gives.",
+  "type": "object",
+  "required": [
+    "schema",
+    "valid"
+  ],
+  "properties": {
+    "schema": {
+      "description": "The ID of the schema the data file is validated against.",
+      "type": "string",
+      "minLength": 1
+    },
+    "valid": {
+      "type": "boolean"
+    },
+    "errors": {
+      "description": "Exactly the expected errors, in shaped order. Message texts are compared under messages.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/error"
+      }
+    },
+    "unchecked": {
+      "description": "Exactly the expected unchecked entries.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/unchecked"
+      }
+    },
+    "messages": {
+      "description": "The English messages of the errors, in order, from the standalone formatter and messages/en.json.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "options": {
+      "type": "object",
+      "properties": {
+        "partial": {
+          "type": "boolean"
+        },
+        "emptyAsMissing": {
+          "type": "boolean"
+        },
+        "locations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "checks": {
+      "description": "Local callbacks as data: the canned result per check name, applied to every value the check is asked about, or only to the values at `locations`.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "errors"
+        ],
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "code",
+                "params"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "params": {
+                  "type": "object"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "locations": {
+            "description": "Instance locations that get the canned errors; values elsewhere pass.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "error": {
+      "type": "object",
+      "required": [
+        "instanceLocation",
+        "code",
+        "params"
+      ],
+      "properties": {
+        "instanceLocation": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "params": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "unchecked": {
+      "type": "object",
+      "required": [
+        "instanceLocation",
+        "code",
+        "reason"
+      ],
+      "properties": {
+        "instanceLocation": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "noProvider",
+            "pending",
+            "static",
+            "error"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

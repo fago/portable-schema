@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+active_version: 2a7e9b1c40d3f5e6
+versioned_properties:
+  active:
+    settings:
+      default_settings:
+        id: system_branding_block
+        label: 'Site branding'
+        label_display: '0'
+        provider: system
+        use_site_logo: true
+        use_site_name: true
+        use_site_slogan: false
+        use_site_motto: true
+    fallback_metadata:
+      slot_definitions: null
+  9f8e7d6c5b4a3210:
+    settings:
+      default_settings:
+        label: 'Old settings, not validated'
+    fallback_metadata:
+      slot_definitions: null
+label: 'Site branding'
+id: block.system_branding_block
+provider: system
+source: block
+source_local_id: system_branding_block

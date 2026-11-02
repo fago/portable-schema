@@ -1,0 +1,22 @@
+langcode: en
+status: false
+dependencies: {}
+active_version: fallback
+versioned_properties:
+  active:
+    settings:
+      last_active_version: 8c01a2bdb897a810
+    fallback_metadata:
+      slot_definitions: null
+  8c01a2bdb897a810:
+    settings:
+      prop_field_definitions: {}
+    fallback_metadata:
+      slot_definitions:
+        content:
+          title: Content
+label: 'Removed heading'
+id: sdc.canvas_test_sdc.gone
+provider: null
+source: sdc
+source_local_id: 'canvas_test_sdc:heading'

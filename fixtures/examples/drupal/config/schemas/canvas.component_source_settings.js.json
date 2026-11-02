@@ -1,0 +1,18 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component_source_settings.js",
+  "title": "Code component settings",
+  "$ref": "drupal:canvas.json_schema_props",
+  "properties": {
+    "prop_field_definitions": {
+      "portable-check": {
+        "drupal:SequenceKeysMustMatch": {
+          "configPrefix": "canvas.js_component.",
+          "configName": "4/source_local_id",
+          "propertyPathToSequence": "props"
+        }
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,26 @@
+{
+  "description": "portable-typeBy expands integers and booleans as text; other values cannot select a type",
+  "registry": {
+    "test:value.1": {
+      "type": "string"
+    },
+    "test:value.true": {
+      "type": "integer"
+    }
+  },
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "kind": true,
+      "value": {
+        "portable-typeBy": {
+          "href": "test:value.{kind}",
+          "source": {
+            "kind": "1/kind"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "description": "known keys",
+    "data": {
+      "language": {
+        "langcodes": [
+          "en"
+        ]
+      },
+      "path": {
+        "pages": "/node"
+      }
+    },
+    "valid": true
+  },
+  {
+    "description": "invalid value of a known key",
+    "data": {
+      "language": {
+        "langcodes": "en"
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/language/langcodes",
+        "code": "type",
+        "params": {
+          "expected": [
+            "array"
+          ],
+          "actual": "string"
+        }
+      }
+    ]
+  },
+  {
+    "description": "unknown key",
+    "data": {
+      "user_role": {}
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/user_role",
+        "code": "typeBy.unresolved",
+        "params": {
+          "value": "user_role",
+          "resolved": "test:condition.user_role"
+        }
+      }
+    ]
+  }
+]

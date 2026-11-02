@@ -1,0 +1,40 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:tool.image",
+  "title": "Image",
+  "description": "A photo of the album, as the tools return it.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "title": "Image ID",
+      "$ref": "drupal:field_item.image#/properties/target_id"
+    },
+    "title": {
+      "title": "Title",
+      "$ref": "portable:label"
+    },
+    "caption": {
+      "title": "Caption",
+      "$ref": "portable:html"
+    },
+    "url": {
+      "title": "URL",
+      "$ref": "portable:uri"
+    },
+    "alt": {
+      "$ref": "drupal:field_item.image#/properties/alt"
+    },
+    "width": {
+      "$ref": "drupal:field_item.image#/properties/width"
+    },
+    "height": {
+      "$ref": "drupal:field_item.image#/properties/height"
+    }
+  },
+  "required": [
+    "id",
+    "url",
+    "alt"
+  ],
+  "unevaluatedProperties": false
+}

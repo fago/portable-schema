@@ -1,0 +1,28 @@
+{
+  "description": "emptyAsMissing: an empty portable-typeBy source selects no schema",
+  "registry": {
+    "test:kind.": {
+      "type": "string"
+    },
+    "test:kind.a": {
+      "type": "integer"
+    }
+  },
+  "schema": {
+    "type": "object",
+    "properties": {
+      "kind": {
+        "type": "string"
+      },
+      "value": {
+        "portable-typeBy": {
+          "href": "test:kind.{kind}",
+          "source": {
+            "kind": "1/kind"
+          }
+        }
+      }
+    },
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

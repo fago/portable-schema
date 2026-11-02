@@ -1,0 +1,28 @@
+{
+  "schema": "drupal:node.article",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/field_image",
+      "code": "maxItems",
+      "params": {
+        "limit": 1,
+        "actual": 2
+      }
+    }
+  ],
+  "messages": [
+    "Image must have at most 1 item."
+  ],
+  "checks": {
+    "drupal:ValidReference": {
+      "errors": []
+    },
+    "drupal:ReferenceAccess": {
+      "errors": []
+    },
+    "drupal:FileExtension": {
+      "errors": []
+    }
+  }
+}

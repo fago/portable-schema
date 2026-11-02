@@ -1,0 +1,18 @@
+[
+  {
+    "description": "invalid",
+    "data": {
+      "xa": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "xa"
+        }
+      }
+    ]
+  }
+]
