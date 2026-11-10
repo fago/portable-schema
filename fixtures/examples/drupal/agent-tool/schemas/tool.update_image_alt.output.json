@@ -1,0 +1,6 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:tool.update_image_alt.output",
+  "title": "Updated image",
+  "$ref": "drupal:tool.image"
+}

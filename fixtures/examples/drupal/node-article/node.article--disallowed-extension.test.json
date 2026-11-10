@@ -1,0 +1,35 @@
+{
+  "schema": "drupal:node.article",
+  "valid": false,
+  "errors": [
+    {
+      "instanceLocation": "/field_image/0",
+      "code": "check.drupal:FileExtension",
+      "params": {
+        "extensions": "png gif jpg jpeg webp"
+      }
+    }
+  ],
+  "messages": [
+    "Only files with the following extensions are allowed: png gif jpg jpeg webp."
+  ],
+  "checks": {
+    "drupal:ValidReference": {
+      "errors": []
+    },
+    "drupal:ReferenceAccess": {
+      "errors": []
+    },
+    "drupal:FileExtension": {
+      "errors": [
+        {
+          "code": "check.drupal:FileExtension",
+          "params": {
+            "extensions": "png gif jpg jpeg webp"
+          },
+          "message": "Only files with the following extensions are allowed: png gif jpg jpeg webp."
+        }
+      ]
+    }
+  }
+}

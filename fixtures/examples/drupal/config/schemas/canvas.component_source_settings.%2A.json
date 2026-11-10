@@ -1,0 +1,8 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component_source_settings.*",
+  "title": "Source-specific component settings",
+  "description": "For sources without settings of their own: none.",
+  "$ref": "drupal:canvas.component_source_settings",
+  "unevaluatedProperties": false
+}

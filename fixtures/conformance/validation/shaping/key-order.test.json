@@ -1,0 +1,58 @@
+[
+  {
+    "description": "index names first",
+    "data": {
+      "z": 1,
+      "12": 1,
+      "a": 1,
+      "1": 1,
+      "-1": 1,
+      "01": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "1"
+        }
+      },
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "12"
+        }
+      },
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "z"
+        }
+      },
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "a"
+        }
+      },
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "-1"
+        }
+      },
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "01"
+        }
+      }
+    ]
+  }
+]

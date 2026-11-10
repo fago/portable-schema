@@ -8,6 +8,14 @@ Schemas outside the profile are refused when they are loaded ([decision 0005](..
 
 The full list of allowed keywords follows. Annotations include `$comment`.
 
+Refused in every schema and subschema:
+
+- `$schema` other than `https://portable-schema.dev/v1/schema`;
+- `$vocabulary`: only meta-schemas declare vocabularies;
+- `$dynamicRef` ([decision 0005](../docs/decisions/0005-profile-only-validators.md)), and by the same decision `$dynamicAnchor`.
+
+A schema is one resource: `$id` and `$schema` only at its root. Below the root, a string `$id` or `$schema` is refused in every object: subschemas and values like `default` or `const` alike.
+
 ## Catalogs
 
 A catalog restricts a value to the facts a system provides ([decision 0006](../docs/decisions/0006-catalogs-as-labeled-oneof.md)):

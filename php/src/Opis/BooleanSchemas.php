@@ -1,0 +1,113 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PortableSchema\Opis;
+
+use Opis\JsonSchema\Errors\ValidationError;
+use Opis\JsonSchema\Info\DataInfo;
+use Opis\JsonSchema\Info\SchemaInfo;
+use Opis\JsonSchema\Keyword;
+use Opis\JsonSchema\Parsers\KeywordParser;
+use Opis\JsonSchema\Parsers\SchemaParser;
+use Opis\JsonSchema\Schema;
+use Opis\JsonSchema\ValidationContext;
+
+/**
+ * Boolean subschemas, and `{}` as `true`, as objects with the internal keyword `portable-boolean`.
+ *
+ * opis evaluates most boolean and empty subschemas inline, without a schema to trace, refuses `false` in `allOf`, and
+ * marks one item too many evaluated for a `prefixItems` of only `{}`.
+ */
+final class BooleanSchemas extends KeywordParser
+{
+    public const KEYWORD = 'portable-boolean';
+
+    private const SINGLE = ['additionalProperties', 'unevaluatedProperties', 'items', 'unevaluatedItems', 'contains', 'propertyNames', 'not', 'if', 'then', 'else'];
+
+    private const MAP = ['properties', 'patternProperties', 'dependentSchemas', '$defs'];
+
+    private const LIST = ['prefixItems', 'allOf', 'anyOf', 'oneOf'];
+
+    public function __construct()
+    {
+        parent::__construct(self::KEYWORD);
+    }
+
+    /**
+     * A copy of $schema with every boolean subschema replaced.
+     */
+    public static function replace(mixed $schema): mixed
+    {
+        if (!$schema instanceof \stdClass) {
+            return $schema;
+        }
+        $copy = clone $schema;
+        foreach (self::SINGLE as $keyword) {
+            if (property_exists($copy, $keyword)) {
+                $copy->{$keyword} = self::subschema($copy->{$keyword});
+            }
+        }
+        foreach (self::MAP as $keyword) {
+            if (($copy->{$keyword} ?? null) instanceof \stdClass) {
+                $copy->{$keyword} = (object) array_map(self::subschema(...), get_object_vars($copy->{$keyword}));
+            }
+        }
+        foreach (self::LIST as $keyword) {
+            if (is_array($copy->{$keyword} ?? null)) {
+                $copy->{$keyword} = array_map(self::subschema(...), $copy->{$keyword});
+            }
+        }
+        return $copy;
+    }
+
+    /**
+     * The object subschemas of $schema.
+     *
+     * @return list<\stdClass>
+     */
+    public static function subschemas(\stdClass $schema): array
+    {
+        $subschemas = [];
+        foreach (self::SINGLE as $keyword) {
+            $subschemas[] = $schema->{$keyword} ?? null;
+        }
+        foreach ([...self::MAP, ...self::LIST] as $keyword) {
+            $value = $schema->{$keyword} ?? null;
+            array_push($subschemas, ...array_values(is_object($value) ? get_object_vars($value) : (is_array($value) ? $value : [])));
+        }
+        return array_values(array_filter($subschemas, fn ($subschema) => $subschema instanceof \stdClass));
+    }
+
+    public static function is(SchemaInfo $info): bool
+    {
+        return $info->isBoolean() || property_exists($info->data(), self::KEYWORD);
+    }
+
+    private static function subschema(mixed $schema): mixed
+    {
+        if ($schema instanceof \stdClass && get_object_vars($schema) === []) {
+            $schema = true;
+        }
+        return is_bool($schema) ? (object) [self::KEYWORD => $schema] : self::replace($schema);
+    }
+
+    public function type(): string
+    {
+        return self::TYPE_BEFORE;
+    }
+
+    public function parse(SchemaInfo $info, SchemaParser $parser, object $shared): ?Keyword
+    {
+        $schema = $info->data();
+        if (!$this->keywordExists($schema) || $this->keywordValue($schema) === true) {
+            return null;
+        }
+        return new class () implements Keyword {
+            public function validate(ValidationContext $context, Schema $schema): ?ValidationError
+            {
+                return new ValidationError('false', $schema, DataInfo::fromContext($context), 'No value is valid');
+            }
+        };
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "description": "every dependent schema is evaluated",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "dependentSchemas": {
+      "a": {
+        "required": [
+          "x"
+        ]
+      },
+      "b": {
+        "required": [
+          "y"
+        ]
+      }
+    }
+  }
+}

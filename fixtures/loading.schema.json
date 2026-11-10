@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portable-schema.dev/fixtures/loading.schema.json",
+  "title": "Loading fixtures",
+  "description": "loading.json: schemas the validators refuse when they are created, or accept.",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "required": ["description", "schema", "refused"],
+    "properties": {
+      "description": { "type": "string", "minLength": 1 },
+      "schema": {
+        "description": "Joins the type registry under its $id.",
+        "type": "object",
+        "required": ["$id"]
+      },
+      "refused": { "type": "boolean" }
+    },
+    "additionalProperties": false
+  }
+}

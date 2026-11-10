@@ -10,6 +10,13 @@
       },
       "age": {
         "$ref": "portable:integer"
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 2
+        }
       }
     },
     "required": [

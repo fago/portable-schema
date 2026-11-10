@@ -1,0 +1,14 @@
+{
+  "description": "an invalid name that is also unknown is reported once, as propertyNames",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "a": true
+    },
+    "propertyNames": {
+      "maxLength": 1
+    },
+    "additionalProperties": false,
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

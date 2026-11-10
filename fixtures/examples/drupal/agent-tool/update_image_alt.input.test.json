@@ -1,0 +1,9 @@
+{
+  "schema": "drupal:tool.update_image_alt.input",
+  "valid": true,
+  "checks": {
+    "drupal:ValidReference": {
+      "errors": []
+    }
+  }
+}

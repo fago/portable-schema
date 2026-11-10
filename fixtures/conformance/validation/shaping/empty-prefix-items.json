@@ -1,0 +1,26 @@
+{
+  "description": "an empty prefixItems schema evaluates only its own item",
+  "schema": {
+    "type": "array",
+    "properties": {},
+    "anyOf": [
+      {
+        "prefixItems": [
+          {}
+        ]
+      },
+      {
+        "allOf": [
+          {
+            "prefixItems": [
+              {},
+              {}
+            ]
+          }
+        ]
+      }
+    ],
+    "unevaluatedItems": false,
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

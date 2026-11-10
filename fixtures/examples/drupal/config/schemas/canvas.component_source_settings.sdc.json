@@ -1,0 +1,16 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "drupal:canvas.component_source_settings.sdc",
+  "title": "SDC component settings",
+  "$ref": "drupal:canvas.json_schema_props",
+  "properties": {
+    "prop_field_definitions": {
+      "portable-check": {
+        "drupal:KeyForEverySdcProp": {
+          "source_local_id": "4/source_local_id"
+        }
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}

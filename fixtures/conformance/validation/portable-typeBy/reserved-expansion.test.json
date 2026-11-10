@@ -1,0 +1,52 @@
+[
+  {
+    "description": "slash kept",
+    "data": {
+      "p": "a/b",
+      "v": {
+        "n": "x"
+      }
+    },
+    "valid": true
+  },
+  {
+    "description": "slash kept, wrong type",
+    "data": {
+      "p": "a/b",
+      "v": {
+        "n": 1
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/v/n",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  },
+  {
+    "description": "fragment selects nothing",
+    "data": {
+      "p": "d#/$defs/q",
+      "v": "x"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/v",
+        "code": "typeBy.unresolved",
+        "params": {
+          "value": "d#/$defs/q",
+          "resolved": "test:s.d#/$defs/q"
+        }
+      }
+    ]
+  }
+]

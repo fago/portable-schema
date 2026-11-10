@@ -1,0 +1,25 @@
+[
+  {
+    "description": "every item matches",
+    "data": [
+      "a",
+      "b"
+    ],
+    "valid": true
+  },
+  {
+    "description": "an item that doesn't match",
+    "data": [
+      "a",
+      1
+    ],
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/1",
+        "code": "false",
+        "params": {}
+      }
+    ]
+  }
+]

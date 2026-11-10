@@ -1,0 +1,28 @@
+{
+  "description": "unevaluatedProperties: false ignores properties only a failed if condition evaluated",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "a": {
+        "$ref": "portable:string"
+      }
+    },
+    "if": {
+      "properties": {
+        "b": {
+          "$ref": "portable:integer"
+        }
+      },
+      "required": [
+        "b"
+      ]
+    },
+    "then": {
+      "required": [
+        "a"
+      ]
+    },
+    "unevaluatedProperties": false
+  }
+}

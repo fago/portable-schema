@@ -1,0 +1,26 @@
+[
+  {
+    "description": "without b",
+    "data": {
+      "a": "s"
+    },
+    "valid": true
+  },
+  {
+    "description": "b only evaluated inside not",
+    "data": {
+      "a": "s",
+      "b": "x"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "b"
+        }
+      }
+    ]
+  }
+]

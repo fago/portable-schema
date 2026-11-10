@@ -1,0 +1,39 @@
+[
+  {
+    "description": "type error",
+    "data": {
+      "b": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/b",
+        "code": "type",
+        "params": {
+          "expected": [
+            "string"
+          ],
+          "actual": "integer"
+        }
+      }
+    ]
+  },
+  {
+    "description": "unknown key in a nested object",
+    "data": {
+      "c": {
+        "x": 1
+      }
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/c",
+        "code": "unknownProperty",
+        "params": {
+          "property": "x"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "description": "one item",
+    "data": [
+      1
+    ],
+    "valid": true,
+    "errors": []
+  },
+  {
+    "description": "two items",
+    "data": [
+      1,
+      2
+    ],
+    "valid": true,
+    "errors": []
+  },
+  {
+    "description": "third item is unevaluated",
+    "data": [
+      1,
+      2,
+      3
+    ],
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/2",
+        "code": "false",
+        "params": {}
+      }
+    ]
+  }
+]

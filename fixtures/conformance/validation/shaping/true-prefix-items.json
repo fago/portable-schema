@@ -1,0 +1,16 @@
+{
+  "description": "a true prefixItems entry in a failed allOf branch evaluates its item for unevaluatedItems",
+  "schema": {
+    "type": "array",
+    "allOf": [
+      {
+        "prefixItems": [
+          true
+        ],
+        "minItems": 2
+      }
+    ],
+    "unevaluatedItems": false,
+    "$schema": "https://portable-schema.dev/v1/schema"
+  }
+}

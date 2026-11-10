@@ -1,0 +1,310 @@
+# MCP tool definitions
+
+[
+    {
+        "name": "find_images",
+        "title": "Find images",
+        "description": "Search photos by words in their title, caption or alt text.",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Find images",
+            "description": "Search photos by words in their title, caption or alt text.",
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "pattern": "^[^\\r\\n]*$",
+                    "title": "Query",
+                    "description": "Words to look for in the title, caption or alt text.",
+                    "minLength": 1,
+                    "maxLength": 128
+                },
+                "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 50,
+                    "title": "Limit",
+                    "description": "The maximum number of images to return.",
+                    "default": 10
+                }
+            },
+            "required": [
+                "query"
+            ],
+            "unevaluatedProperties": false
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Found images",
+            "type": "object",
+            "properties": {
+                "images": {
+                    "title": "Images",
+                    "type": "array",
+                    "items": {
+                        "title": "Image",
+                        "description": "A photo of the album, as the tools return it.",
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991,
+                                "title": "Image ID"
+                            },
+                            "title": {
+                                "type": "string",
+                                "pattern": "^[^\\r\\n]*$",
+                                "title": "Title"
+                            },
+                            "caption": {
+                                "type": "string",
+                                "format": "html",
+                                "contentMediaType": "text/html",
+                                "title": "Caption"
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "title": "URL"
+                            },
+                            "alt": {
+                                "type": "string",
+                                "title": "Alternative text",
+                                "description": "Alternative image text, for the image's 'alt' attribute.",
+                                "minLength": 1
+                            },
+                            "width": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991,
+                                "title": "Width",
+                                "description": "The width of the image in pixels."
+                            },
+                            "height": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991,
+                                "title": "Height",
+                                "description": "The height of the image in pixels."
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "url",
+                            "alt"
+                        ],
+                        "unevaluatedProperties": false
+                    }
+                }
+            },
+            "required": [
+                "images"
+            ],
+            "unevaluatedProperties": false
+        }
+    },
+    {
+        "name": "update_image_alt",
+        "title": "Update image alt text",
+        "description": "Change the alt text of a photo.",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Update image alt text",
+            "description": "Change the alt text of a photo.",
+            "type": "object",
+            "properties": {
+                "image_id": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991,
+                    "title": "Image ID"
+                },
+                "alt": {
+                    "type": "string",
+                    "title": "Alternative text",
+                    "description": "Plain text describing the image for screen readers.",
+                    "minLength": 1,
+                    "maxLength": 512
+                }
+            },
+            "required": [
+                "image_id",
+                "alt"
+            ],
+            "unevaluatedProperties": false
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Updated image",
+            "description": "A photo of the album, as the tools return it.",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991,
+                    "title": "Image ID"
+                },
+                "title": {
+                    "type": "string",
+                    "pattern": "^[^\\r\\n]*$",
+                    "title": "Title"
+                },
+                "caption": {
+                    "type": "string",
+                    "format": "html",
+                    "contentMediaType": "text/html",
+                    "title": "Caption"
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "title": "URL"
+                },
+                "alt": {
+                    "type": "string",
+                    "title": "Alternative text",
+                    "description": "Alternative image text, for the image's 'alt' attribute.",
+                    "minLength": 1
+                },
+                "width": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991,
+                    "title": "Width",
+                    "description": "The width of the image in pixels."
+                },
+                "height": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991,
+                    "title": "Height",
+                    "description": "The height of the image in pixels."
+                }
+            },
+            "required": [
+                "id",
+                "url",
+                "alt"
+            ],
+            "unevaluatedProperties": false
+        }
+    }
+]
+
+# Repair loop: find_images
+
+→ find_images {"query": "skiing photos", "limit": 100, "sort": "date"}
+← {
+    "isError": true,
+    "content": [
+        {
+            "type": "text",
+            "text": "Find images: “sort” is not allowed here.\nLimit must be at most 50."
+        }
+    ],
+    "structuredContent": {
+        "errors": [
+            {
+                "instanceLocation": "",
+                "code": "unknownProperty",
+                "params": {
+                    "property": "sort"
+                },
+                "message": "Find images: “sort” is not allowed here."
+            },
+            {
+                "instanceLocation": "/limit",
+                "code": "maximum",
+                "params": {
+                    "limit": 50
+                },
+                "message": "Limit must be at most 50."
+            }
+        ]
+    }
+}
+
+→ find_images {"query": "ski", "limit": 5}
+← valid output: {
+    "structuredContent": {
+        "images": [
+            {
+                "id": 7,
+                "title": "Ski tour",
+                "url": "https://example.com/photos/ski-tour.jpg",
+                "alt": "Two skiers on a ridge above the clouds"
+            }
+        ]
+    }
+}
+
+# Repair loop: update_image_alt
+
+→ update_image_alt {"image_id": "7", "alt": ""}
+← {
+    "isError": true,
+    "content": [
+        {
+            "type": "text",
+            "text": "Alternative text must be at least 1 character long.\nImage ID has the wrong type."
+        }
+    ],
+    "structuredContent": {
+        "errors": [
+            {
+                "instanceLocation": "/alt",
+                "code": "minLength",
+                "params": {
+                    "limit": 1,
+                    "actual": 0
+                },
+                "message": "Alternative text must be at least 1 character long."
+            },
+            {
+                "instanceLocation": "/image_id",
+                "code": "type",
+                "params": {
+                    "expected": [
+                        "integer"
+                    ],
+                    "actual": "string"
+                },
+                "message": "Image ID has the wrong type."
+            }
+        ]
+    }
+}
+
+→ update_image_alt {"image_id": 70, "alt": "Two skiers on a ridge above the clouds"}
+← {
+    "isError": true,
+    "content": [
+        {
+            "type": "text",
+            "text": "The referenced file (70) does not exist."
+        }
+    ],
+    "structuredContent": {
+        "errors": [
+            {
+                "instanceLocation": "/image_id",
+                "code": "check.drupal:ValidReference",
+                "params": {
+                    "id": 70
+                },
+                "message": "The referenced file (70) does not exist."
+            }
+        ]
+    }
+}
+
+→ update_image_alt {"image_id": 7, "alt": "Two skiers on a ridge above the clouds"}
+← valid output: {
+    "structuredContent": {
+        "id": 7,
+        "url": "https://example.com/photos/ski-tour.jpg",
+        "alt": "Two skiers on a ridge above the clouds"
+    }
+}

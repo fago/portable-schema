@@ -1,0 +1,20 @@
+{
+  "$schema": "https://portable-schema.dev/v1/schema",
+  "$id": "portable:link",
+  "title": "Link",
+  "description": "A link: target and text. Open: use sites may add keys.",
+  "type": "object",
+  "properties": {
+    "uri": {
+      "title": "URL",
+      "$ref": "portable:uri-reference"
+    },
+    "title": {
+      "title": "Link text",
+      "$ref": "portable:label"
+    }
+  },
+  "required": [
+    "uri"
+  ]
+}

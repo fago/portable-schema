@@ -1,0 +1,27 @@
+[
+  {
+    "description": "matches",
+    "data": {
+      "p": "a+b",
+      "v": "plus"
+    },
+    "valid": true
+  },
+  {
+    "description": "other value",
+    "data": {
+      "p": "a+b",
+      "v": "minus"
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "/v",
+        "code": "const",
+        "params": {
+          "expected": "plus"
+        }
+      }
+    ]
+  }
+]

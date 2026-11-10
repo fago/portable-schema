@@ -1,0 +1,36 @@
+{
+  "description": "x-portable-messages overrides the catalog text; the use site wins over the type; checks may render their own message",
+  "registry": {
+    "test:mail": {
+      "type": "string",
+      "format": "email",
+      "x-portable-messages": {
+        "format.email": "{label}: please enter an address like joe@example.com."
+      }
+    }
+  },
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "mail": {
+        "title": "Email",
+        "$ref": "test:mail"
+      },
+      "backup": {
+        "title": "Backup email",
+        "$ref": "test:mail",
+        "x-portable-messages": {
+          "format.email": "{label} needs an @."
+        }
+      },
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "portable-check": {
+          "test:Unique": {}
+        }
+      }
+    }
+  }
+}

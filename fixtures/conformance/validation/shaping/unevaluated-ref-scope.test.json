@@ -1,0 +1,26 @@
+[
+  {
+    "description": "only the referenced schema's properties",
+    "data": {
+      "a": "x"
+    },
+    "valid": true
+  },
+  {
+    "description": "a property next to the $ref",
+    "data": {
+      "a": "x",
+      "b": 1
+    },
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "unknownProperty",
+        "params": {
+          "property": "b"
+        }
+      }
+    ]
+  }
+]

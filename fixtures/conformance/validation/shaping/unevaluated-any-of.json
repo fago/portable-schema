@@ -1,0 +1,30 @@
+{
+  "description": "unevaluatedProperties: false ignores properties only a failed anyOf branch evaluated",
+  "schema": {
+    "$schema": "https://portable-schema.dev/v1/schema",
+    "type": "object",
+    "properties": {
+      "a": {
+        "$ref": "portable:string"
+      }
+    },
+    "anyOf": [
+      {
+        "properties": {
+          "b": {
+            "$ref": "portable:string"
+          }
+        },
+        "required": [
+          "b"
+        ]
+      },
+      {
+        "required": [
+          "a"
+        ]
+      }
+    ],
+    "unevaluatedProperties": false
+  }
+}

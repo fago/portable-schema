@@ -1,0 +1,25 @@
+[
+  {
+    "description": "both branches fail",
+    "data": "ab",
+    "valid": false,
+    "errors": [
+      {
+        "instanceLocation": "",
+        "code": "minLength",
+        "params": {
+          "limit": 3,
+          "actual": 2
+        }
+      },
+      {
+        "instanceLocation": "",
+        "code": "maxLength",
+        "params": {
+          "limit": 1,
+          "actual": 2
+        }
+      }
+    ]
+  }
+]
