@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://portable-schema.dev/v1/load",
+  "$id": "https://portable-schema.dev/v1/schema-strict",
   "$comment": "The dialect meta-schema plus the profile's limits, in every subschema: `$schema` names the dialect; no `$vocabulary`, `$dynamicRef`, `$dynamicAnchor`.",
   "$dynamicAnchor": "meta",
   "$ref": "https://portable-schema.dev/v1/schema",

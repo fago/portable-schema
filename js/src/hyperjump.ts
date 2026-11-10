@@ -110,7 +110,7 @@ const setUp = (): void => {
   registerSchema(spec("vocab.json"));
   registerSchema(spec("schema.json"));
   // The dialect meta-schema plus the profile's limits.
-  registerSchema(spec("load.json"));
+  registerSchema(spec("schema-strict.json"));
 };
 
 /** Matches the URIs a URI template can expand to. */
@@ -144,9 +144,9 @@ const compileNow = async (registry: Registry): Promise<Compiled> => {
   const ast = { metaData: {}, plugins: new Set<EvaluationPlugin>() } as unknown as Compiled["ast"];
   const urls = new Map<string, string>();
   const ids = new Map<string, string>();
-  const load = await validate("https://portable-schema.dev/v1/load");
+  const strict = await validate("https://portable-schema.dev/v1/schema-strict");
   for (const id of registered) {
-    if (!load(registry.get(id)).valid) throw new Error(`Invalid schema ${id}`);
+    if (!strict(registry.get(id)).valid) throw new Error(`Invalid schema ${id}`);
   }
   compiling = registry;
   try {

@@ -20,7 +20,7 @@ export class Registry {
       .map((name) => `https://json-schema.org/draft/2020-12/meta/${name}`),
     "https://portable-schema.dev/v1/schema",
     "https://portable-schema.dev/v1/vocab",
-    "https://portable-schema.dev/v1/load",
+    "https://portable-schema.dev/v1/schema-strict",
   ];
 
   static readonly TYPES_NAMESPACE = "portable";

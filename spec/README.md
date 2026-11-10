@@ -8,7 +8,7 @@ The normative definition of Portable Schema. The spec plus the [fixtures](../fix
 |---|---|
 | [`v1/schema.json`](v1/schema.json) | Dialect meta-schema. Schemas declare it with `$schema` |
 | [`v1/vocab.json`](v1/vocab.json) | Syntax of the keywords Portable Schema adds |
-| [`v1/load.json`](v1/load.json) | What loading checks: the dialect meta-schema plus the [profile](profile.md)'s limits in every subschema |
+| [`v1/schema-strict.json`](v1/schema-strict.json) | `schema.json`, strict: only the Portable Schema dialect and the [profile](profile.md)'s limits, in every subschema. Validators refuse a schema that fails it when they load the registry |
 
 The `portable-schema.dev` base URI is a placeholder until a domain is chosen.
 
