@@ -26,7 +26,7 @@ final class Registry
         'https://json-schema.org/draft/2020-12/meta/unevaluated',
         'https://portable-schema.dev/v1/schema',
         'https://portable-schema.dev/v1/vocab',
-        'https://portable-schema.dev/v1/load',
+        'https://portable-schema.dev/v1/schema-strict',
     ];
 
     public const TYPES_NAMESPACE = 'portable';

@@ -30,7 +30,7 @@ final class RegistryTest extends TestCase
         yield 'file scheme' => [['file:///x']];
         yield 'encoded ? before a dot-dot segment' => [['test:a%3F/../b']];
         yield 'encoded ? before an encoded dot-dot segment' => [['test:a%3F/%2E%2E/b']];
-        yield 'meta-schema id' => [['https://portable-schema.dev/v1/load']];
+        yield 'meta-schema id' => [['https://portable-schema.dev/v1/schema-strict']];
         yield '2020-12 meta-schema id' => [['https://json-schema.org/draft/2020-12/schema']];
         yield 'meta-schema id in other case' => [['HTTPS://JSON-SCHEMA.ORG/draft/2020-12/meta/core']];
     }
