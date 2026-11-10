@@ -24,7 +24,7 @@ test.each([
   ["file scheme", ["file:///x"]],
   ["encoded ? before a dot-dot segment", ["test:a%3F/../b"]],
   ["encoded ? before an encoded dot-dot segment", ["test:a%3F/%2E%2E/b"]],
-  ["meta-schema id", ["https://portable-schema.dev/v1/load"]],
+  ["meta-schema id", ["https://portable-schema.dev/v1/schema-strict"]],
   ["2020-12 meta-schema id", ["https://json-schema.org/draft/2020-12/schema"]],
   ["meta-schema id in other case", ["HTTPS://JSON-SCHEMA.ORG/draft/2020-12/meta/core"]],
 ])("refuses an id: %s", (_name, ids) => {

@@ -9,7 +9,7 @@ use Opis\JsonSchema\Validator;
 use PortableSchema\Pointer;
 
 /**
- * Checks schemas against `spec/v1/load.json`: the dialect meta-schema `spec/v1/schema.json` plus the profile's limits.
+ * Checks schemas against `spec/v1/schema-strict.json`: the dialect meta-schema `spec/v1/schema.json` plus the profile's limits.
  *
  * - The meta-schemas assert no formats: their own `$schema` is plain 2020-12.
  * - Defaults off: opis would write the meta-schema's `default`s into the checked schema.
@@ -36,7 +36,7 @@ final class MetaSchema
         if (isset(self::$valid[$hash])) {
             return;
         }
-        $error = self::validator()->validate($schema, 'https://portable-schema.dev/v1/load')->error();
+        $error = self::validator()->validate($schema, 'https://portable-schema.dev/v1/schema-strict')->error();
         if ($error === null) {
             if (count(self::$valid) >= self::CACHE_SIZE) {
                 self::$valid = [];
@@ -62,7 +62,7 @@ final class MetaSchema
             }
             $resolver->registerFile(Parser::DIALECT, self::SPEC . '/schema.json');
             $resolver->registerFile('https://portable-schema.dev/v1/vocab', self::SPEC . '/vocab.json');
-            $resolver->registerFile('https://portable-schema.dev/v1/load', self::SPEC . '/load.json');
+            $resolver->registerFile('https://portable-schema.dev/v1/schema-strict', self::SPEC . '/schema-strict.json');
         }
         return self::$validator;
     }
