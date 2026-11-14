@@ -6,8 +6,7 @@ import {
 } from "@hyperjump/json-schema/experimental";
 import type { JsonNode } from "@hyperjump/json-schema/instance/experimental";
 import * as Instance from "@hyperjump/json-schema/instance/experimental";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { SPEC } from "./embedded.js";
 import { CheckRequest, type Checks } from "./checks.js";
 import * as Formats from "./formats.js";
 import type { JsonObject } from "./json.js";
@@ -93,7 +92,7 @@ const setUp = (): void => {
     "portable-typeBy": KEYWORD + "typeBy",
     "portable-check": KEYWORD + "check",
   });
-  const spec = (file: string) => JSON.parse(readFileSync(fileURLToPath(new URL(`../../spec/v1/${file}`, import.meta.url)), "utf8"));
+  const spec = (file: keyof typeof SPEC) => JSON.parse(SPEC[file]);
   registerSchema(spec("vocab.json"));
   registerSchema(spec("schema.json"));
   // The dialect meta-schema plus the profile's limits.

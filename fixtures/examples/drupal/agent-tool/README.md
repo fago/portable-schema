@@ -15,7 +15,7 @@ php repair-loop.php
 npx tsx repair-loop.mts
 ```
 
-`scripts/compare-results.sh` checks that both print `repair-loop.txt`.
+The JS script runs the JS sources, so it needs the generated `js/src/embedded.ts`: run `npm run build` first. `scripts/compare-results.sh` checks that both print `repair-loop.txt`.
 
 ## Mapping
 

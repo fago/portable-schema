@@ -78,7 +78,7 @@ Portable Schema itself is not tied to any framework. Integrations, such as one f
 | `fixtures/conformance/` | Conformance cases that both implementations must pass |
 | `fixtures/examples/` | Worked examples used for planning, e.g. schemas an integration would generate |
 | `php/` | PHP implementation (`fago/portable-schema`) |
-| `js/` | JS implementation (`portable-schema` on npm) |
+| `js/` | JS implementation (`portable-schema` on npm); `js/scripts/embed.mjs` generates its embedded copy of `spec/v1/`, `types/v1/` and `messages/en.json` |
 | `docs/` | Non-normative documentation, e.g. [scope](docs/scope.md) |
 | `scripts/` | `compare-results.sh`: compares the full results of PHP and JS on every fixture |
 

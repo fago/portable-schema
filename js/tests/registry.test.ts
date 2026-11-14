@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { getAllRegisteredSchemaUris } from "@hyperjump/json-schema/draft-2020-12";
-import { afterEach, expect, test } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 import { Registry, Validator } from "../src/index.js";
 
 test.each([
@@ -119,6 +119,23 @@ test("refuses a file name that decodes to non-ASCII characters", () => {
 
 test("refuses an $id other than the file path", () => {
   expect(() => new Registry().addDirectory(directory({ "a.json": '{"$id": "drupal:b"}' }), "drupal")).toThrow();
+});
+
+test.each([
+  ["in a browser", undefined],
+  ["in Node.js before 22.3", {}],
+])("refuses to mount a directory without Node.js's modules: %s", (_name, stub) => {
+  const root = directory({ "a.json": "true" });
+  let error: unknown;
+  vi.stubGlobal("process", stub);
+  try {
+    new Registry().addDirectory(root, "drupal");
+  } catch (thrown) {
+    error = thrown;
+  } finally {
+    vi.unstubAllGlobals();
+  }
+  expect(error).toEqual(new Error("Reading a directory of schemas needs Node.js 22.3 or later: elsewhere, add the schemas with add()."));
 });
 
 test.each([

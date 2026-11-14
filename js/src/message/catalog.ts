@@ -1,16 +1,13 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { MESSAGES } from "../embedded.js";
 
 type Entry = { text: string } | { plural: string; one: string; other: string };
 
 /** Message source texts by id, in the format of decision 0001. */
 export class Catalog {
-  static readonly DEFAULT = fileURLToPath(new URL("../../../messages/en.json", import.meta.url));
-
   constructor(private readonly entries: Record<string, Entry>) {}
 
   static default(): Catalog {
-    return new Catalog(JSON.parse(readFileSync(Catalog.DEFAULT, "utf8")) as Record<string, Entry>);
+    return new Catalog(JSON.parse(MESSAGES) as Record<string, Entry>);
   }
 
   has(id: string): boolean {
