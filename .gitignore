@@ -2,4 +2,5 @@
 /composer.lock
 node_modules/
 /js/dist/
+/js/src/embedded.ts
 /.phpunit.result.cache

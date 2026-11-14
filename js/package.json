@@ -20,11 +20,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
-    "test": "tsc -p tsconfig.test.json && vitest run"
+    "build": "node scripts/embed.mjs && tsc",
+    "test": "node scripts/embed.mjs && tsc -p tsconfig.test.json && vitest run"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.3"
   },
   "dependencies": {
     "@hyperjump/browser": "^1.6.0",

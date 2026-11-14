@@ -7,6 +7,8 @@ out="${TMPDIR:-/tmp}"
 php php/tests/results.php > "$out/portable-schema-php.raw.jsonl"
 # Re-serialized by JS: the same numbers, written as JS writes them (PHP writes 1.0e+20).
 node -e 'require("readline").createInterface({ input: process.stdin }).on("line", (l) => console.log(JSON.stringify(JSON.parse(l))))' < "$out/portable-schema-php.raw.jsonl" > "$out/portable-schema-php.jsonl"
+# tsx runs the JS sources, which import the generated js/src/embedded.ts.
+node js/scripts/embed.mjs
 npx tsx js/tests/results.ts > "$out/portable-schema-js.jsonl"
 test -s "$out/portable-schema-php.jsonl"
 diff "$out/portable-schema-php.jsonl" "$out/portable-schema-js.jsonl"

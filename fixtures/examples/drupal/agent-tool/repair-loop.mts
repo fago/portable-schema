@@ -3,6 +3,8 @@
  * tool returns, and the corrected calls. repair-loop.php prints the same in PHP.
  *
  *   npx tsx repair-loop.mts
+ *
+ * Needs the generated js/src/embedded.ts: run `npm run build` first.
  */
 import { fileURLToPath } from "node:url";
 import { CheckResult, Exporter, Formatter, Registry, Validator, type CheckRequest, type Result } from "../../../../js/src/index.js";

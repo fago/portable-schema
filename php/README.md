@@ -34,7 +34,7 @@ $validator->subschemaAt($data, 'drupal:block.block', 'settings.label'); // Subsc
 
 ## Design
 
-The same as the JS implementation, with the same names ([validator design](../docs/architecture/validator.md)):
+The same as the JS implementation, with the same names ([validator design](../docs/architecture/validator.md)), except that PHP reads `spec/v1/`, `types/v1/` and `messages/en.json` from the package files, while JS embeds them and reads files only in `Registry.addDirectory()`, which needs Node.js:
 
 | Class | Role |
 |---|---|

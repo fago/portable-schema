@@ -1,6 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
-import { join, relative, sep } from "node:path";
-import { fileURLToPath } from "node:url";
+import { TYPES } from "./embedded.js";
 import * as Formats from "./formats.js";
 import { isObject, type Json, type JsonObject } from "./json.js";
 import * as Pointer from "./pointer.js";
@@ -11,8 +9,6 @@ export type Schema = JsonObject | boolean;
  * Schemas and catalogs by $id. Values follow the JSON data model.
  */
 export class Registry {
-  static readonly TYPES_DIRECTORY = fileURLToPath(new URL("../../types/v1", import.meta.url));
-
   /** The meta-schemas the validators load: Hyperjump keeps them in one global store, so a registry id must not be one. */
   static readonly META_SCHEMA_IDS: readonly string[] = [
     "https://json-schema.org/draft/2020-12/schema",
@@ -30,9 +26,11 @@ export class Registry {
   /** Ids by their normalized form. */
   private normalized = new Map<string, string>();
 
-  /** A registry with the type library. */
+  /** A registry with the type library, which is embedded: no files are read. */
   static withTypes(): Registry {
-    return new Registry().mount(Registry.TYPES_DIRECTORY, Registry.TYPES_NAMESPACE);
+    const registry = new Registry();
+    for (const [name, json] of Object.entries(TYPES)) registry.store(JSON.parse(json) as Schema, `${Registry.TYPES_NAMESPACE}:${name}`);
+    return registry;
   }
 
   /**
@@ -71,15 +69,17 @@ export class Registry {
   /**
    * Mounts `directory` under `namespace`: every *.json file below it, except *.test.json, is added by the id
    * `<namespace>:<relative path without .json>`, percent-decoded. A `$id` in the file must equal that id.
-   * Symbolic links and names starting with `.` are skipped.
+   * Symbolic links and names starting with `.` are skipped. Reads files, so it needs Node.js.
    */
   addDirectory(directory: string, namespace: string): this {
     if (namespace === Registry.TYPES_NAMESPACE) throw new Error(`The namespace ${namespace} is reserved for the type library.`);
-    return this.mount(directory, namespace);
-  }
-
-  private mount(directory: string, namespace: string): this {
     if (!/^[a-z][a-z0-9_]*$/u.test(namespace)) throw new Error(`The namespace ${namespace} is not a lowercase identifier.`);
+    // Looked up here, not imported: an import of a Node.js module would keep this file out of browsers and bundles.
+    if (typeof process === "undefined" || typeof process.getBuiltinModule !== "function") {
+      throw new Error("Reading a directory of schemas needs Node.js 22.3 or later: elsewhere, add the schemas with add().");
+    }
+    const { readdirSync, readFileSync } = process.getBuiltinModule("node:fs");
+    const { join, relative, sep } = process.getBuiltinModule("node:path");
     const paths: string[] = [];
     const walk = (dir: string): void => {
       for (const entry of readdirSync(dir, { withFileTypes: true })) {
